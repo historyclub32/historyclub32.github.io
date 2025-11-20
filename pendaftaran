@@ -1,0 +1,525 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pendaftaran Anggota HC 32</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
+  
+  <style>
+    :root {
+      --brand-1: #1a4787; --brand-2: #0f8a94; --brand: #005A9C;
+      --ink: #0f172a; --muted: #64748b; --border: #cbd5e1; --page: #e2e8f0; --card: #ffffff;
+      --danger: #ef4444;
+    }
+    body{margin:0;font-family:'Poppins',system-ui,-apple-system,sans-serif;background:var(--page);color:var(--ink);-webkit-text-size-adjust:100%;}
+    .shell{min-height:100vh;display:grid;place-items:center;padding:24px}
+    .frame{width:min(1100px,96vw);background:var(--card);border-radius:20px;box-shadow:0 18px 60px rgba(15,23,42,.15);overflow:hidden;position:relative}
+    .grid{display:grid;grid-template-columns:1fr}
+    .card{padding:30px 28px 32px;display:grid;align-content:start;gap:18px}
+    .card-wrap{width:min(500px,90vw);margin:18px auto;background:#fff;border-radius:16px;box-shadow:0 12px 40px rgba(15,23,42,.08);overflow:hidden}
+    .welcome{background:linear-gradient(135deg,var(--brand-1),var(--brand-2));color:#fff;padding:18px 22px}
+    .welcome small{display:block;opacity:.85;font-weight:600;letter-spacing:.2px}
+    .welcome h2{margin:6px 0 0;font-size:28px}
+    form{padding:20px 22px 22px}
+    .row{display:grid;gap:12px}
+    label{display:block;font-size:13px;font-weight:600;margin:6px 0 6px;color:#0f172a}
+    input,select,canvas,textarea{width:100%;box-sizing:border-box;font-size:16px;padding:12px 14px;border:1px solid var(--border);border-radius:12px;outline:none;background:#fff;color:var(--ink);min-height:44px;transition:border-color .2s,box-shadow .2s}
+    input:focus,select:focus,textarea:focus,canvas:focus{border-color:var(--brand);box-shadow:0 0 0 3px color-mix(in oklab,var(--brand) 20%,transparent)}
+    .two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .note{font-size:12px;color:var(--muted);margin:-4px 0 8px}
+    button[type="submit"]{width:100%;background:linear-gradient(135deg,var(--brand-1),var(--brand-2));color:#fff;border:none;padding:14px 18px;border-radius:999px;font-weight:700;font-size:16px;cursor:pointer;transition:all .2s;box-shadow:0 16px 30px rgba(26,71,135,.25);min-height:48px}
+    button[type="submit"]:hover{filter:brightness(.95);transform:translateY(-1px)}
+    button[type="submit"]:disabled{background:#cbd5e1;cursor:not-allowed;box-shadow:none}
+    .hidden{display:none!important}
+    
+    /* Signature */
+    .sig-wrap{position:relative;height:160px;border:1px dashed var(--border);border-radius:10px;overflow:clip;background:#f8fafc}
+    #sig-canvas{width:100%;height:100%;display:block;cursor:crosshair}
+    .sig-actions{position:absolute;right:10px;top:10px;display:flex;gap:8px}
+    
+    /* Buttons Ghost */
+    .ghost{background:#f1f5f9;color:#475569;border:1px solid var(--border);padding:10px 14px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;transition:all 0.2s}
+    .ghost:hover{background:#e2e8f0;border-color:#94a3b8}
+    .ghost.danger{background:#fee2e2;color:#b91c1c;border-color:#fca5a5}
+
+    /* Foto & Kamera & Cropper Styles */
+    .photo-actions { display: flex; gap: 10px; margin-bottom: 8px; }
+    .photo-actions button { flex: 1; }
+    #foto-preview-container { position: relative; width: 150px; height: 150px; background: #f1f5f9; border-radius: 50%; overflow: hidden; margin: 0 auto 16px auto; border: 4px solid white; box-shadow: 0 4px 12px rgba(0,0,0,0.1); display: none; }
+    #foto-preview-img { width: 100%; height: 100%; object-fit: cover; }
+    #btn-hapus-foto { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.6); color: white; font-size: 11px; border: none; padding: 6px; cursor: pointer; text-align: center; width: 100%; }
+
+    /* Modal Umum (Camera & Cropper) */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+    .modal-content { width: 100%; max-width: 500px; background: #000; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; max-height: 90vh; }
+    .modal-controls { display: flex; gap: 12px; width: 100%; padding: 16px; background: #1a1a1a; box-sizing: border-box; }
+    
+    /* Cropper Specific */
+    #cropper-img { max-width: 100%; display: block; }
+    .cropper-view-box, .cropper-face { border-radius: 50%; } /* Optional: Tampilan bulat visual saja */
+
+    #msg{font-size:12px;margin-top:8px;text-align:center}
+    #msg.success{color:#16a34a} #msg.error{color:#ef4444} #msg.loading{color:#2563eb}
+    
+    select{appearance:none;background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%2364748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>');background-size:16px;background-position:right 12px center;background-repeat:no-repeat;padding-right:36px}
+    
+    @media (max-width:960px){.grid{grid-template-columns:1fr}.card{padding:12px}.card-wrap{width:100%;margin:8px 0 16px}.two{grid-template-columns:1fr}}
+    .site-footer{background:#08324a;color:#fff;text-align:center;padding:16px 14px;font-weight:300;font-size:14px}
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="frame">
+      <div class="grid">
+        <section class="card">
+          <div class="card-wrap">
+            <div class="welcome">
+              <small>Selamat Datang di History Club SMAN 32 Jakarta</small>
+              <h2>Pendaftaran Anggota</h2>
+            </div>
+
+            <form id="form-daftar" novalidate>
+              <div class="row">
+                <label id="label-id" for="fd-nis">NIS / NISN / NIP *</label>
+                <input id="fd-nis" placeholder="Masukkan Nomor Identitas" required />
+              </div>
+
+              <div class="row">
+                <label for="fd-nama">Nama lengkap *</label>
+                <input id="fd-nama" required autocomplete="name" autocapitalize="words" placeholder="Sesuai Dapodik/Absen" />
+              </div>
+
+              <div class="row">
+                <label for="fd-tipe">Tipe keanggotaan *</label>
+                <select id="fd-tipe" required>
+                  <option value="siswa" selected>Siswa/Siswi Aktif SMAN 32</option>
+                  <option value="guru">Guru/Tendik</option>
+                  <option value="alumni">Alumni SMAN 32</option>
+                  <option value="lain">Selain SMAN 32</option>
+                </select>
+              </div>
+
+              <div id="group-siswa" class="row">
+                <div class="two">
+                  <div>
+                    <label for="fd-kelas">Kelas *</label>
+                    <select id="fd-kelas">
+                        <option value="">Pilih Kelas...</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label for="fd-angkatan">Angkatan *</label>
+                    <select id="fd-angkatan">
+                        <option value="">Pilih Tahun...</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div id="group-jabatan" class="row hidden">
+                <label for="fd-jabatan">Jabatan (mis. Pembina, Pelatih, Guru PPL)</label>
+                <input id="fd-jabatan" />
+              </div>
+
+              <div id="group-lulus" class="row hidden">
+                <label for="fd-thn-lulus">Tahun Lulus</label>
+                <input id="fd-thn-lulus" type="number" placeholder="Contoh: 2020" />
+              </div>
+
+              <div class="two">
+                <div class="row">
+                  <label for="fd-nohp">No HP (WhatsApp) *</label>
+                  <input id="fd-nohp" type="tel" inputmode="numeric" required placeholder="08..." />
+                </div>
+                <div class="row">
+                  <label for="fd-email">Email (opsional)</label>
+                  <input id="fd-email" type="email" placeholder="email@google.com" />
+                </div>
+              </div>
+              
+              <div class="row">
+                 <label for="fd-tgllahir">Tanggal Lahir (opsional)</label>
+                 <input id="fd-tgllahir" type="date" />
+              </div>
+
+              <div class="row" style="margin-top: 10px; border-top: 1px dashed #e2e8f0; padding-top: 16px;">
+                <label>Foto Profil (Wajib 1:1, Maks 1MB)</label>
+                
+                <div id="foto-preview-container">
+                    <img id="foto-preview-img" src="" alt="Preview">
+                    <button type="button" id="btn-hapus-foto">Hapus Foto</button>
+                </div>
+                
+                <div class="photo-actions" id="photo-buttons">
+                    <button type="button" class="ghost" id="btn-open-cam">📷 Kamera</button>
+                    <button type="button" class="ghost" id="btn-open-file">📁 Pilih File</button>
+                </div>
+                <input type="file" id="inp-file-foto" accept="image/*" hidden>
+                <input type="hidden" id="fd-foto-base64">
+                <p class="note" style="text-align: center;">Foto akan otomatis di-crop menjadi persegi.</p>
+              </div>
+
+              <div class="row">
+                <label for="sig-canvas">Tanda Tangan Digital *</label>
+                <div class="sig-wrap">
+                  <canvas id="sig-canvas"></canvas>
+                  <div class="sig-actions">
+                    <button class="ghost danger" type="button" id="sig-clear">Hapus</button>
+                  </div>
+                </div>
+                <p class="note">Tanda tangan di dalam kotak di atas.</p>
+              </div>
+
+              <button type="submit" id="btn-submit">Kirim Pendaftaran</button>
+              <p id="msg" aria-live="polite"></p>
+            </form>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <div id="cam-modal" class="modal-overlay">
+      <div class="modal-content">
+         <video id="cam-video" autoplay playsinline style="width:100%; background:black; min-height: 300px;"></video>
+      </div>
+      <div class="modal-controls">
+          <button type="button" class="ghost danger" id="btn-cam-cancel" style="flex:1">Batal</button>
+          <button type="button" class="ghost" id="btn-cam-capture" style="flex:2; background:white; color:black;">Ambil Foto</button>
+      </div>
+  </div>
+
+  <div id="crop-modal" class="modal-overlay">
+      <div class="modal-content" style="background: #333;">
+          <div style="height: 400px; width: 100%;">
+              <img id="cropper-img" src="" style="max-width: 100%;">
+          </div>
+      </div>
+      <div class="modal-controls">
+          <button type="button" class="ghost danger" id="btn-crop-cancel" style="flex:1">Batal</button>
+          <button type="button" class="ghost" id="btn-crop-save" style="flex:2; background:white; color:black;">Simpan (Crop 1:1)</button>
+      </div>
+  </div>
+
+  <footer class="site-footer">
+    <p>© 2025 History Club SMAN 32 Jakarta.</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+  
+  <script>
+    // ==== KONFIGURASI ====
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz22NwYQ-WJwmdieMgzQxw1I2lXKTghebFO-oSY-wE_av-3oEYIi9TfSCqJCpy3iZKt/exec"; 
+    const MAX_FILE_SIZE_MB = 1; // Batas Maksimal MB
+
+    // ==== ELEMEN UI ====
+    const tipeSel = document.getElementById('fd-tipe');
+    const grpSiswa = document.getElementById('group-siswa');
+    const grpJab   = document.getElementById('group-jabatan');
+    const grpLulus = document.getElementById('group-lulus');
+    const msg      = document.getElementById('msg');
+    const nisInput = document.getElementById('fd-nis');
+    const nisLabel = document.getElementById('label-id');
+    
+    // ==== 1. DROPDOWN KELAS & ANGKATAN (DIPERBAIKI) ====
+    function populateDropdowns() {
+        // Kelas: X-1 sampai X-8 (XI dan XII juga)
+        const kelasSelect = document.getElementById('fd-kelas');
+        const tingkat = ['X', 'XI', 'XII'];
+        while (kelasSelect.options.length > 1) kelasSelect.remove(1);
+        
+        tingkat.forEach(t => {
+            for(let i=1; i<=8; i++) { // Loop hanya sampai 8
+                let val = `${t}-${i}`;
+                kelasSelect.add(new Option(val, val));
+            }
+        });
+
+        // Angkatan: Hanya 2026, 2027, 2028
+        const angkatanSelect = document.getElementById('fd-angkatan');
+        const tahunList = [2026, 2027, 2028]; // Array statis
+        while (angkatanSelect.options.length > 1) angkatanSelect.remove(1);
+        
+        tahunList.forEach(yr => {
+            angkatanSelect.add(new Option(yr, yr));
+        });
+    }
+
+    // ==== 2. CAMERA, FILE & CROPPER LOGIC ====
+    const btnCam = document.getElementById('btn-open-cam');
+    const btnFile = document.getElementById('btn-open-file');
+    const inpFile = document.getElementById('inp-file-foto');
+    
+    // Elements Camera
+    const camModal = document.getElementById('cam-modal');
+    const video = document.getElementById('cam-video');
+    const btnCapture = document.getElementById('btn-cam-capture');
+    const btnCancelCam = document.getElementById('btn-cam-cancel');
+    let stream = null;
+
+    // Elements Cropper
+    const cropModal = document.getElementById('crop-modal');
+    const cropperImgElement = document.getElementById('cropper-img');
+    const btnCropSave = document.getElementById('btn-crop-save');
+    const btnCropCancel = document.getElementById('btn-crop-cancel');
+    let cropper = null;
+
+    // Elements Preview
+    const previewCont = document.getElementById('foto-preview-container');
+    const previewImg = document.getElementById('foto-preview-img');
+    const btnHapusFoto = document.getElementById('btn-hapus-foto');
+    const hiddenBase64 = document.getElementById('fd-foto-base64');
+
+    // --- A. File Input ---
+    btnFile.addEventListener('click', () => inpFile.click());
+    inpFile.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if(file) startCropper(file);
+    });
+
+    // --- B. Camera Logic (DIPERBAIKI) ---
+    btnCam.addEventListener('click', async () => {
+        try {
+            stream = await navigator.mediaDevices.getUserMedia({ 
+                video: { facingMode: 'user' }, 
+                audio: false 
+            });
+            video.srcObject = stream;
+            // Pastikan video dimainkan (diperlukan di beberapa browser mobile)
+            video.onloadedmetadata = () => {
+                video.play();
+            };
+            camModal.style.display = 'flex';
+        } catch (err) {
+            alert('Gagal akses kamera: ' + err.message + '\nPastikan Anda memberi izin kamera di browser.');
+        }
+    });
+
+    btnCancelCam.addEventListener('click', stopCamera);
+
+    btnCapture.addEventListener('click', () => {
+        // Tunggu sebentar untuk memastikan dimensi video tersedia
+        if (video.videoWidth === 0 || video.videoHeight === 0) {
+            alert("Tunggu sebentar, kamera sedang memuat...");
+            return;
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        canvas.getContext('2d').drawImage(video, 0, 0);
+        canvas.toBlob(blob => {
+            stopCamera();
+            startCropper(blob);
+        }, 'image/jpeg');
+    });
+
+    function stopCamera() {
+        if(stream) {
+            stream.getTracks().forEach(t => t.stop());
+            stream = null;
+        }
+        camModal.style.display = 'none';
+    }
+
+    // --- C. Cropper Logic (Inti Fitur) ---
+    function startCropper(blob) {
+        const url = URL.createObjectURL(blob);
+        cropperImgElement.src = url;
+        cropModal.style.display = 'flex';
+        
+        if(cropper) cropper.destroy();
+        cropper = new Cropper(cropperImgElement, {
+            aspectRatio: 1, // WAJIB 1:1
+            viewMode: 1,
+            dragMode: 'move',
+            autoCropArea: 1,
+        });
+    }
+
+    btnCropCancel.addEventListener('click', () => {
+        cropModal.style.display = 'none';
+        inpFile.value = '';
+        if(cropper) cropper.destroy();
+    });
+
+    btnCropSave.addEventListener('click', () => {
+        if(!cropper) return;
+        
+        // 1. Get Canvas (Resize to max 600x600 for reasonable quality)
+        const canvas = cropper.getCroppedCanvas({
+            width: 600, height: 600,
+            fillColor: '#fff',
+            imageSmoothingEnabled: true,
+            imageSmoothingQuality: 'high',
+        });
+
+        // 2. Convert to Blob & Validate Size
+        canvas.toBlob((blob) => {
+            const sizeMB = blob.size / (1024 * 1024);
+            
+            if (sizeMB > MAX_FILE_SIZE_MB) {
+                // Jika masih > 1MB, kompres lebih kuat
+                canvas.toBlob((blob2) => {
+                    if((blob2.size / 1024 / 1024) > MAX_FILE_SIZE_MB) {
+                        alert("Ukuran foto masih terlalu besar. Silakan gunakan foto lain.");
+                        return;
+                    }
+                    saveFinalImage(blob2);
+                }, 'image/jpeg', 0.6); // Turunkan kualitas ke 60%
+            } else {
+                saveFinalImage(blob);
+            }
+        }, 'image/jpeg', 0.9); // Default kualitas 90%
+    });
+
+    function saveFinalImage(blob) {
+        const reader = new FileReader();
+        reader.readAsDataURL(blob);
+        reader.onloadend = () => {
+            hiddenBase64.value = reader.result;
+            previewImg.src = reader.result;
+            previewCont.style.display = 'block';
+            document.getElementById('photo-buttons').style.display = 'none';
+            cropModal.style.display = 'none';
+            if(cropper) cropper.destroy();
+        };
+    }
+
+    btnHapusFoto.addEventListener('click', () => {
+        hiddenBase64.value = '';
+        previewImg.src = '';
+        previewCont.style.display = 'none';
+        document.getElementById('photo-buttons').style.display = 'flex';
+        inpFile.value = '';
+    });
+
+    // ==== 3. LOGIKA UI UMUM ====
+    const onlyDigits = s => (s || '').toString().replace(/\D+/g, '');
+    const mapUiTypeToBackend = (ui) => {
+      if (ui === 'siswa') return 'siswa-aktif';
+      if (ui === 'lain')  return 'non-32';
+      return ui;
+    };
+
+    function setIdFieldByType(type){
+      let label = 'NIS / NISN / NIP *';
+      let ph = 'Masukkan Nomor Identitas';
+      if(type === 'siswa'){ label = 'NIS *'; ph = 'Masukkan NIS (maks 7 digit)'; }
+      else if(type === 'guru'){ label = 'NIP *'; ph = 'Masukkan NIP (18 digit)'; }
+      else if(type === 'alumni'){ label = 'Nomor Anggota Perpus 32 *'; ph = 'Masukkan No. Anggota / NIS lama'; }
+      else if(type === 'lain'){ label = 'Identitas (NISN/NIP/Lainnya) *'; ph = 'Masukkan NISN atau NIP'; }
+      nisLabel.textContent = label; nisInput.placeholder = ph;
+    }
+
+    function applyTypeUI(){
+      const v = tipeSel.value;
+      grpSiswa.classList.add('hidden');
+      grpJab.classList.add('hidden');
+      grpLulus.classList.add('hidden');
+
+      if (v === 'siswa') { grpSiswa.classList.remove('hidden'); }
+      else if (v === 'guru')   { grpJab.classList.remove('hidden'); grpLulus.classList.remove('hidden'); }
+      else if (v === 'alumni') { grpLulus.classList.remove('hidden'); }
+      else { grpJab.classList.remove('hidden'); }
+      setIdFieldByType(v);
+    }
+    tipeSel.addEventListener('change', applyTypeUI);
+
+    // ==== 4. SIGNATURE PAD ====
+    const sigCanvas = document.getElementById('sig-canvas');
+    let signaturePad = null;
+
+    function resizeSigCanvas(){
+      const ratio = Math.max(window.devicePixelRatio || 1, 1);
+      sigCanvas.width = sigCanvas.offsetWidth * ratio;
+      sigCanvas.height = sigCanvas.offsetHeight * ratio;
+      sigCanvas.getContext("2d").scale(ratio, ratio);
+      if(signaturePad) signaturePad.clear();
+    }
+
+    window.addEventListener('load', ()=>{ 
+        populateDropdowns();
+        applyTypeUI(); 
+        signaturePad = new SignaturePad(sigCanvas, { backgroundColor: 'rgba(255, 255, 255, 0)' });
+        resizeSigCanvas();
+    });
+    window.addEventListener('resize', resizeSigCanvas);
+    document.getElementById('sig-clear').addEventListener('click', () => signaturePad.clear());
+
+    // ==== 5. SUBMIT FORM ====
+    document.getElementById('form-daftar').addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      msg.textContent = ''; msg.className = '';
+
+      if(signaturePad.isEmpty()){ 
+          msg.textContent = 'Tanda tangan wajib diisi.'; msg.className='error'; return; 
+      }
+      if(!hiddenBase64.value){
+          msg.textContent = 'Foto profil wajib diisi.'; msg.className='error'; return;
+      }
+
+      const submitBtn = document.getElementById('btn-submit');
+      submitBtn.disabled = true; submitBtn.textContent = 'Sedang Mengirim...';
+      msg.textContent = 'Mohon tunggu, sedang mengupload data...'; msg.className='loading';
+
+      try {
+        const tipeUi = tipeSel.value;
+        const tipe = mapUiTypeToBackend(tipeUi);
+        const rawId = nisInput.value.trim();
+        const d = onlyDigits(rawId);
+
+        let payloadId = { nis:'', nisn:'', nip:'' };
+        if(tipe === 'siswa-aktif') payloadId.nis = d;
+        else if(tipe === 'guru') { payloadId.nip = d; payloadId.nis = d.slice(-7); }
+        else if(tipe === 'alumni') payloadId.nis = d;
+        else if(tipe === 'non-32') {
+             if(d.length===18) { payloadId.nip = d; payloadId.nis = d.slice(-7); }
+             else if(d.length===10) { payloadId.nisn = d; payloadId.nis = d.slice(-7); }
+             else payloadId.nis = d;
+        }
+
+        const payload = {
+          action: 'pendaftaran',
+          ...payloadId,
+          nama: document.getElementById('fd-nama').value.trim(),
+          tipe: tipe,
+          kelas: (tipe === 'siswa-aktif') ? document.getElementById('fd-kelas').value : '',
+          angkatan: (tipe === 'siswa-aktif') ? document.getElementById('fd-angkatan').value : '',
+          nohp: document.getElementById('fd-nohp').value.trim(),
+          email: document.getElementById('fd-email').value.trim(),
+          fotoBase64: hiddenBase64.value, // KIRIM BASE64
+          jabatan: (tipe!=='siswa-aktif' && tipe!=='alumni') ? document.getElementById('fd-jabatan').value.trim() : '',
+          tahunLulus: (tipe==='alumni' || tipe==='guru') ? document.getElementById('fd-thn-lulus').value.trim() : '',
+          tanggalLahir: document.getElementById('fd-tgllahir').value,
+          tandaTangan: signaturePad.toDataURL('image/png')
+        };
+
+        const res = await fetch(WEB_APP_URL, { method:'POST', body: JSON.stringify(payload) });
+        const out = await res.json();
+
+        if(out.status==='ok'){
+          msg.textContent = 'Pendaftaran Berhasil! Terima kasih.'; msg.className='success';
+          e.target.reset();
+          signaturePad.clear();
+          btnHapusFoto.click();
+          applyTypeUI();
+          setTimeout(() => { msg.textContent=''; }, 5000);
+        } else if(out.status==='already'){
+          msg.textContent = 'Nomor Identitas sudah terdaftar.'; msg.className='error';
+        } else {
+          msg.textContent = 'Gagal: ' + out.message; msg.className='error';
+        }
+      } catch(err){
+        msg.textContent = 'Error Jaringan: ' + err.message; msg.className='error';
+      } finally {
+        submitBtn.disabled = false; submitBtn.textContent = 'Kirim Pendaftaran';
+      }
+    });
+  </script>
+</body>
+</html>
