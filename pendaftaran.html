@@ -3,50 +3,61 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Pendaftaran Anggota - History Club 32</title>
-  
+  <title>Pendaftaran Anggota HC 32</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  
   <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
-  
   <script src="config.js"></script>
   
   <style>
     :root {
-      /* WARNA UTAMA (Sesuai PDF Hal 5) */
-      --hc-blue: #1a4787;   /* Biru Pengetahuan */
-      --hc-tosca: #0f8a94;  /* Toska Perkembangan */
-      
-      /* WARNA PENDAMPING (Sesuai PDF Hal 6) */
-      --hc-dark: #2e2e2e;   /* Teks Utama */
-      --hc-grey: #e7e9ea;   /* Background Netral */
-      --hc-yellow: #ecec17; /* Aksen Kuning */
-      --hc-red: #d30e14;    /* Error / Danger */
-      --hc-green: #15a256;  /* Success */
-      
-      /* UI Colors */
-      --bg-page: #f8fafc;
-      --border-color: #cbd5e1;
-      --card-bg: #ffffff;
+      --hc-blue: #1a4787; --hc-toska: #0f8a94; --hc-dark: #2e2e2e;
+      --hc-green: #15a256; --hc-red: #d30e14; --hc-bg: #f8fafc;
+      --hc-blue-light-bg: rgba(26, 71, 135, 0.08);
+      --border: #cbd5e1; --card: #ffffff;
+      --hc-yellow: #ecec17;
     }
 
-    /* Typography (Sesuai PDF Hal 5 - Poppins) */
+    /* === BASE STYLES === */
     body {
-        font-family: 'Poppins', sans-serif; 
-        margin: 0; padding: 0;
-        background-color: var(--bg-page); 
+        font-family: 'Poppins', sans-serif;
+        background-color: var(--hc-bg);
         color: var(--hc-dark);
-        padding-top: 70px; /* Space untuk Header Fixed */
-        font-weight: 400; /* Poppins Regular */
+        margin: 0; padding: 0;
+        padding-top: 70px;
     }
 
-    h1, h2, h3, .header-title, .sidebar-title {
-        font-weight: 700; /* Poppins Bold for Headlines */
+    /* === CUSTOM LOADING SPINNER (Perbaikan #3) === */
+    #hc32-loading-overlay {
+        position: fixed; inset: 0; background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(4px); display: none; /* Hidden by default */
+        flex-direction: column;
+        align-items: center; justify-content: center; z-index: 9999;
     }
+    .hc-loader-box {
+        background: white; padding: 40px; border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+        display: flex; flex-direction: column; align-items: center;
+        text-align: center;
+    }
+    .hc-loader { position: relative; width: 100px; height: 100px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
+    
+    /* Spinner Ring */
+    .hc-loader-spinner { 
+        position: absolute; inset: 0; border-radius: 50%; 
+        border: 6px solid var(--hc-blue); 
+        border-top-color: var(--hc-toska); 
+        animation: hcspin 1s linear infinite; 
+    }
+    /* Logo Tengah */
+    .hc-loader-logo { width: 65px; height: 65px; border-radius: 50%; object-fit: contain; }
+    
+    .hc-loader-text { font-size: 18px; font-weight: 700; color: var(--hc-dark); }
 
-    /* === 1. HEADER === */
+    @keyframes hcspin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+    /* === HEADER (Perbaikan #1) === */
     .app-header {
         position: fixed; top: 0; left: 0; right: 0;
         height: 64px; background: #fff;
@@ -54,29 +65,26 @@
         padding: 0 20px;
         box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         z-index: 1000; 
-        /* Garis aksen kuning di bawah header (warna pendamping) */
         border-bottom: 3px solid var(--hc-yellow); 
     }
     
     .header-left { display: flex; align-items: center; gap: 12px; }
-    .header-logo { width: 45px; height: 45px; object-fit: contain; } 
-    .header-title { font-size: 18px; color: var(--hc-blue); margin: 0; letter-spacing: 0.5px; }
-
+    /* Logo Header Baru */
+    .header-logo { height: 48px; width: auto; object-fit: contain; } 
+    
     .menu-btn {
         background: none; border: none; cursor: pointer;
-        display: flex; flex-direction: column; gap: 5px;
-        padding: 5px;
+        display: flex; flex-direction: column; gap: 5px; padding: 5px;
     }
     .menu-btn span {
         display: block; width: 26px; height: 3px;
         background-color: var(--hc-blue); border-radius: 2px;
     }
 
-    /* === 2. SIDEBAR / MENU NAVIGASI === */
+    /* === SIDEBAR === */
     .sidebar-overlay {
-        position: fixed; inset: 0; background: rgba(46, 46, 46, 0.5); /* Menggunakan warna pendamping dark transparan */
-        z-index: 1100; opacity: 0; visibility: hidden;
-        transition: all 0.3s;
+        position: fixed; inset: 0; background: rgba(46, 46, 46, 0.5);
+        z-index: 1100; opacity: 0; visibility: hidden; transition: all 0.3s;
     }
     .sidebar-overlay.active { opacity: 1; visibility: visible; }
 
@@ -86,164 +94,177 @@
         transform: translateX(100%); transition: transform 0.3s ease-out;
         display: flex; flex-direction: column;
         box-shadow: -2px 0 10px rgba(0,0,0,0.1);
-        border-left: 1px solid var(--border-color);
     }
     .sidebar.active { transform: translateX(0); }
 
     .sidebar-header {
         display: flex; justify-content: space-between; align-items: center;
-        padding: 20px; border-bottom: 1px solid var(--hc-grey);
+        padding: 20px; border-bottom: 1px solid #f1f5f9;
     }
-    .sidebar-title { font-size: 18px; color: var(--hc-blue); }
-    .close-btn { font-size: 28px; background: none; border: none; color: var(--hc-dark); cursor: pointer; line-height: 1; }
+    .sidebar-title { font-size: 18px; font-weight: 700; color: var(--hc-blue); }
+    .close-btn { font-size: 28px; background: none; border: none; color: var(--hc-dark); cursor: pointer; }
 
     .sidebar-content { flex: 1; overflow-y: auto; padding: 10px 0; }
-
-    /* Menu Items */
     .menu-category {
-        padding: 16px 24px 8px;
-        font-size: 12px; font-weight: 600;
+        padding: 16px 24px 8px; font-size: 12px; font-weight: 600;
         color: var(--hc-toska); text-transform: uppercase; letter-spacing: 1px;
     }
-    
     .nav-link, .nav-link-single {
-        display: block; padding: 10px 24px;
-        color: var(--hc-dark); text-decoration: none; font-size: 15px;
-        transition: background 0.2s, color 0.2s;
+        display: block; padding: 10px 24px; color: var(--hc-dark); 
+        text-decoration: none; font-size: 15px; transition: 0.2s;
         border-left: 4px solid transparent;
     }
-    .nav-link { padding-left: 40px; } /* Indent child links */
-    
-    .nav-link:hover, .nav-link-single:hover { 
-        background-color: #f0f9fa; /* Light Tosca Tint */
-        color: var(--hc-blue); 
-    }
-    
-    /* Active State - Sesuai warna utama */
+    .nav-link { padding-left: 40px; }
+    .nav-link:hover, .nav-link-single:hover { background-color: #f0f9fa; color: var(--hc-blue); }
     .nav-link.active {
         background: linear-gradient(to right, #f0f9fa, white);
-        color: var(--hc-blue); font-weight: 600;
-        border-left-color: var(--hc-toska);
+        color: var(--hc-blue); font-weight: 600; border-left-color: var(--hc-toska);
     }
 
-    /* === 3. FORM CONTENT === */
+    /* === FORM STYLES === */
     .container { max-width: 600px; margin: 0 auto; padding: 20px; }
     .card {
-        background: var(--card-bg); border-radius: 16px;
-        box-shadow: 0 8px 30px rgba(26, 71, 135, 0.08); /* Bayangan halus biru */
-        padding: 30px; border: 1px solid var(--border-color);
+        background: var(--card); border-radius: 16px;
+        box-shadow: 0 8px 30px rgba(26, 71, 135, 0.08);
+        padding: 30px; border: 1px solid var(--border);
     }
     
-    /* Banner Gradien (Sesuai PDF Hal 7) */
     .welcome-banner { 
         background: linear-gradient(135deg, var(--hc-blue) 0%, var(--hc-toska) 100%);
         color: #fff; padding: 24px; border-radius: 12px; margin-bottom: 28px;
         text-align: center;
     }
-    .welcome-banner h2 { margin: 0 0 6px; font-size: 24px; }
+    .welcome-banner h2 { margin: 0 0 6px; font-size: 24px; font-weight: 700; }
     .welcome-banner p { margin: 0; opacity: 0.9; font-size: 14px; font-weight: 300; }
 
-    /* Form Elements */
     .row { margin-bottom: 20px; }
     label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; color: var(--hc-dark); }
-    
     input, select {
-        width: 100%; padding: 12px 16px; 
-        border: 1px solid var(--border-color);
+        width: 100%; padding: 12px 16px; border: 1px solid var(--border);
         border-radius: 10px; font-size: 15px; outline: none;
-        background: #fff; box-sizing: border-box; 
-        transition: border-color 0.2s, box-shadow 0.2s;
+        background: #fff; box-sizing: border-box; transition: 0.2s;
         font-family: 'Poppins', sans-serif;
     }
-    input:focus, select:focus { 
-        border-color: var(--hc-blue); 
-        box-shadow: 0 0 0 3px rgba(26, 71, 135, 0.15); 
-    }
-    
+    input:focus, select:focus { border-color: var(--hc-blue); box-shadow: 0 0 0 3px rgba(26, 71, 135, 0.15); }
     .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    .note { font-size: 12px; color: #64748b; margin-top: 6px; }
     .hidden { display: none; }
+    .note { font-size: 12px; color: #64748b; margin-top: 6px; }
 
-    /* Buttons - Gradien Biru Toska */
     button[type="submit"] {
-        width: 100%; 
-        background: linear-gradient(135deg, var(--hc-blue), var(--hc-toska));
+        width: 100%; background: linear-gradient(135deg, var(--hc-blue), var(--hc-toska));
         color: #fff; border: none; padding: 16px; border-radius: 10px;
         font-weight: 600; font-size: 16px; cursor: pointer; margin-top: 10px;
-        box-shadow: 0 4px 15px rgba(15, 138, 148, 0.3);
-        transition: transform 0.2s, box-shadow 0.2s;
+        box-shadow: 0 4px 15px rgba(15, 138, 148, 0.3); transition: 0.2s;
     }
     button[type="submit"]:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(15, 138, 148, 0.4); }
-    button[type="submit"]:disabled { background: var(--border-color); cursor: not-allowed; transform: none; box-shadow: none; }
+    button[type="submit"]:disabled { background: var(--border); cursor: not-allowed; transform: none; box-shadow: none; }
 
-    /* Upload & Camera UI */
-    .photo-area { 
-        border: 2px dashed var(--hc-toska); /* Dashed Toska */
-        border-radius: 12px; padding: 20px; text-align: center; 
-        background: #f0f9fa; 
-    }
-    #foto-preview-container { 
-        width: 130px; height: 130px; margin: 0 auto 16px; 
-        border-radius: 50%; overflow: hidden; border: 4px solid #fff; 
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: none; background: #ddd;
-    }
+    /* Upload UI */
+    .photo-area { border: 2px dashed var(--hc-toska); border-radius: 12px; padding: 20px; text-align: center; background: #f0f9fa; }
+    #foto-preview-container { width: 130px; height: 130px; margin: 0 auto 16px; border-radius: 50%; overflow: hidden; border: 4px solid #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: none; background: #ddd; }
     #foto-preview-img { width: 100%; height: 100%; object-fit: cover; }
-    
     .photo-btn-group { display: flex; gap: 10px; justify-content: center; margin-top: 12px; }
-    
     .btn-small {
         padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 500;
         border: 1px solid var(--hc-blue); color: var(--hc-blue);
         background: #fff; cursor: pointer; display: flex; align-items: center; gap: 6px;
-        transition: all 0.2s;
+        transition: 0.2s;
     }
     .btn-small:hover { background: var(--hc-blue); color: #fff; }
-    
     .btn-small.danger { color: var(--hc-red); border-color: var(--hc-red); }
     .btn-small.danger:hover { background: var(--hc-red); color: #fff; }
 
     /* Signature */
-    .sig-wrapper { 
-        height: 180px; border: 1px solid var(--border-color); 
-        border-radius: 10px; position: relative; background: #fff; 
-    }
+    .sig-wrapper { height: 180px; border: 1px solid var(--border); border-radius: 10px; position: relative; background: #fff; }
     canvas#sig-canvas { width: 100%; height: 100%; display: block; }
     .sig-clear-btn { position: absolute; top: 10px; right: 10px; z-index: 10; }
 
-    /* Modals */
-    .modal-overlay { 
-        position: fixed; inset: 0; background: rgba(46,46,46,0.9); z-index: 2000; 
-        display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; 
+    /* === CUSTOM CAMERA MODAL (Perbaikan #2) === */
+    /* Meniru gaya pop-up browser modern (Dark Theme) */
+    .cam-popup-overlay {
+        position: fixed; top: 20px; left: 20px; /* Posisi pojok kiri atas seperti browser pop-up */
+        z-index: 3000; display: none;
+        filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));
+        animation: popIn 0.3s ease-out;
     }
-    .modal-box { width: 100%; max-width: 400px; background: #000; border-radius: 12px; overflow: hidden; }
-    .modal-actions { display: flex; gap: 10px; width: 100%; max-width: 400px; margin-top: 16px; }
-    .btn-modal { flex: 1; padding: 12px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; }
-    .btn-modal.cancel { background: var(--hc-dark); color: white; }
-    .btn-modal.confirm { background: var(--hc-blue); color: white; }
+    
+    @keyframes popIn { from { opacity: 0; transform: translateY(-10px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
+    .cam-popup-content {
+        background: #202124; /* Dark grey background like Chrome */
+        color: #e8eaed;
+        width: 320px; border-radius: 12px; padding: 16px;
+        display: flex; flex-direction: column; gap: 12px;
+    }
+    
+    .cam-popup-header {
+        display: flex; justify-content: space-between; align-items: flex-start;
+        font-size: 14px; font-weight: 500; margin-bottom: 8px;
+    }
+    .cam-popup-title { display: flex; align-items: center; gap: 8px; }
+    .cam-icon { width: 16px; height: 16px; fill: #9aa0a6; } /* Ikon kamera */
+    .close-cam { cursor: pointer; color: #9aa0a6; font-size: 18px; line-height: 1; }
+
+    .cam-view-box {
+        position: relative; width: 100%; height: 200px;
+        background: #000; border-radius: 8px; overflow: hidden;
+        border: 1px solid #3c4043;
+    }
+    #cam-video { width: 100%; height: 100%; object-fit: cover; }
+    .cam-badge {
+        position: absolute; top: 8px; right: 8px;
+        background: rgba(0,0,0,0.6); color: #81c995; /* Green text */
+        padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600;
+        display: flex; align-items: center; gap: 4px;
+    }
+    
+    .cam-popup-actions { display: flex; flex-direction: column; gap: 8px; }
+    .cam-btn {
+        width: 100%; padding: 10px; border-radius: 20px;
+        font-size: 13px; font-weight: 500; cursor: pointer; border: none;
+        transition: background 0.2s;
+    }
+    .cam-btn.primary { background: #8ab4f8; color: #202124; } /* Blue button */
+    .cam-btn.primary:hover { background: #aecbfa; }
+    .cam-btn.secondary { background: #3c4043; color: #8ab4f8; border: 1px solid #5f6368; }
+    .cam-btn.secondary:hover { background: #45484c; }
+
+    /* Cropper Modal (Tetap Center Overlay) */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2500; display: none; align-items: center; justify-content: center; padding: 20px; }
+    .modal-box { width: 100%; max-width: 400px; background: #202124; border-radius: 12px; overflow: hidden; padding: 16px; }
+    .modal-actions { display: flex; gap: 10px; margin-top: 16px; }
+    .btn-modal { flex: 1; padding: 10px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; }
+    .btn-modal.cancel { background: #3c4043; color: #e8eaed; }
+    .btn-modal.confirm { background: #8ab4f8; color: #202124; }
     #cropper-img { max-width: 100%; display: block; }
 
-    /* Footer (Poppins Light) */
-    .site-footer { 
-        text-align: center; padding: 40px 20px 20px; 
-        color: #64748b; font-size: 13px; font-weight: 300; 
-    }
-
-    /* Message */
+    .site-footer { text-align: center; padding: 40px 20px 20px; color: #64748b; font-size: 13px; font-weight: 300; }
     #msg { text-align: center; margin-top: 16px; font-size: 14px; font-weight: 500; }
-    #msg.success { color: var(--hc-green); } #msg.error { color: var(--hc-red); } #msg.loading { color: var(--hc-blue); }
+    #msg.success { color: var(--hc-green); } #msg.error { color: var(--hc-red); }
 
     @media (max-width: 600px) {
         .two-col { grid-template-columns: 1fr; }
         .card { padding: 20px; }
+        /* Mobile Cam Popup: Center it */
+        .cam-popup-overlay { top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; max-width: 320px; animation: none; }
     }
   </style>
 </head>
 <body>
 
+  <div id="hc32-loading-overlay">
+      <div class="hc-loader-box">
+          <div class="hc-loader">
+              <div class="hc-loader-spinner"></div>
+              <img src="https://lh3.googleusercontent.com/d/16VXxbcOF9h5zAzYEo2faAzmgqqhtHLlH" class="hc-loader-logo" alt="Logo HC">
+          </div>
+          <div class="hc-loader-text" id="loading-text">Mengambil data lengkap...</div>
+      </div>
+  </div>
+
   <header class="app-header">
       <div class="header-left">
-          <img src="https://lh3.googleusercontent.com/d/16VXxbcOF9h5zAzYEo2faAzmgqqhtHLlH" alt="HC Logo" class="header-logo">
-          <h1 class="header-title">History Club</h1>
+          <img src="https://lh3.googleusercontent.com/d/1AplgM9Tf9RH9IKcQINTgHSUn1FUR5K8l" alt="History Club" class="header-logo">
       </div>
       <button class="menu-btn" id="btn-menu" aria-label="Menu">
           <span></span><span></span><span></span>
@@ -256,19 +277,15 @@
           <span class="sidebar-title">Menu Navigasi</span>
           <button class="close-btn" id="btn-close">×</button>
       </div>
-      
       <div class="sidebar-content">
           <a href="https://sites.google.com/view/historyclub32/beranda" class="nav-link-single">Beranda</a>
-
           <div class="menu-category">Profil</div>
           <a href="https://sites.google.com/view/historyclub32/profil/tentang-kami" class="nav-link">Tentang Kami</a>
           <a href="https://sites.google.com/view/historyclub32/profil/sejarah" class="nav-link">Sejarah</a>
           <a href="https://sites.google.com/view/historyclub32/profil/kepengurusan" class="nav-link">Kepengurusan</a>
-
           <div class="menu-category">Aktivitas</div>
           <a href="https://sites.google.com/view/historyclub32/aktivitas/agenda" class="nav-link">Agenda</a>
           <a href="https://sites.google.com/view/historyclub32/aktivitas/kegiatan" class="nav-link">Kegiatan</a>
-
           <div class="menu-category">Keanggotaan</div>
           <a href="https://sites.google.com/view/historyclub32/keanggotaan/anggota" class="nav-link">Anggota</a>
           <a href="https://sites.google.com/view/historyclub32/keanggotaan/presensi" class="nav-link">Presensi</a>
@@ -362,7 +379,7 @@
                   <label>Tanda Tangan Digital *</label>
                   <div class="sig-wrapper">
                       <canvas id="sig-canvas"></canvas>
-                      <button type="button" class="btn-small danger sig-clear-btn" id="sig-clear">Hapus</button>
+                      <button type="button" class="btn-small danger sig-clear-btn" id="sig-clear">Ulangi</button>
                   </div>
                   <p class="note">Goreskan tanda tangan pada kotak di atas.</p>
               </div>
@@ -377,25 +394,40 @@
       <p>© 2025 History Club SMAN 32 Jakarta</p>
   </footer>
 
-  <div id="cam-modal" class="modal-overlay">
-      <div class="modal-box">
-         <video id="cam-video" autoplay playsinline style="width:100%; background:black; min-height: 300px;"></video>
-      </div>
-      <div class="modal-actions">
-          <button class="btn-modal cancel" id="btn-cam-cancel">Batal</button>
-          <button class="btn-modal confirm" id="btn-cam-capture">Jepret</button>
+  <div id="cam-popup" class="cam-popup-overlay">
+      <div class="cam-popup-content">
+          <div class="cam-popup-header">
+              <div class="cam-popup-title">
+                  <svg class="cam-icon" viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
+                  <span>historyclub32.github.io ingin</span>
+              </div>
+              <span class="close-cam" id="btn-cam-close">×</span>
+          </div>
+          
+          <div style="font-size:13px; margin-bottom:8px;">Menggunakan kamera Anda</div>
+          
+          <div class="cam-view-box">
+              <video id="cam-video" autoplay playsinline muted></video>
+              <div class="cam-badge">● Pratinjau</div>
+          </div>
+
+          <div class="cam-popup-actions">
+              <button class="cam-btn primary" id="btn-cam-capture">Ambil Foto</button>
+              <button class="cam-btn secondary" id="btn-cam-cancel">Batal</button>
+          </div>
       </div>
   </div>
 
   <div id="crop-modal" class="modal-overlay">
-      <div class="modal-box" style="background:#222; max-height:60vh;">
+      <div class="modal-box">
+          <h3 style="margin:0 0 10px; color:#e8eaed; text-align:center; font-size:16px;">Sesuaikan Foto (1:1)</h3>
           <div style="height: 300px; width: 100%;">
               <img id="cropper-img" src="" style="max-width: 100%;">
           </div>
-      </div>
-      <div class="modal-actions">
-          <button class="btn-modal cancel" id="btn-crop-cancel">Batal</button>
-          <button class="btn-modal confirm" id="btn-crop-save">Simpan</button>
+          <div class="modal-actions">
+              <button class="btn-modal cancel" id="btn-crop-cancel">Batal</button>
+              <button class="btn-modal confirm" id="btn-crop-save">Simpan</button>
+          </div>
       </div>
   </div>
 
@@ -403,22 +435,31 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 
   <script>
-    // ==== UI INTERACTION (SIDEBAR) ====
+    // ==== UI INTERACTION ====
     const btnMenu = document.getElementById('btn-menu');
     const btnClose = document.getElementById('btn-close');
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('sidebar-overlay');
+    const loader = document.getElementById("hc32-loading-overlay");
+    const loadingText = document.getElementById("loading-text");
 
     function toggleSidebar() {
         sidebar.classList.toggle('active');
         overlay.classList.toggle('active');
     }
-
     btnMenu.addEventListener('click', toggleSidebar);
     btnClose.addEventListener('click', toggleSidebar);
     overlay.addEventListener('click', toggleSidebar);
 
-    // ==== KONFIGURASI FORM ====
+    function showLoader(text = "Memproses...") {
+        loadingText.textContent = text;
+        loader.style.display = 'flex';
+    }
+    function hideLoader() {
+        loader.style.display = 'none';
+    }
+
+    // ==== KONFIGURASI ====
     const MAX_FILE_SIZE_MB = 1;
 
     // ==== ELEMEN FORM ====
@@ -434,14 +475,12 @@
     function populateDropdowns() {
         const kelasSelect = document.getElementById('fd-kelas');
         const tingkat = ['X', 'XI', 'XII'];
-        // Reset
         while (kelasSelect.options.length > 1) kelasSelect.remove(1);
         tingkat.forEach(t => {
-            for(let i=1; i<=8; i++) { // X-1 sd X-8
+            for(let i=1; i<=8; i++) { 
                 kelasSelect.add(new Option(`${t}-${i}`, `${t}-${i}`));
             }
         });
-
         const angkatanSelect = document.getElementById('fd-angkatan');
         const tahun = [2026, 2027, 2028];
         while (angkatanSelect.options.length > 1) angkatanSelect.remove(1);
@@ -453,12 +492,8 @@
     // 2. TIPE ANGGOTA LOGIC
     function applyTypeUI() {
         const v = tipeSel.value;
-        grpSiswa.classList.add('hidden');
-        grpJab.classList.add('hidden');
-        grpLulus.classList.add('hidden');
-
-        let labelText = 'NIS / Identitas *';
-        let phText = 'Masukkan Nomor Identitas';
+        grpSiswa.classList.add('hidden'); grpJab.classList.add('hidden'); grpLulus.classList.add('hidden');
+        let labelText = 'NIS / Identitas *'; let phText = 'Masukkan Nomor Identitas';
 
         if (v === 'siswa') { 
             grpSiswa.classList.remove('hidden');
@@ -469,7 +504,7 @@
         } else if (v === 'alumni') {
             grpLulus.classList.remove('hidden');
             labelText = 'No Anggota Perpus *'; phText = 'Nomor Anggota Lama';
-        } else { // Lain
+        } else { 
             grpJab.classList.remove('hidden');
             labelText = 'Identitas (NISN/NIP) *'; phText = 'NISN atau NIP';
         }
@@ -478,7 +513,7 @@
     }
     tipeSel.addEventListener('change', applyTypeUI);
 
-    // ==== 3. CAMERA & CROPPER ====
+    // ==== 3. CAMERA (POP-UP STYLE) & CROPPER ====
     const btnCam = document.getElementById('btn-open-cam');
     const btnFile = document.getElementById('btn-open-file');
     const inpFile = document.getElementById('inp-file-foto');
@@ -489,11 +524,12 @@
     const photoBtns = document.getElementById('photo-buttons');
     const photoDelGroup = document.getElementById('photo-delete-group');
 
-    // Modal Els
-    const camModal = document.getElementById('cam-modal');
+    // Cam Popup Els
+    const camPopup = document.getElementById('cam-popup');
     const video = document.getElementById('cam-video');
     const btnCapture = document.getElementById('btn-cam-capture');
-    const btnCancelCam = document.getElementById('btn-cam-cancel');
+    const btnCamCancel = document.getElementById('btn-cam-cancel');
+    const btnCamClose = document.getElementById('btn-cam-close');
     
     const cropModal = document.getElementById('crop-modal');
     const cropperImg = document.getElementById('cropper-img');
@@ -509,20 +545,22 @@
         if(e.target.files[0]) startCropper(e.target.files[0]);
     });
 
-    // Camera
+    // Camera Logic
     btnCam.addEventListener('click', async () => {
         try {
             stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
             video.srcObject = stream;
             video.onloadedmetadata = () => video.play();
-            camModal.style.display = 'flex';
+            camPopup.style.display = 'block'; // Show custom popup
         } catch(e) { alert("Gagal buka kamera. Izinkan akses kamera."); }
     });
 
-    btnCancelCam.addEventListener('click', () => {
+    function closeCam() {
         if(stream) stream.getTracks().forEach(t => t.stop());
-        camModal.style.display = 'none';
-    });
+        camPopup.style.display = 'none';
+    }
+    btnCamCancel.addEventListener('click', closeCam);
+    btnCamClose.addEventListener('click', closeCam);
 
     btnCapture.addEventListener('click', () => {
         if(video.videoWidth === 0) return;
@@ -530,13 +568,12 @@
         cvs.width = video.videoWidth; cvs.height = video.videoHeight;
         cvs.getContext('2d').drawImage(video, 0,0);
         cvs.toBlob(b => {
-            if(stream) stream.getTracks().forEach(t => t.stop());
-            camModal.style.display = 'none';
+            closeCam();
             startCropper(b);
         }, 'image/jpeg');
     });
 
-    // Cropper
+    // Cropper Logic
     function startCropper(blob) {
         cropperImg.src = URL.createObjectURL(blob);
         cropModal.style.display = 'flex';
@@ -554,9 +591,8 @@
         if(!cropper) return;
         const cvs = cropper.getCroppedCanvas({ width: 600, height: 600, fillColor: '#fff' });
         cvs.toBlob(blob => {
-            // Size Check
             if(blob.size / 1024 / 1024 > MAX_FILE_SIZE_MB) {
-                cvs.toBlob(b2 => finalizePhoto(b2), 'image/jpeg', 0.6); // Kompres
+                cvs.toBlob(b2 => finalizePhoto(b2), 'image/jpeg', 0.6);
             } else {
                 finalizePhoto(blob);
             }
@@ -616,14 +652,13 @@
 
         const btn = document.getElementById('btn-submit');
         btn.disabled = true; btn.textContent = 'Mengirim...';
-        msg.textContent = 'Mohon tunggu...'; msg.className = 'loading';
+        showLoader("Mengirim Data Pendaftaran...");
 
         try {
             const tipe = tipeSel.value === 'siswa' ? 'siswa-aktif' : 
                          tipeSel.value === 'lain' ? 'non-32' : tipeSel.value;
             const rawId = nisInput.value.trim().replace(/\D+/g, '');
             
-            // ID Logic
             let pl = { nis:'', nisn:'', nip:'' };
             if(tipe==='siswa-aktif') pl.nis = rawId;
             else if(tipe==='guru') { pl.nip = rawId; pl.nis = rawId.slice(-7); }
@@ -663,6 +698,7 @@
         } catch(err) {
             msg.textContent = 'Error: ' + err.message; msg.className = 'error';
         } finally {
+            hideLoader();
             btn.disabled = false; btn.textContent = 'Kirim Data';
         }
     });
