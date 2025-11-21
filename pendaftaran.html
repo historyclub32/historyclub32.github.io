@@ -14,74 +14,42 @@
     :root {
       --hc-blue: #1a4787; --hc-toska: #0f8a94; --hc-dark: #2e2e2e;
       --hc-green: #15a256; --hc-red: #d30e14; --hc-bg: #f8fafc;
-      --hc-blue-light-bg: rgba(26, 71, 135, 0.08);
-      --border: #cbd5e1; --card: #ffffff;
-      --hc-yellow: #ecec17;
+      --hc-yellow: #ecec17; --border: #cbd5e1; --card: #ffffff;
     }
 
-    /* === BASE STYLES === */
     body {
         font-family: 'Poppins', sans-serif;
         background-color: var(--hc-bg);
         color: var(--hc-dark);
         margin: 0; padding: 0;
-        padding-top: 70px;
+        display: flex; flex-direction: column; min-height: 100vh;
     }
 
-    /* === CUSTOM LOADING SPINNER (Perbaikan #3) === */
-    #hc32-loading-overlay {
-        position: fixed; inset: 0; background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(4px); display: none; /* Hidden by default */
-        flex-direction: column;
-        align-items: center; justify-content: center; z-index: 9999;
-    }
-    .hc-loader-box {
-        background: white; padding: 40px; border-radius: 20px;
-        box-shadow: 0 20px 60px rgba(0,0,0,0.1);
-        display: flex; flex-direction: column; align-items: center;
-        text-align: center;
-    }
-    .hc-loader { position: relative; width: 100px; height: 100px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
-    
-    /* Spinner Ring */
-    .hc-loader-spinner { 
-        position: absolute; inset: 0; border-radius: 50%; 
-        border: 6px solid var(--hc-blue); 
-        border-top-color: var(--hc-toska); 
-        animation: hcspin 1s linear infinite; 
-    }
-    /* Logo Tengah */
-    .hc-loader-logo { width: 65px; height: 65px; border-radius: 50%; object-fit: contain; }
-    
-    .hc-loader-text { font-size: 18px; font-weight: 700; color: var(--hc-dark); }
-
-    @keyframes hcspin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
-    /* === HEADER (Perbaikan #1) === */
+    /* === 1. HEADER (Sticky & Logo Kecil) === */
     .app-header {
-        position: fixed; top: 0; left: 0; right: 0;
+        position: sticky; top: 0; left: 0; right: 0;
         height: 64px; background: #fff;
         display: flex; align-items: center; justify-content: space-between;
-        padding: 0 20px;
+        padding: 0 24px;
         box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         z-index: 1000; 
         border-bottom: 3px solid var(--hc-yellow); 
     }
     
-    .header-left { display: flex; align-items: center; gap: 12px; }
-    /* Logo Header Baru */
-    .header-logo { height: 48px; width: auto; object-fit: contain; } 
+    .header-left { display: flex; align-items: center; }
+    /* Logo diperkecil sesuai request */
+    .header-logo { height: 36px; width: auto; object-fit: contain; } 
     
     .menu-btn {
         background: none; border: none; cursor: pointer;
         display: flex; flex-direction: column; gap: 5px; padding: 5px;
     }
     .menu-btn span {
-        display: block; width: 26px; height: 3px;
+        display: block; width: 24px; height: 3px;
         background-color: var(--hc-blue); border-radius: 2px;
     }
 
-    /* === SIDEBAR === */
+    /* === 2. SIDEBAR (Off-canvas) === */
     .sidebar-overlay {
         position: fixed; inset: 0; background: rgba(46, 46, 46, 0.5);
         z-index: 1100; opacity: 0; visibility: hidden; transition: all 0.3s;
@@ -121,8 +89,10 @@
         color: var(--hc-blue); font-weight: 600; border-left-color: var(--hc-toska);
     }
 
-    /* === FORM STYLES === */
-    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    /* === MAIN CONTENT === */
+    .main-wrapper { flex: 1; padding: 40px 20px; }
+    .container { max-width: 600px; margin: 0 auto; }
+    
     .card {
         background: var(--card); border-radius: 16px;
         box-shadow: 0 8px 30px rgba(26, 71, 135, 0.08);
@@ -137,6 +107,7 @@
     .welcome-banner h2 { margin: 0 0 6px; font-size: 24px; font-weight: 700; }
     .welcome-banner p { margin: 0; opacity: 0.9; font-size: 14px; font-weight: 300; }
 
+    /* Form Elements */
     .row { margin-bottom: 20px; }
     label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; color: var(--hc-dark); }
     input, select {
@@ -179,86 +150,129 @@
     canvas#sig-canvas { width: 100%; height: 100%; display: block; }
     .sig-clear-btn { position: absolute; top: 10px; right: 10px; z-index: 10; }
 
-    /* === CUSTOM CAMERA MODAL (Perbaikan #2) === */
-    /* Meniru gaya pop-up browser modern (Dark Theme) */
-    .cam-popup-overlay {
-        position: fixed; top: 20px; left: 20px; /* Posisi pojok kiri atas seperti browser pop-up */
-        z-index: 3000; display: none;
-        filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));
-        animation: popIn 0.3s ease-out;
+    /* === FOOTER (Perbaikan #2 - Gaya Fandom) === */
+    .site-footer {
+        background-color: #0f172a; /* Dark Slate Blue */
+        color: #fff; padding: 60px 20px 30px;
+        margin-top: auto; /* Push to bottom */
     }
+    .footer-content {
+        max-width: 1100px; margin: 0 auto;
+        display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 40px; text-align: left;
+    }
+    .footer-brand img { width: 60px; height: 60px; border-radius: 50%; margin-bottom: 15px; }
+    .footer-brand h3 { margin: 0; font-size: 24px; font-weight: 700; color: #fff; }
+    .footer-brand p { font-size: 13px; color: #94a3b8; margin-top: 10px; line-height: 1.6; }
     
-    @keyframes popIn { from { opacity: 0; transform: translateY(-10px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
-
-    .cam-popup-content {
-        background: #202124; /* Dark grey background like Chrome */
-        color: #e8eaed;
-        width: 320px; border-radius: 12px; padding: 16px;
-        display: flex; flex-direction: column; gap: 12px;
+    .footer-col h4 { 
+        font-size: 12px; font-weight: 700; color: #94a3b8; 
+        text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px;
     }
+    .footer-col ul { list-style: none; padding: 0; margin: 0; }
+    .footer-col ul li { margin-bottom: 12px; }
+    .footer-col ul li a { 
+        color: #fff; text-decoration: none; font-size: 14px; font-weight: 500; transition: 0.2s; 
+    }
+    .footer-col ul li a:hover { color: var(--hc-toska); padding-left: 5px; }
+
+    .footer-bottom {
+        max-width: 1100px; margin: 40px auto 0; padding-top: 20px;
+        border-top: 1px solid #1e293b; text-align: center;
+        font-size: 12px; color: #64748b;
+    }
+
+    /* === POP-UP NOTIFIKASI (Perbaikan #3) === */
+    .status-modal-overlay {
+        position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 4000;
+        display: none; align-items: center; justify-content: center;
+        animation: fadeIn 0.2s ease-out;
+    }
+    .status-modal-box {
+        background: white; padding: 30px; border-radius: 20px;
+        width: 90%; max-width: 320px; text-align: center;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        transform: scale(0.9); animation: scaleUp 0.3s ease-out forwards;
+    }
+    @keyframes scaleUp { to { transform: scale(1); } }
     
-    .cam-popup-header {
-        display: flex; justify-content: space-between; align-items: flex-start;
-        font-size: 14px; font-weight: 500; margin-bottom: 8px;
+    /* Icon Success */
+    .status-icon-circle {
+        width: 80px; height: 80px; margin: 0 auto 20px;
+        border-radius: 50%; display: flex; align-items: center; justify-content: center;
     }
-    .cam-popup-title { display: flex; align-items: center; gap: 8px; }
-    .cam-icon { width: 16px; height: 16px; fill: #9aa0a6; } /* Ikon kamera */
-    .close-cam { cursor: pointer; color: #9aa0a6; font-size: 18px; line-height: 1; }
-
-    .cam-view-box {
-        position: relative; width: 100%; height: 200px;
-        background: #000; border-radius: 8px; overflow: hidden;
-        border: 1px solid #3c4043;
-    }
-    #cam-video { width: 100%; height: 100%; object-fit: cover; }
-    .cam-badge {
-        position: absolute; top: 8px; right: 8px;
-        background: rgba(0,0,0,0.6); color: #81c995; /* Green text */
-        padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600;
-        display: flex; align-items: center; gap: 4px;
-    }
+    .status-icon-circle.success { border: 4px solid var(--hc-green); }
+    .status-icon-circle.error { border: 4px solid var(--hc-red); }
     
-    .cam-popup-actions { display: flex; flex-direction: column; gap: 8px; }
-    .cam-btn {
-        width: 100%; padding: 10px; border-radius: 20px;
-        font-size: 13px; font-weight: 500; cursor: pointer; border: none;
-        transition: background 0.2s;
-    }
-    .cam-btn.primary { background: #8ab4f8; color: #202124; } /* Blue button */
-    .cam-btn.primary:hover { background: #aecbfa; }
-    .cam-btn.secondary { background: #3c4043; color: #8ab4f8; border: 1px solid #5f6368; }
-    .cam-btn.secondary:hover { background: #45484c; }
+    .status-icon-svg { width: 40px; height: 40px; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+    .success .status-icon-svg { stroke: var(--hc-green); }
+    .error .status-icon-svg { stroke: var(--hc-red); }
 
-    /* Cropper Modal (Tetap Center Overlay) */
-    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2500; display: none; align-items: center; justify-content: center; padding: 20px; }
+    .status-title { font-size: 20px; font-weight: 700; color: var(--hc-dark); margin-bottom: 8px; }
+    .status-desc { font-size: 14px; color: #64748b; margin-bottom: 24px; line-height: 1.5; }
+    
+    .status-btn {
+        width: 100%; padding: 12px; border: none; border-radius: 10px;
+        background: var(--hc-blue); color: white; font-weight: 600; font-size: 15px;
+        cursor: pointer; transition: 0.2s;
+    }
+    .status-btn:hover { background: #153a6f; }
+
+    /* === LOADER === */
+    #hc32-loading-overlay {
+        position: fixed; inset: 0; background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(4px); display: none;
+        flex-direction: column; align-items: center; justify-content: center; z-index: 9999;
+    }
+    .hc-loader { position: relative; width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; }
+    .hc-loader-spinner { 
+        position: absolute; inset: 0; border-radius: 50%; 
+        border: 5px solid var(--hc-blue); border-top-color: var(--hc-toska); 
+        animation: hcspin 1s linear infinite; 
+    }
+    .hc-loader-logo { width: 50px; height: 50px; border-radius: 50%; object-fit: contain; }
+    .hc-loader-text { font-size: 16px; font-weight: 600; color: var(--hc-dark); }
+    @keyframes hcspin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+    /* Modals Camera/Crop */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 2500; display: none; align-items: center; justify-content: center; padding: 20px; }
     .modal-box { width: 100%; max-width: 400px; background: #202124; border-radius: 12px; overflow: hidden; padding: 16px; }
     .modal-actions { display: flex; gap: 10px; margin-top: 16px; }
     .btn-modal { flex: 1; padding: 10px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; }
-    .btn-modal.cancel { background: #3c4043; color: #e8eaed; }
+    .btn-modal.cancel { background: #333; color: white; }
     .btn-modal.confirm { background: #8ab4f8; color: #202124; }
+    
+    /* Cam Popup Style */
+    #cam-popup { top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; max-width: 320px; }
+    .cam-popup-content { background: #202124; color: #e8eaed; border-radius: 12px; padding: 16px; }
+    .cam-view-box { position: relative; width: 100%; height: 200px; background: #000; border-radius: 8px; overflow: hidden; border: 1px solid #3c4043; margin: 10px 0; }
+    #cam-video { width: 100%; height: 100%; object-fit: cover; }
     #cropper-img { max-width: 100%; display: block; }
-
-    .site-footer { text-align: center; padding: 40px 20px 20px; color: #64748b; font-size: 13px; font-weight: 300; }
-    #msg { text-align: center; margin-top: 16px; font-size: 14px; font-weight: 500; }
-    #msg.success { color: var(--hc-green); } #msg.error { color: var(--hc-red); }
 
     @media (max-width: 600px) {
         .two-col { grid-template-columns: 1fr; }
         .card { padding: 20px; }
-        /* Mobile Cam Popup: Center it */
-        .cam-popup-overlay { top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; max-width: 320px; animation: none; }
+        .footer-content { grid-template-columns: 1fr; gap: 30px; text-align: center; }
     }
   </style>
 </head>
 <body>
 
   <div id="hc32-loading-overlay">
-      <div class="hc-loader-box">
-          <div class="hc-loader">
-              <div class="hc-loader-spinner"></div>
-              <img src="https://lh3.googleusercontent.com/d/16VXxbcOF9h5zAzYEo2faAzmgqqhtHLlH" class="hc-loader-logo" alt="Logo HC">
-          </div>
-          <div class="hc-loader-text" id="loading-text">Mengambil data lengkap...</div>
+      <div class="hc-loader">
+          <div class="hc-loader-spinner"></div>
+          <img src="https://lh3.googleusercontent.com/d/16VXxbcOF9h5zAzYEo2faAzmgqqhtHLlH" class="hc-loader-logo" alt="Logo HC">
+      </div>
+      <div class="hc-loader-text" id="loading-text">Memproses data...</div>
+  </div>
+
+  <div id="status-modal" class="status-modal-overlay">
+      <div class="status-modal-box">
+          <div id="status-icon-container" class="status-icon-circle success">
+              </div>
+          <h3 id="status-title" class="status-title">Berhasil!</h3>
+          <p id="status-desc" class="status-desc">Data Anda telah tersimpan.</p>
+          <button id="status-btn" class="status-btn">Oke</button>
       </div>
   </div>
 
@@ -293,127 +307,156 @@
       </div>
   </aside>
 
-  <div class="container">
-      <div class="card">
-          <div class="welcome-banner">
-              <h2>Formulir Pendaftaran</h2>
-              <p>Bergabunglah bersama kami untuk belajar dan berkembang.</p>
+  <div class="main-wrapper">
+      <div class="container">
+          <div class="card">
+              <div class="welcome-banner">
+                  <h2>Formulir Pendaftaran</h2>
+                  <p>Bergabunglah bersama kami untuk belajar dan berkembang.</p>
+              </div>
+
+              <form id="form-daftar" novalidate>
+                  <div class="row">
+                      <label for="fd-nis" id="label-id">NIS / Identitas *</label>
+                      <input id="fd-nis" placeholder="Nomor Induk Siswa" required />
+                  </div>
+                  <div class="row">
+                      <label for="fd-nama">Nama Lengkap *</label>
+                      <input id="fd-nama" placeholder="Sesuai Absen/Dapodik" required autocapitalize="words" />
+                  </div>
+                  <div class="row">
+                      <label for="fd-tipe">Tipe Keanggotaan *</label>
+                      <select id="fd-tipe">
+                          <option value="siswa">Siswa Aktif SMAN 32</option>
+                          <option value="guru">Guru/Tendik</option>
+                          <option value="alumni">Alumni</option>
+                          <option value="lain">Lainnya (Non-32)</option>
+                      </select>
+                  </div>
+
+                  <div id="group-siswa" class="row">
+                      <div class="two-col">
+                          <div>
+                              <label>Kelas *</label>
+                              <select id="fd-kelas"><option value="">Pilih...</option></select>
+                          </div>
+                          <div>
+                              <label>Angkatan *</label>
+                              <select id="fd-angkatan"><option value="">Pilih...</option></select>
+                          </div>
+                      </div>
+                  </div>
+
+                  <div id="group-jabatan" class="row hidden">
+                      <label>Jabatan</label>
+                      <input id="fd-jabatan" placeholder="Contoh: Pembina" />
+                  </div>
+                  <div id="group-lulus" class="row hidden">
+                      <label>Tahun Lulus</label>
+                      <input id="fd-thn-lulus" type="number" placeholder="YYYY" />
+                  </div>
+
+                  <div class="two-col row">
+                      <div>
+                          <label>No HP (WA) *</label>
+                          <input id="fd-nohp" type="tel" placeholder="08..." required />
+                      </div>
+                      <div>
+                          <label>Tanggal Lahir</label>
+                          <input id="fd-tgllahir" type="date" />
+                      </div>
+                  </div>
+                  <div class="row">
+                      <label>Email (Opsional)</label>
+                      <input id="fd-email" type="email" placeholder="email@address.com" />
+                  </div>
+
+                  <div class="row" style="margin-top:30px">
+                      <label>Foto Profil (Wajib, 1:1)</label>
+                      <div class="photo-area">
+                          <div id="foto-preview-container">
+                              <img id="foto-preview-img" src="" alt="Preview">
+                          </div>
+                          <input type="file" id="inp-file-foto" accept="image/*" hidden>
+                          <input type="hidden" id="fd-foto-base64">
+                          
+                          <div class="photo-btn-group" id="photo-buttons">
+                              <button type="button" class="btn-small" id="btn-open-cam">📷 Kamera</button>
+                              <button type="button" class="btn-small" id="btn-open-file">📁 Upload</button>
+                          </div>
+                          <div class="photo-btn-group hidden" id="photo-delete-group">
+                               <button type="button" class="btn-small danger" id="btn-hapus-foto">Hapus</button>
+                          </div>
+                      </div>
+                  </div>
+
+                  <div class="row">
+                      <label>Tanda Tangan Digital *</label>
+                      <div class="sig-wrapper">
+                          <canvas id="sig-canvas"></canvas>
+                          <button type="button" class="btn-small danger sig-clear-btn" id="sig-clear">Ulangi</button>
+                      </div>
+                      <p class="note">Goreskan tanda tangan pada kotak di atas.</p>
+                  </div>
+
+                  <button type="submit" id="btn-submit">Kirim Data</button>
+              </form>
           </div>
-
-          <form id="form-daftar" novalidate>
-              <div class="row">
-                  <label for="fd-nis" id="label-id">NIS / Identitas *</label>
-                  <input id="fd-nis" placeholder="Nomor Induk Siswa" required />
-              </div>
-              <div class="row">
-                  <label for="fd-nama">Nama Lengkap *</label>
-                  <input id="fd-nama" placeholder="Sesuai Absen/Dapodik" required autocapitalize="words" />
-              </div>
-              <div class="row">
-                  <label for="fd-tipe">Tipe Keanggotaan *</label>
-                  <select id="fd-tipe">
-                      <option value="siswa">Siswa Aktif SMAN 32</option>
-                      <option value="guru">Guru/Tendik</option>
-                      <option value="alumni">Alumni</option>
-                      <option value="lain">Lainnya (Non-32)</option>
-                  </select>
-              </div>
-
-              <div id="group-siswa" class="row">
-                  <div class="two-col">
-                      <div>
-                          <label>Kelas *</label>
-                          <select id="fd-kelas"><option value="">Pilih...</option></select>
-                      </div>
-                      <div>
-                          <label>Angkatan *</label>
-                          <select id="fd-angkatan"><option value="">Pilih...</option></select>
-                      </div>
-                  </div>
-              </div>
-
-              <div id="group-jabatan" class="row hidden">
-                  <label>Jabatan</label>
-                  <input id="fd-jabatan" placeholder="Contoh: Pembina" />
-              </div>
-              <div id="group-lulus" class="row hidden">
-                  <label>Tahun Lulus</label>
-                  <input id="fd-thn-lulus" type="number" placeholder="YYYY" />
-              </div>
-
-              <div class="two-col row">
-                  <div>
-                      <label>No HP (WA) *</label>
-                      <input id="fd-nohp" type="tel" placeholder="08..." required />
-                  </div>
-                  <div>
-                      <label>Tanggal Lahir</label>
-                      <input id="fd-tgllahir" type="date" />
-                  </div>
-              </div>
-              <div class="row">
-                  <label>Email (Opsional)</label>
-                  <input id="fd-email" type="email" placeholder="email@address.com" />
-              </div>
-
-              <div class="row" style="margin-top:30px">
-                  <label>Foto Profil (Wajib, 1:1)</label>
-                  <div class="photo-area">
-                      <div id="foto-preview-container">
-                          <img id="foto-preview-img" src="" alt="Preview">
-                      </div>
-                      <input type="file" id="inp-file-foto" accept="image/*" hidden>
-                      <input type="hidden" id="fd-foto-base64">
-                      
-                      <div class="photo-btn-group" id="photo-buttons">
-                          <button type="button" class="btn-small" id="btn-open-cam">📷 Kamera</button>
-                          <button type="button" class="btn-small" id="btn-open-file">📁 Upload</button>
-                      </div>
-                      <div class="photo-btn-group hidden" id="photo-delete-group">
-                           <button type="button" class="btn-small danger" id="btn-hapus-foto">Hapus</button>
-                      </div>
-                  </div>
-              </div>
-
-              <div class="row">
-                  <label>Tanda Tangan Digital *</label>
-                  <div class="sig-wrapper">
-                      <canvas id="sig-canvas"></canvas>
-                      <button type="button" class="btn-small danger sig-clear-btn" id="sig-clear">Ulangi</button>
-                  </div>
-                  <p class="note">Goreskan tanda tangan pada kotak di atas.</p>
-              </div>
-
-              <button type="submit" id="btn-submit">Kirim Data</button>
-              <p id="msg"></p>
-          </form>
       </div>
   </div>
 
   <footer class="site-footer">
-      <p>© 2025 History Club SMAN 32 Jakarta</p>
+      <div class="footer-content">
+          <div class="footer-brand">
+              <img src="https://lh3.googleusercontent.com/d/16VXxbcOF9h5zAzYEo2faAzmgqqhtHLlH" alt="HC Logo">
+              <h3>History Club</h3>
+              <p>Wadah bagi siswa SMAN 32 Jakarta untuk mengeksplorasi, belajar, dan melestarikan sejarah dengan cara yang menyenangkan.</p>
+          </div>
+          
+          <div class="footer-col">
+              <h4>PROFIL</h4>
+              <ul>
+                  <li><a href="https://sites.google.com/view/historyclub32/profil/tentang-kami">Tentang Kami</a></li>
+                  <li><a href="https://sites.google.com/view/historyclub32/profil/sejarah">Sejarah</a></li>
+                  <li><a href="https://sites.google.com/view/historyclub32/profil/kepengurusan">Kepengurusan</a></li>
+              </ul>
+          </div>
+
+          <div class="footer-col">
+              <h4>KEANGGOTAAN</h4>
+              <ul>
+                  <li><a href="https://sites.google.com/view/historyclub32/keanggotaan/anggota">Daftar Anggota</a></li>
+                  <li><a href="https://sites.google.com/view/historyclub32/keanggotaan/presensi">Presensi</a></li>
+                  <li><a href="#">Pendaftaran</a></li>
+              </ul>
+          </div>
+
+          <div class="footer-col">
+              <h4>IKUTI KAMI</h4>
+              <ul>
+                  <li><a href="https://instagram.com/historyclub32" target="_blank">Instagram</a></li>
+                  <li><a href="mailto:historyclub32@gmail.com">Email</a></li>
+              </ul>
+          </div>
+      </div>
+      
+      <div class="footer-bottom">
+          <p>© 2025 History Club SMAN 32 Jakarta. Dibuat dengan bangga.</p>
+      </div>
   </footer>
 
-  <div id="cam-popup" class="cam-popup-overlay">
+  <div id="cam-popup" class="modal-overlay">
       <div class="cam-popup-content">
-          <div class="cam-popup-header">
-              <div class="cam-popup-title">
-                  <svg class="cam-icon" viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
-                  <span>historyclub32.github.io ingin</span>
-              </div>
-              <span class="close-cam" id="btn-cam-close">×</span>
+          <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+              <span style="font-size:14px; font-weight:500;">Ambil Foto</span>
+              <span id="btn-cam-close" style="cursor:pointer;">×</span>
           </div>
-          
-          <div style="font-size:13px; margin-bottom:8px;">Menggunakan kamera Anda</div>
-          
           <div class="cam-view-box">
               <video id="cam-video" autoplay playsinline muted></video>
-              <div class="cam-badge">● Pratinjau</div>
           </div>
-
-          <div class="cam-popup-actions">
-              <button class="cam-btn primary" id="btn-cam-capture">Ambil Foto</button>
-              <button class="cam-btn secondary" id="btn-cam-cancel">Batal</button>
+          <div style="display:flex; gap:10px; margin-top:10px;">
+              <button class="btn-modal cancel" id="btn-cam-cancel">Batal</button>
+              <button class="btn-modal confirm" id="btn-cam-capture">Jepret</button>
           </div>
       </div>
   </div>
@@ -435,61 +478,71 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 
   <script>
-    // ==== UI INTERACTION ====
+    // ==== UI LOGIC ====
     const btnMenu = document.getElementById('btn-menu');
     const btnClose = document.getElementById('btn-close');
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('sidebar-overlay');
     const loader = document.getElementById("hc32-loading-overlay");
     const loadingText = document.getElementById("loading-text");
+    
+    // Status Modal
+    const statusModal = document.getElementById('status-modal');
+    const statusTitle = document.getElementById('status-title');
+    const statusDesc = document.getElementById('status-desc');
+    const statusIconContainer = document.getElementById('status-icon-container');
+    const statusBtn = document.getElementById('status-btn');
 
-    function toggleSidebar() {
-        sidebar.classList.toggle('active');
-        overlay.classList.toggle('active');
-    }
+    function toggleSidebar() { sidebar.classList.toggle('active'); overlay.classList.toggle('active'); }
     btnMenu.addEventListener('click', toggleSidebar);
     btnClose.addEventListener('click', toggleSidebar);
     overlay.addEventListener('click', toggleSidebar);
 
-    function showLoader(text = "Memproses...") {
-        loadingText.textContent = text;
-        loader.style.display = 'flex';
-    }
-    function hideLoader() {
-        loader.style.display = 'none';
-    }
+    function showLoader(text) { loadingText.textContent = text; loader.style.display = 'flex'; }
+    function hideLoader() { loader.style.display = 'none'; }
 
-    // ==== KONFIGURASI ====
+    // Function Show Popup Status
+    function showStatusPopup(type, title, message) {
+        statusModal.style.display = 'flex';
+        statusTitle.textContent = title;
+        statusDesc.textContent = message;
+        
+        // Reset Class
+        statusIconContainer.className = 'status-icon-circle ' + type;
+        
+        // Set SVG Icon
+        let svgContent = '';
+        if (type === 'success') {
+            svgContent = '<svg class="status-icon-svg" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+        } else {
+            svgContent = '<svg class="status-icon-svg" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>';
+        }
+        statusIconContainer.innerHTML = svgContent;
+    }
+    statusBtn.addEventListener('click', () => { statusModal.style.display = 'none'; });
+
+    // ==== FORM LOGIC ====
     const MAX_FILE_SIZE_MB = 1;
-
-    // ==== ELEMEN FORM ====
     const tipeSel = document.getElementById('fd-tipe');
     const grpSiswa = document.getElementById('group-siswa');
     const grpJab = document.getElementById('group-jabatan');
     const grpLulus = document.getElementById('group-lulus');
     const nisInput = document.getElementById('fd-nis');
     const nisLabel = document.getElementById('label-id');
-    const msg = document.getElementById('msg');
 
-    // 1. DROPDOWN LOGIC
     function populateDropdowns() {
         const kelasSelect = document.getElementById('fd-kelas');
         const tingkat = ['X', 'XI', 'XII'];
         while (kelasSelect.options.length > 1) kelasSelect.remove(1);
         tingkat.forEach(t => {
-            for(let i=1; i<=8; i++) { 
-                kelasSelect.add(new Option(`${t}-${i}`, `${t}-${i}`));
-            }
+            for(let i=1; i<=8; i++) kelasSelect.add(new Option(`${t}-${i}`, `${t}-${i}`));
         });
         const angkatanSelect = document.getElementById('fd-angkatan');
         const tahun = [2026, 2027, 2028];
         while (angkatanSelect.options.length > 1) angkatanSelect.remove(1);
-        tahun.forEach(yr => {
-            angkatanSelect.add(new Option(yr, yr));
-        });
+        tahun.forEach(yr => angkatanSelect.add(new Option(yr, yr)));
     }
 
-    // 2. TIPE ANGGOTA LOGIC
     function applyTypeUI() {
         const v = tipeSel.value;
         grpSiswa.classList.add('hidden'); grpJab.classList.add('hidden'); grpLulus.classList.add('hidden');
@@ -513,7 +566,7 @@
     }
     tipeSel.addEventListener('change', applyTypeUI);
 
-    // ==== 3. CAMERA (POP-UP STYLE) & CROPPER ====
+    // ==== CAMERA & CROPPER ====
     const btnCam = document.getElementById('btn-open-cam');
     const btnFile = document.getElementById('btn-open-file');
     const inpFile = document.getElementById('inp-file-foto');
@@ -524,7 +577,6 @@
     const photoBtns = document.getElementById('photo-buttons');
     const photoDelGroup = document.getElementById('photo-delete-group');
 
-    // Cam Popup Els
     const camPopup = document.getElementById('cam-popup');
     const video = document.getElementById('cam-video');
     const btnCapture = document.getElementById('btn-cam-capture');
@@ -539,19 +591,17 @@
     let stream = null;
     let cropper = null;
 
-    // File Input
     btnFile.addEventListener('click', () => inpFile.click());
     inpFile.addEventListener('change', (e) => {
         if(e.target.files[0]) startCropper(e.target.files[0]);
     });
 
-    // Camera Logic
     btnCam.addEventListener('click', async () => {
         try {
             stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
             video.srcObject = stream;
             video.onloadedmetadata = () => video.play();
-            camPopup.style.display = 'block'; // Show custom popup
+            camPopup.style.display = 'flex'; // Show popup
         } catch(e) { alert("Gagal buka kamera. Izinkan akses kamera."); }
     });
 
@@ -573,7 +623,6 @@
         }, 'image/jpeg');
     });
 
-    // Cropper Logic
     function startCropper(blob) {
         cropperImg.src = URL.createObjectURL(blob);
         cropModal.style.display = 'flex';
@@ -621,7 +670,7 @@
         inpFile.value = '';
     });
 
-    // ==== 4. SIGNATURE ====
+    // ==== SIGNATURE ====
     const sigCanvas = document.getElementById('sig-canvas');
     let signaturePad = null;
 
@@ -635,7 +684,7 @@
     window.addEventListener('resize', initSig);
     document.getElementById('sig-clear').addEventListener('click', () => signaturePad.clear());
 
-    // ==== 5. INIT & SUBMIT ====
+    // ==== INIT & SUBMIT ====
     window.addEventListener('load', () => {
         populateDropdowns();
         applyTypeUI();
@@ -645,10 +694,13 @@
 
     document.getElementById('form-daftar').addEventListener('submit', async (e) => {
         e.preventDefault();
-        msg.textContent = ''; msg.className = '';
         
-        if(signaturePad.isEmpty()) { msg.textContent = 'Harap tanda tangan.'; msg.className='error'; return; }
-        if(!hiddenBase64.value) { msg.textContent = 'Harap upload foto.'; msg.className='error'; return; }
+        if(signaturePad.isEmpty()) { 
+            showStatusPopup('error', 'Tanda Tangan Kosong', 'Harap tanda tangan terlebih dahulu.'); return; 
+        }
+        if(!hiddenBase64.value) { 
+            showStatusPopup('error', 'Foto Kosong', 'Harap upload foto profil.'); return; 
+        }
 
         const btn = document.getElementById('btn-submit');
         btn.disabled = true; btn.textContent = 'Mengirim...';
@@ -687,16 +739,16 @@
             const res = await hc32_post('pendaftaran', data);
 
             if(res.status === 'ok') {
-                msg.textContent = 'Berhasil! Data terkirim.'; msg.className = 'success';
+                showStatusPopup('success', 'Pendaftaran Berhasil', 'Data Anda telah berhasil disimpan. Terima kasih!');
                 e.target.reset(); signaturePad.clear(); btnHapusFoto.click(); applyTypeUI();
             } else if (res.status === 'already') {
-                msg.textContent = 'Nomor Identitas sudah terdaftar.'; msg.className = 'error';
+                showStatusPopup('error', 'Gagal Mendaftar', 'Nomor Identitas ini sudah terdaftar sebelumnya.');
             } else {
-                msg.textContent = 'Gagal: ' + res.message; msg.className = 'error';
+                showStatusPopup('error', 'Terjadi Kesalahan', 'Gagal: ' + res.message);
             }
 
         } catch(err) {
-            msg.textContent = 'Error: ' + err.message; msg.className = 'error';
+            showStatusPopup('error', 'Error Jaringan', err.message);
         } finally {
             hideLoader();
             btn.disabled = false; btn.textContent = 'Kirim Data';
