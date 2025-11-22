@@ -209,7 +209,7 @@ function initHC32Navigation(activePageId) {
               <h4>KEANGGOTAAN</h4>
               <ul>
                   <li><a href="https://sites.google.com/view/historyclub32/keanggotaan/anggota">Daftar Anggota</a></li>
-                  <li><a href="https://sites.google.com/view/historyclub32/keanggotaan/presensi">Presensi</a></li>
+                  <li><a href="presensi.html">Presensi</a></li>
                   <li><a href="pendaftaran.html">Pendaftaran</a></li>
               </ul>
           </div>
