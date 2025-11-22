@@ -1,289 +1,468 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daftar Presensi - Admin HC 32</title>
+  <meta charset="UTF-8" />
+  <title>Presensi Kegiatan HC 32</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <script src="config.js"></script>
+  <script src="components.js"></script>
+
+  <style>
+    /* Style Spesifik Halaman Ini */
+    :root {
+      --hc-blue: #1a4787;
+      --hc-toska: #0f8a94;
+      --hc-dark: #2e2e2e;
+      --hc-green: #15a256;
+      --hc-red: #d30e14;
+      --hc-bg: #e7e9ea;
+      --hc-yellow: #ecec17;
+    }
     
-    <script src="config.js"></script>
-    <script src="components.js"></script>
+    body {
+      background: var(--hc-bg);
+      min-height: 100vh;
+      font-family: 'Poppins', sans-serif;
+      display: flex;
+      flex-direction: column;
+    }
 
-    <style>
-        /* Style spesifik konten tabel saja */
-        body {
-            font-family: 'Poppins', system-ui, -apple-system, 'Segoe UI', sans-serif;
-            background-color: #f8fafc;
-            color: var(--hc-dark);
-            margin: 0; padding: 0;
-            display: flex; flex-direction: column; min-height: 100vh;
-        }
+    /* Penyesuaian Main agar tidak tertutup Header Components.js */
+    main {
+      flex-grow: 1;
+      padding-top: 20px; /* Jarak dari header */
+    }
 
-        /* LOADER (Sama seperti pendaftaran) */
-        #hc32-loading-overlay {
-            position: fixed; inset: 0; background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(2px); display: flex;
-            align-items: center; justify-content: center; z-index: 100;
-        }
-        .hc-loader { position: relative; width: 64px; height: 64px; display: flex; align-items: center; justify-content: center; }
-        .hc-loader-spinner {
-            position: absolute; inset: 0; border-radius: 50%;
-            border: 5px solid var(--hc-blue); border-top-color: var(--hc-toska);
-            animation: hcspin 1s linear infinite;
-        }
-        .hc-loader-logo { width: 44px; height: 44px; border-radius: 50%; }
-        @keyframes hcspin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    .scanner-frame {
+      border: 2px solid #e5e7eb;
+      border-radius: 1.25rem;
+      overflow: hidden;
+      background: #000;
+      position: relative;
+    }
 
-        /* MAIN CONTENT (Disesuaikan dengan layout pendaftaran) */
-        main {
-            flex-grow: 1;
-            padding: 40px 24px;
-            overflow-y: auto;
-            margin: 0; /* Reset margin sidebar lama */
-            width: 100%;
-        }
-        
-        /* PAGE HEADER */
-        .page-header { margin-bottom: 24px; }
-        .page-title { font-size: 28px; font-weight: 700; color: var(--hc-dark); margin: 0 0 4px 0; }
-        .page-subtitle { font-size: 16px; color: #475569; margin: 0; }
+    footer {
+      background: var(--hc-dark);
+      color: #fff;
+    }
 
-        /* CARDS */
-        .content-section {
-            background: #fff; border-radius: 12px; border: 1px solid #e2e8f0;
-            padding: 24px; margin-bottom: 24px;
-            box-shadow: 0 4px 16px rgba(15, 23, 42, .05);
-        }
-        .section-title { font-size: 18px; font-weight: 600; color: var(--hc-dark); margin: 0 0 16px 0; }
-
-        /* EXPORT TOOLS */
-        .export-controls { display: flex; gap: 12px; align-items: center; }
-        .hc-select, .hc-button {
-            font-family: 'Poppins', system-ui; font-size: 14px; border-radius: 8px;
-            padding: 8px 12px; border: 1px solid #cbd5e1;
-        }
-        .hc-select { flex-grow: 1; }
-        .hc-button {
-            background-color: var(--hc-blue); color: white; font-weight: 500;
-            cursor: pointer; transition: background-color 0.2s;
-        }
-        .hc-button:hover { background-color: var(--hc-toska); }
-        .hc-button:disabled { background-color: #94a3b8; cursor: not-allowed; }
-
-        /* TABLE */
-        .table-wrapper { width: 100%; overflow-x: auto; border: 1px solid #e2e8f0; border-radius: 8px; }
-        table { width: 100%; border-collapse: collapse; min-width: 800px; }
-        th, td { padding: 10px 14px; text-align: left; font-size: 13px; border-bottom: 1px solid #e2e8f0; }
-        th { background-color: #f8fafc; font-weight: 600; color: #64748b; font-size: 12px; }
-        td { color: var(--hc-dark); }
-        tr:last-child td { border-bottom: none; }
-        td .user-name { font-weight: 600; color: var(--hc-dark); }
-        td .user-id { font-size: 12px; color: #94a3b8; }
-
-        @media (max-width: 768px) {
-            main { padding: 20px 16px; }
-            .export-controls { flex-direction: column; align-items: stretch; }
-        }
-    </style>
+    .raw-error {
+      font-size: .65rem;
+      background: rgba(0,0,0,.05);
+      border-radius: .5rem;
+      padding: .35rem .55rem;
+      margin-top: .35rem;
+      word-break: break-all;
+    }
+  </style>
 </head>
-<body>
+<body class="text-gray-800">
 
-    <div id="hc32-loading-overlay">
-        <div class="hc-loader">
-            <div class="hc-loader-spinner"></div>
-            <img src="https://lh3.googleusercontent.com/d/1lAev2D5Pxp5Rt36iy4y0YMibEnYu5BgI" class="hc-loader-logo" alt="Logo HC">
-        </div>
+  <main class="max-w-5xl mx-auto px-4 pb-20 w-full">
+    
+    <div class="mb-6 mt-2">
+      <h1 class="text-2xl font-bold text-[var(--hc-dark)]">Presensi Kegiatan</h1>
+      <p class="text-slate-500 text-sm">Silakan pindai kode QR atau barcode kartu anggota.</p>
     </div>
 
-    <main>
-        <header class="page-header">
+    <div class="relative">
+
+      <div id="global-overlay" class="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-20 hidden rounded-2xl">
+        <div class="flex flex-col items-center gap-4 p-6 rounded-lg text-center">
+          <div class="relative w-16 h-16">
+            <div class="absolute inset-0 rounded-full border-4 border-[var(--hc-blue)] border-t-[var(--hc-toska)] animate-spin"></div>
+            <img src="https://lh3.googleusercontent.com/d/1lAev2D5Pxp5Rt36iy4y0YMibEnYu5BgI" alt="Logo" class="absolute inset-0 m-auto w-10 h-10">
+          </div>
+          <p id="global-overlay-text" class="text-[var(--hc-dark)] font-semibold text-sm">Memeriksa presensi...</p>
+        </div>
+      </div>
+
+      <div class="grid lg:grid-cols-2 gap-6">
+
+        <section class="bg-white rounded-2xl shadow-sm p-4 border border-gray-200">
+          <h2 class="text-xl font-bold text-[var(--hc-dark)] mb-1">Kamera Pemindai</h2>
+          <p class="text-sm text-gray-500 mb-4 flex items-center gap-2">
+            <span class="w-10 h-[3px] bg-[var(--hc-blue)] inline-block rounded-full"></span>
+            Aktifkan kamera untuk memindai.
+          </p>
+
+          <div id="camera-wrapper" class="scanner-frame mb-4 h-60 flex items-center justify-center">
+            <div id="qr-reader" class="hidden w-full h-full [&_video]:w-full [&_video]:h-full [&_video]:object-cover"></div>
+            <div id="qr-placeholder" class="flex flex-col items-center px-4 text-center">
+              <p class="text-white/80 text-sm mb-2">Kamera belum aktif.</p>
+              <p class="text-white/50 text-xs">Tekan tombol di bawah.</p>
+            </div>
+            <div id="scan-anim" class="absolute inset-6 rounded-xl border-2 border-white/70 pointer-events-none hidden">
+              <div class="absolute inset-x-4 top-6 h-1 bg-white/60 shadow-[0_0_15px_2px_rgba(255,255,255,0.7)] animate-pulse"></div>
+            </div>
+          </div>
+
+          <button id="btn-toggle-camera"
+            class="w-full bg-[var(--hc-blue)] text-white font-semibold py-2.5 rounded-xl hover:bg-opacity-90 transition flex items-center justify-center gap-2 mb-1">
+            
+            <svg id="icon-cam-start" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+            </svg>
+            <svg id="icon-cam-stop" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" />
+            </svg>
+            <span id="btn-toggle-text">Mulai Pindai Barcode</span>
+          </button>
+          <p class="text-[0.7rem] text-gray-400 mt-1 text-center">Pastikan browser mengizinkan akses kamera.</p>
+        </section>
+
+        <section class="flex flex-col gap-4">
+
+          <div id="status-box" class="bg-white border border-gray-200 rounded-2xl p-4 flex gap-3 items-center shadow-sm">
+            <div id="status-icon" class="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 shrink-0">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p id="status-title" class="font-semibold text-sm text-slate-800 truncate">Menunggu presensi...</p>
+              <p id="status-msg" class="text-xs text-slate-500">Data akan muncul di sini setelah dipindai.</p>
+              <pre id="status-raw" class="raw-error hidden"></pre>
+            </div>
+          </div>
+
+          <div class="bg-yellow-50 border border-yellow-200 rounded-2xl px-4 py-3 flex items-center gap-3 shadow-sm">
+            <img src="https://lh3.googleusercontent.com/d/1F42BAD5bDPLJBEYrjfGdv-7f7KtAVWIg" alt="NFC Logo" class="w-9 h-9">
             <div>
-                <h1 class="page-title">Daftar Presensi</h1>
-                <p class="page-subtitle">Lihat dan ekspor riwayat presensi per pertemuan.</p>
+              <p class="font-semibold text-yellow-900 text-sm">NFC Reader</p>
+              <p class="text-xs text-yellow-800 leading-tight">Coming soon – tempel kartu anggota untuk presensi.</p>
             </div>
-        </header>
+          </div>
 
-        <section class="content-section">
-            <h2 class="section-title">Export Data Presensi</h2>
-            <div class="export-controls">
-                <select id="pertemuan-select" class="hc-select">
-                    <option value="">Pilih pertemuan...</option>
-                </select>
-                <button id="export-btn" class="hc-button" disabled>Export ke CSV</button>
+          <div class="bg-white rounded-2xl shadow-sm p-4 border border-gray-200">
+            <h3 class="font-semibold text-[var(--hc-dark)] mb-1">Input manual</h3>
+            <p class="text-xs text-gray-500 mb-3">Jika barcode rusak atau tidak terbaca.</p>
+            <div class="flex flex-col sm:flex-row gap-3">
+              <input id="manual-nis" type="text" inputmode="numeric"
+                     placeholder="Masukkan NIS/ID..."
+                     class="flex-1 min-w-0 border border-gray-300 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--hc-blue)] focus:border-[var(--hc-blue)]">
+              <button id="btn-send-manual"
+                       class="px-4 py-2 rounded-xl bg-[var(--hc-blue)] text-white text-sm font-semibold hover:bg-opacity-90 transition w-full sm:w-auto">
+                Kirim
+              </button>
             </div>
+          </div>
+
+          <div id="result-box" class="hidden bg-white rounded-2xl shadow-sm p-4 flex items-center gap-4 border border-gray-200">
+            <div id="result-avatar" class="w-16 h-16 rounded-full bg-[var(--hc-dark)] flex items-center justify-center text-white font-bold text-xl border-4 border-[var(--hc-blue)] overflow-hidden bg-cover bg-center shrink-0">
+              </div>
+            <div class="flex-1 min-w-0">
+              <p id="result-name" class="font-bold text-[var(--hc-dark)] truncate">Nama Anggota</p>
+              <p id="result-meta" class="text-sm text-gray-500">Pertemuan • Jam</p>
+            </div>
+          </div>
         </section>
+      </div>
+    </div>
 
-        <section class="content-section">
-            <h2 class="section-title">Presensi Terbaru (150 Terakhir)</h2>
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Nama Anggota</th>
-                            <th>Tipe</th>
-                            <th>Kelas/Jabatan</th>
-                            <th>Pertemuan</th>
-                            <th>Waktu</th>
-                        </tr>
-                    </thead>
-                    <tbody id="presensi-table-body"></tbody>
-                </table>
-            </div>
-        </section>
-    </main>
+    <div class="mt-8 mb-6 bg-white rounded-2xl shadow-sm flex flex-col md:flex-row items-center justify-between gap-3 px-5 py-4 border-l-4 border-[var(--hc-blue)]">
+      <div>
+        <p class="font-semibold text-[var(--hc-dark)] text-sm">Butuh Bantuan?</p>
+        <p class="text-xs text-gray-500">Hubungi Ketua HC <span class="font-semibold text-[var(--hc-blue)]">@vitezegi</span> jika mengalami kendala sistem.</p>
+      </div>
+      <a href="https://www.instagram.com/historyclub32jkt/" target="_blank"
+         class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--hc-blue)] text-white text-sm hover:bg-opacity-90 transition-colors shrink-0">
+        Instagram HC 32
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+        </svg>
+      </a>
+    </div>
+  </main>
 
-    <script>
-        // Gunakan config.js
-        const LOADER = document.getElementById("hc32-loading-overlay");
-        let ADMIN_TOKEN = null;
-        
-        // 1. Validasi Sesi
-        function validateSession() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const urlToken = urlParams.get('token');
-            const urlNama = urlParams.get('n');
-            const urlJabatan = urlParams.get('j');
-            const urlFoto = urlParams.get('f');
+  <footer class="mt-auto">
+    <div class="max-w-5xl mx-auto px-4 py-6 text-center text-sm">
+      <p>© 2025 History Club SMAN 32 Jakarta. All rights reserved.</p>
+      <p class="text-xs text-slate-300/80 mt-1">Dibuat oleh <span class="font-semibold text-white">@vitezegi</span>.</p>
+    </div>
+  </footer>
 
-            let session;
+  <audio id="sound-success" preload="auto">
+    <source src="data:audio/wav;base64,UklGRiQCAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YRgCAADg/+4A/QD6APEA8gDzAPIA7wDrAO8A7ADoAOEA6QDoAOIA5QDjAOIA4QDdANMA1gDSANAAzADMANAAywC/AK8ArACqAKgApQCjAKMAoQChAJ0AmgCcAJoAmACWAI8AkwCPAI0AjQCOAIwAigCHAIYAhQCBAIEAgAB/AH4AfAB5AHgAdQB1AHMAbwBtAGwAaQBoAGUAZgBhAGAAXQBcAFoAWQBXAFUAVABSAFIAUQBOAE0ASgBIAEYARgBFAEMAPwA+ADsAOgA5ADYANAAzADEALwAuACsAKgApACcAJgAjACIAHwAeAB0AGwAaABgAFgAUABEAEQAQAA8ADQAMAAoACAAFAAMAAgAAAP8A/gD5APcA8wD0APMA8gDwAO0A7gDrAOsA6ADlAOQA5QDiAN8A3ADaANkAzwDPA NAAywDJAMQAwgC/ALsAuAC1AmYClQKJAoMChQMCAv8B/wH9AfwB+gH6AfYB9AHvAfAB8gHxAfAB8AHvAe4B6wHrAesB6AHnAOYA5ADiAOEA4ADfAN0A2wDXANkA1gDSAM0AygDFAL4AtwCtAKoApwCkAI8AiwCAAHsAbQBhAFgASwA/ACsAHP8A9ADUAKEAagBGAB4A/gDOAIwAXgBAACsAHP8A9gDUAKMAagBHAB4A/gDPAMAAugC1AMQAswCxALEAsgCxAK8ArQCvAK8AsQCwALIAswCyALQAtQC1ALUAtAC1ALEAsgCzA LQAswCyALIAswCyALMAtAC0ALQAtQC1ALUAtQC1ALUAtQC1ALQAtAC0ALMAsgCyALMAsgCyALMAsgCyALIAswCyALMAswCyALMAtACzALMAsgCzALMAsgCzALMAswCzALMAtAC0ALQAtQC1ALUAtQC1ALUAtQC1ALQAtAC0ALMAsgCyALMAsgCyALMAsgCyALIAswCyALMAswCyALMAtACzALMAsgCzALMAsgCzALMAswCzALMAsgCzALIAswCyALMAsgCyALMAswCzALIAswCzALMAsgCyALMAsgCzALIAswCzALIAswCzALIAswCzALIAswCzALIAswCzALIAswCyALMAswCyALMAsgCzALIAswCzALIAswCzALIAswCyALMAsgCzALIAswCzALIAswCzALIAswCzALIAswCzALIAswCzALIAswCzALIAswCzALIAswCzALIAswCzALIAswCzALIAswCzALMAswCzALIAswCzALIAswCzALIAswCzALIAswCzALIAswCzALIAswCzALIAswCzALIAswCzALMAsgCzALIAswCzALIAswCzALIAswCzALMAsgCzALIAswCzALIAswCzALIAswCzALMAsgCzALIAswCzALIAswCzALIAswCzALIAswCzALIAswCzALIAswCzALIAswCzALIAswCzALIAswCzALIAswCzALIAswCzALIAswCzALIAswCzALIAswCzALIAswCzALIAswCzALIAswCzALIAswCzALMAsgCzALIAswCzALIAswCzALIAswCzALIAswCzALIAswCzALIAswCzALIAswCzALMAsgCzALIAswCzALIAswCzALIAswCzALMAsgCzALIAswCzALIAswCzAnalisa`" type="audio/wav">
+  </audio>
+  <audio id="sound-error" preload="auto">
+    <source src="data:audio/wav;base64,UklGRiwCAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YSAgAgAAMEBAgMDBw8XIycrMy8/S1NbX2Nna3N/h5Ofo6err7O/x9fb4+vv9/f8AAQECBg4KESQnKC0uLzM2Nzw9P0NHSUtOUFNVV1laW15gYWJjZGVmZ2lqa2xub3Bxc3R1dnd5ent9f4CBg4WHh4mKi4yNjo+QkZKTlJWXmJmbnJ2en6Gio6Slp6mqrK2ur7CxsrO0tba3uLm6u7y9vr/AwcLDxMXGx8jJysvMzc7P0NHS09TV1tfa2drb3N3e3+Di4uPk5ebn6Onq6+zt7u/w8fLz9PX29/j5+vv8/f7/AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8gISIjJCUmJygpKissLS4vMDEyMzQ1Njc4OTo7PD0+P0BBQkNERUZHSElKS0xNTk9QUVJTVFVWV1hZWltcXV5fYGFiY2RlZmdoaWprbG1ub3BxcnN0dXZ3eHl6e3x9fn+AgYKDhIWGh4iJiouMjY6PkJGSk5SVlpeYmZqbnJ2en6ChoqOkpaanqKmqq6ytrq+wsbKztLW2t7i5uru8vb6/wMHCw8TFxsc=" type="audio/wav">
+  </audio>
 
-            if (urlToken && urlNama) {
-                hc32_saveSession(urlToken, urlNama, urlJabatan, urlFoto); 
-                window.history.replaceState({}, document.title, window.location.pathname); 
-                session = { token: urlToken, nama: urlNama };
-            } else {
-                session = hc32_getSession(); 
-            }
+  <script>
+    /* Gunakan URL dari config.js, tapi jika error CORS kita fallback ke variabel ini */
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzRJr31SeGSAG1uJcVTboTTfH-RNswG5P7z0zsPljNUvW-vTVClGJgKjxYgvAv1Jy8lTw/exec";
 
-            if (!session || !session.token) {
-                alert("Sesi tidak valid. Silakan login kembali.");
-                window.location.href = "https://sites.google.com/view/history-club-32/keanggotaan/login-pengurus";
-                return false;
-            }
-
-            ADMIN_TOKEN = session.token;
-            return true;
+    // Inisialisasi Navigasi dari components.js
+    document.addEventListener("DOMContentLoaded", () => {
+        if (typeof initHC32Navigation === 'function') {
+            // ID 'presensi' akan membuat menu Presensi aktif di sidebar
+            initHC32Navigation('presensi'); 
         }
+    });
 
-        // 2. Muat Dashboard
-        async function loadDashboard() {
-            const out = await hc32_post("getPresensiDashboard", { token: ADMIN_TOKEN });
-            const tableBody = document.getElementById("presensi-table-body");
-            tableBody.innerHTML = ""; 
+    // Element Selector
+    const statusBox     = document.getElementById('status-box');
+    const statusIcon    = document.getElementById('status-icon');
+    const statusTitle   = document.getElementById('status-title');
+    const statusMsg     = document.getElementById('status-msg');
+    const statusRaw     = document.getElementById('status-raw');
 
-            if (out.status !== 'ok' || !out.data || out.data.length === 0) {
-                tableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #94a3b8;">Belum ada data presensi.</td></tr>`;
-                return;
-            }
+    const manualInput   = document.getElementById('manual-nis');
+    const manualBtn     = document.getElementById('btn-send-manual');
+    
+    const globalOverlay     = document.getElementById('global-overlay');
+    const globalOverlayText = document.getElementById('global-overlay-text');
 
-            out.data.forEach(p => {
-                const tr = document.createElement("tr");
-                const tgl = new Date(p.timestamp);
-                const waktuStr = `${tgl.toLocaleDateString('id-ID')} - ${p.jam}`;
-                
-                let detail = '-';
-                if (p.tipe === 'siswa-aktif') detail = p.kelas || '-';
-                else if (p.tipe === 'guru' || p.tipe === 'non-32') detail = p.roleTag || p.jabatan || '-';
-                else if (p.tipe === 'alumni') detail = 'Alumni';
+    const resultBox     = document.getElementById('result-box');
+    const resultName    = document.getElementById('result-name');
+    const resultMeta    = document.getElementById('result-meta');
+    const resultAvatar  = document.getElementById('result-avatar');
 
-                tr.innerHTML = `
-                    <td>
-                        <div class="user-name">${p.nama}</div>
-                        <div class="user-id">ID: ${p.id_hc || p.nis}</div>
-                    </td>
-                    <td>${p.tipe}</td>
-                    <td>${detail}</td>
-                    <td>${p.pertemuan}</td>
-                    <td>${waktuStr}</td>
-                `;
-                tableBody.appendChild(tr);
-            });
-        }
+    const btnToggleCamera = document.getElementById('btn-toggle-camera');
+    const btnToggleText   = document.getElementById('btn-toggle-text');
+    const iconCamStart    = document.getElementById('icon-cam-start');
+    const iconCamStop     = document.getElementById('icon-cam-stop');
+    
+    const qrReaderDiv   = document.getElementById('qr-reader');
+    const qrPlaceholder = document.getElementById('qr-placeholder');
+    const scanAnim      = document.getElementById('scan-anim');
 
-        // 3. Muat Daftar Pertemuan
-        async function loadPertemuanList() {
-            const selectEl = document.getElementById("pertemuan-select");
-            const out = await hc32_post("listPertemuan", { token: ADMIN_TOKEN });
+    const soundSuccess  = document.getElementById('sound-success');
+    const soundError    = document.getElementById('sound-error');
 
-            if (out.status === 'ok' && out.data.length > 0) {
-                out.data.sort().reverse(); 
-                out.data.forEach(pertemuan => {
-                    const opt = document.createElement("option");
-                    opt.value = pertemuan;
-                    opt.textContent = pertemuan;
-                    selectEl.appendChild(opt);
-                });
-            }
-        }
-        
-        // 4. Export CSV
-        function convertJSONToCSV(data) {
-            if (!data || data.length === 0) return "";
-            const headers = ['ID_HC', 'NIS', 'Nama', 'Tipe', 'Kelas/Jabatan', 'Pertemuan', 'Timestamp', 'Jam'];
-            let csv = headers.join(',') + '\n';
-            data.forEach(p => {
-                let detail = '-';
-                if (p.tipe === 'siswa-aktif') detail = p.kelas || '-';
-                else if (p.tipe === 'guru' || p.tipe === 'non-32') detail = p.roleTag || p.jabatan || '-';
-                else if (p.tipe === 'alumni') detail = 'Alumni';
-                const nama = `"${(p.nama || '').replace(/"/g, '""')}"`;
-                const pertemuan = `"${(p.pertemuan || '').replace(/"/g, '""')}"`;
-                const row = [p.id_hc || p.nis, p.nis, nama, p.tipe, detail, pertemuan, p.timestamp, p.jam];
-                csv += row.join(',') + '\n';
-            });
-            return csv;
-        }
+    let qrReader = null;
+    let cameraOn = false;
+    let lastScannedCode = "";
+    let lastScanTime    = 0;
 
-        async function exportPresensi() {
-            const selectEl = document.getElementById("pertemuan-select");
-            const exportBtn = document.getElementById("export-btn");
-            const pertemuan = selectEl.value;
-            if (!pertemuan) { alert("Pilih pertemuan terlebih dahulu."); return; }
+    /* ===== STATUS HELPER ===== */
+    function setStatus(type, title, msg, raw) {
+      statusBox.className = "bg-white border border-gray-200 rounded-2xl p-4 flex gap-3 items-center shadow-sm";
+      statusIcon.innerHTML = "";
+      statusIcon.className = "w-10 h-10 rounded-full flex items-center justify-center text-white shrink-0";
+      statusRaw.classList.add('hidden');
+      statusRaw.textContent = '';
 
-            exportBtn.disabled = true; exportBtn.textContent = "Mengekspor...";
-            
-            const out = await hc32_post("listPresensiByPertemuan", { token: ADMIN_TOKEN, pertemuan: pertemuan });
-            if (out.status !== 'ok' || !out.data || !out.data.length === 0) {
-                alert("Tidak ada data presensi untuk pertemuan ini.");
-                exportBtn.disabled = false; exportBtn.textContent = "Export ke CSV";
-                return;
-            }
-            
-            try {
-                const csvContent = convertJSONToCSV(out.data);
-                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-                const link = document.createElement("a");
-                const url = URL.createObjectURL(blob);
-                link.setAttribute("href", url);
-                const fileName = `presensi_${pertemuan.replace(/ /g, '_')}.csv`;
-                link.setAttribute("download", fileName);
-                link.style.visibility = 'hidden';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            } catch(err) { alert("Gagal membuat file CSV: " + err.message); }
-            exportBtn.disabled = false; exportBtn.textContent = "Export ke CSV";
-        }
+      if (type === 'loading') {
+        statusBox.classList.add("bg-slate-50","border-slate-200");
+        statusIcon.classList.add("bg-slate-400");
+        statusIcon.innerHTML = '<div class="w-5 h-5 border-2 border-white/50 border-t-white rounded-full animate-spin"></div>';
+      } else if (type === 'success') {
+        statusBox.classList.add("bg-green-50","border-green-200");
+        statusIcon.classList.add("bg-[var(--hc-green)]");
+        statusIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 00-1.414 0L8 12.586 4.707 9.293A1 1 0 003.293 10.707l4 4a1 1 0 001.414 0l8-8a1 1 0 000-1.414z" clip-rule="evenodd"/></svg>';
+      } else if (type === 'error') {
+        statusBox.classList.add("bg-red-50","border-red-200");
+        statusIcon.classList.add("bg-[var(--hc-red)]");
+        statusIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>';
+      } else {
+        statusBox.classList.add("bg-white", "border-gray-200");
+        statusIcon.classList.add("bg-slate-400");
+        statusIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" /></svg>';
+      }
 
-        // 5. Init
-        document.addEventListener("DOMContentLoaded", () => {
-            // Render Navigasi
-            initHC32Navigation('presensi');
+      statusTitle.textContent = title || '';
+      statusMsg.textContent   = msg   || '';
+      if (raw) {
+        statusRaw.textContent = raw;
+        statusRaw.classList.remove('hidden');
+      }
+    }
 
-            if (validateSession()) {
-                Promise.all([ loadDashboard(), loadPertemuanList() ]).finally(() => {
-                    LOADER.style.display = 'none';
-                });
-            }
+    function showResult(data) {
+      resultBox.classList.remove('hidden');
+      resultName.textContent = data.nama || 'Anggota';
+      resultMeta.textContent = (data.pertemuan || '-') + ' • ' + (data.jam || '');
+      
+      resultAvatar.style.backgroundImage = 'none';
+      resultAvatar.textContent = '';
 
-            document.getElementById("export-btn").addEventListener("click", exportPresensi);
-            document.getElementById("pertemuan-select").addEventListener("change", (e) => {
-                document.getElementById("export-btn").disabled = !e.target.value;
-            });
+      if (data.foto) {
+        resultAvatar.style.backgroundImage = `url('${data.foto}')`;
+      } else {
+        const inisial = (data.nama || 'HC').split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+        resultAvatar.textContent = inisial;
+      }
+    }
+
+    /* ===== KIRIM PRESENSI ===== */
+    async function sendPresensi(id, source) {
+      const cleanId = (id || '').replace(/[^0-9]/g, '');
+      if (!cleanId) {
+        setStatus('error', 'Input kosong', 'Masukkan nomor identitas yang valid.');
+        soundError && soundError.play().catch(()=>{});
+        return;
+      }
+
+      globalOverlay.style.display = 'flex';
+      globalOverlayText.textContent = (source === 'scanner') ? 'Memeriksa presensi...' : 'Memeriksa data...';
+      setStatus('loading', 'Mengirim presensi...', `Nomor ID: ${cleanId}`);
+
+      // 1. Coba POST JSON (Modern)
+      try {
+        const res = await fetch(WEB_APP_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain' }, // text/plain aman untuk CORS Google
+          body: JSON.stringify({ action: 'presensi', nis: cleanId })
         });
-    </script>
+        const json = await res.json();
+        handlePresensiResponse(json);
+        return;
+      } catch (e1) {
+        console.warn('POST JSON gagal, mencoba GET...', e1);
+      }
+
+      // 2. Fallback GET (Kompatibilitas)
+      try {
+        const url  = WEB_APP_URL + '?action=presensi&nis=' + encodeURIComponent(cleanId);
+        const res  = await fetch(url);
+        const json = await res.json();
+        handlePresensiResponse(json);
+      } catch (e2) {
+        globalOverlay.style.display = 'none';
+        scanAnim.classList.add('hidden');
+        setStatus('error', 'Gagal terhubung', 'Periksa koneksi internet Anda.', e2.message);
+        soundError && soundError.play().catch(()=>{});
+      }
+    }
+
+    function handlePresensiResponse(json) {
+      globalOverlay.style.display = 'none';
+      scanAnim.classList.add('hidden');
+
+      if (!json || !json.status) {
+        setStatus('error', 'Respon tidak dikenal', 'Script tidak mengembalikan status.');
+        soundError && soundError.play().catch(()=>{});
+        return;
+      }
+
+      if (json.status === 'ok') {
+        setStatus('success', 'Presensi berhasil!', `${json.nama} • ${json.pertemuan || '-'}`);
+        showResult(json);
+        soundSuccess && soundSuccess.play().catch(()=>{});
+        manualInput.value = '';
+      } else if (json.status === 'duplicate') {
+        setStatus('error', 'Presensi ditolak', 'Anggota ini sudah presensi hari ini.');
+        showResult(json);
+        soundError && soundError.play().catch(()=>{});
+      } else if (json.status === 'not-registered') {
+        setStatus('error', 'ID tidak ditemukan', `ID ${json.nis} tidak terdaftar.`);
+        resultBox.classList.add('hidden');
+        soundError && soundError.play().catch(()=>{});
+      } else {
+        setStatus('error', 'Gagal mengirim', json.message || 'Terjadi kesalahan.');
+        resultBox.classList.add('hidden');
+        soundError && soundError.play().catch(()=>{});
+      }
+    }
+
+    /* ===== INPUT MANUAL ===== */
+    manualBtn.addEventListener('click', () => {
+      sendPresensi(manualInput.value, 'manual');
+    });
+    manualInput.addEventListener('keyup', (e) => {
+      if (e.key === 'Enter') {
+        sendPresensi(manualInput.value, 'manual');
+      }
+    });
+
+    /* ===== START/STOP KAMERA ===== */
+    async function stopCamera() {
+      if (!qrReader || !cameraOn) return;
+      try {
+        await qrReader.stop();
+      } catch (err) {
+        console.warn("Gagal mematikan kamera:", err);
+      } finally {
+        cameraOn = false;
+        qrPlaceholder.classList.remove('hidden');
+        qrReaderDiv.classList.add('hidden');
+        scanAnim.classList.add('hidden');
+        
+        btnToggleText.textContent = 'Mulai Pindai Barcode';
+        iconCamStart.classList.remove('hidden');
+        iconCamStop.classList.add('hidden');
+        
+        setStatus('info', 'Kamera dimatikan', 'Klik tombol untuk memulai lagi.');
+      }
+    }
+
+    async function startCamera() {
+      if (cameraOn) return;
+      try {
+        qrPlaceholder.classList.add('hidden');
+        qrReaderDiv.classList.remove('hidden');
+        setStatus('loading', 'Mengaktifkan kamera...', 'Mohon IZINKAN akses kamera.');
+
+        if (!qrReader) {
+          qrReader = new Html5Qrcode("qr-reader", { 
+            verbose: false,
+            formatsToSupport: [
+              Html5QrcodeSupportedFormats.QR_CODE,
+              Html5QrcodeSupportedFormats.CODE_128,
+              Html5QrcodeSupportedFormats.CODE_39,
+              Html5QrcodeSupportedFormats.EAN_13,
+            ]
+          });
+        }
+        
+        const cameraConfig = { 
+          fps: 10, 
+          qrbox: (w,h) => {
+             const size = Math.min(w,h) * 0.7;
+             return { width: size, height: size };
+          },
+          aspectRatio: 1.0
+        };
+        
+        await qrReader.start(
+          { facingMode: "environment" },
+          cameraConfig,
+          (decodedText) => { // Sukses Scan
+            const now = Date.now();
+            if (decodedText === lastScannedCode && (now - lastScanTime) < 3000) {
+              return; // Debounce
+            }
+            lastScannedCode = decodedText;
+            lastScanTime    = now;
+            scanAnim.classList.remove('hidden');
+            sendPresensi(decodedText, 'scanner');
+          },
+          (errorMessage) => {} // Scan Gagal (hiraukan)
+        );
+        
+        cameraOn = true;
+        setStatus('info', 'Kamera aktif', 'Arahkan barcode ke dalam kotak.');
+        scanAnim.classList.remove('hidden');
+
+        btnToggleText.textContent = 'Matikan Kamera';
+        iconCamStart.classList.add('hidden');
+        iconCamStop.classList.remove('hidden');
+
+      } catch (err) {
+        console.error(err);
+        setStatus('error', 'Kamera tidak tersedia', 'Izin ditolak atau tidak ada kamera.');
+        qrPlaceholder.classList.remove('hidden');
+        qrReaderDiv.classList.add('hidden');
+        cameraOn = false;
+      }
+    }
+
+    btnToggleCamera.addEventListener('click', () => {
+      if (cameraOn) stopCamera();
+      else startCamera();
+    });
+
+  </script>
 </body>
 </html>
