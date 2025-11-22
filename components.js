@@ -1,9 +1,9 @@
 /**
  * HISTORY CLUB 32 - SHARED UI COMPONENTS
- * Menggunakan UI/UX & Animasi dari pendaftaran.html
+ * (Header, Sidebar, dan Footer terpusat)
  */
 
-// Konfigurasi Menu (Sesuaikan URL dengan kebutuhan)
+// === KONFIGURASI MENU SIDEBAR ===
 const HC32_MENU = [
     { type: 'link', text: 'Beranda', href: 'https://sites.google.com/view/historyclub32/beranda', id: 'beranda' },
     { type: 'category', text: 'Profil' },
@@ -15,18 +15,19 @@ const HC32_MENU = [
     { type: 'link', text: 'Kegiatan', href: 'https://sites.google.com/view/historyclub32/aktivitas/kegiatan', id: 'kegiatan' },
     { type: 'category', text: 'Keanggotaan' },
     { type: 'link', text: 'Anggota', href: 'https://sites.google.com/view/historyclub32/keanggotaan/anggota', id: 'anggota' },
-    { type: 'link', text: 'Presensi', href: 'presensi.html', id: 'presensi' }, // Link lokal
-    { type: 'link', text: 'Pendaftaran', href: 'pendaftaran.html', id: 'pendaftaran' } // Link lokal
+    { type: 'link', text: 'Presensi', href: 'presensi.html', id: 'presensi' },
+    { type: 'link', text: 'Pendaftaran', href: 'pendaftaran.html', id: 'pendaftaran' }
 ];
 
-// CSS Core dari pendaftaran.html (Disuntikkan via JS agar tidak perlu copy-paste di setiap HTML)
+// === CSS GABUNGAN (Dari pendaftaran.html) ===
 const HC32_STYLES = `
     :root {
         --hc-blue: #1a4787; --hc-toska: #0f8a94; --hc-dark: #2e2e2e;
         --hc-green: #15a256; --hc-red: #d30e14; --hc-bg: #f8fafc;
         --hc-yellow: #ecec17; --border: #cbd5e1; --card: #ffffff;
     }
-    /* Header Sticky */
+    
+    /* HEADER STYLES */
     .app-header {
         position: sticky; top: 0; left: 0; right: 0;
         height: 64px; background: #fff;
@@ -46,7 +47,8 @@ const HC32_STYLES = `
         display: block; width: 24px; height: 3px;
         background-color: var(--hc-blue); border-radius: 2px;
     }
-    /* Sidebar Off-canvas */
+
+    /* SIDEBAR STYLES */
     .sidebar-overlay {
         position: fixed; inset: 0; background: rgba(46, 46, 46, 0.5);
         z-index: 1100; opacity: 0; visibility: hidden; transition: all 0.3s;
@@ -67,7 +69,6 @@ const HC32_STYLES = `
     .sidebar-title { font-size: 18px; font-weight: 700; color: var(--hc-blue); }
     .close-btn { font-size: 28px; background: none; border: none; color: var(--hc-dark); cursor: pointer; }
     .sidebar-content { flex: 1; overflow-y: auto; padding: 10px 0; }
-    /* Links */
     .menu-category {
         padding: 16px 24px 8px; font-size: 12px; font-weight: 600;
         color: var(--hc-toska); text-transform: uppercase; letter-spacing: 1px;
@@ -83,21 +84,63 @@ const HC32_STYLES = `
         background: linear-gradient(to right, #f0f9fa, white);
         color: var(--hc-blue); font-weight: 600; border-left-color: var(--hc-toska);
     }
-    /* Reset Main Layout untuk halaman yang dulunya pakai fixed sidebar */
+
+    /* FOOTER STYLES (Diambil dari pendaftaran.html) */
+    .site-footer {
+        background-color: #0f172a; /* Dark Slate Blue */
+        color: #fff; padding: 60px 20px 30px;
+        margin-top: auto; 
+    }
+    .footer-content {
+        max-width: 1100px; margin: 0 auto;
+        display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 40px; text-align: left;
+    }
+    .footer-brand img { width: 60px; height: 60px; border-radius: 50%; margin-bottom: 15px; }
+    .footer-brand h3 { margin: 0; font-size: 24px; font-weight: 700; color: #fff; }
+    .footer-brand p { font-size: 13px; color: #94a3b8; margin-top: 10px; line-height: 1.6; }
+    
+    .footer-col h4 { 
+        font-size: 12px; font-weight: 700; color: #94a3b8; 
+        text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px;
+    }
+    .footer-col ul { list-style: none; padding: 0; margin: 0; }
+    .footer-col ul li { margin-bottom: 12px; }
+    .footer-col ul li a { 
+        color: #fff; text-decoration: none; font-size: 14px; font-weight: 500; transition: 0.2s; 
+    }
+    .footer-col ul li a:hover { color: var(--hc-toska); padding-left: 5px; }
+
+    .footer-bottom {
+        max-width: 1100px; margin: 40px auto 0; padding-top: 20px;
+        border-top: 1px solid #1e293b; text-align: center;
+        font-size: 12px; color: #64748b;
+    }
+
+    /* Layout Helper untuk memastikan Footer di bawah */
+    body { display: flex; flex-direction: column; min-height: 100vh; }
     main { margin-left: 0 !important; width: 100% !important; box-sizing: border-box; }
+    
     @media (max-width: 600px) {
         .app-header { padding: 0 16px; }
+        .footer-content { grid-template-columns: 1fr; gap: 30px; text-align: center; }
     }
 `;
 
 function initHC32Navigation(activePageId) {
-    // 1. Inject CSS Styles
+    // 1. Inject CSS
     const styleTag = document.createElement('style');
     styleTag.textContent = HC32_STYLES;
     document.head.appendChild(styleTag);
 
-    // 2. Render Header HTML
-    const headerHTML = `
+    // 2. Render Header (Logo dan Hamburger)
+    let headerEl = document.querySelector('header.app-header');
+    if (!headerEl) {
+        headerEl = document.createElement('header');
+        headerEl.className = 'app-header';
+        document.body.prepend(headerEl);
+    }
+    headerEl.innerHTML = `
         <div class="header-left">
             <img src="https://lh3.googleusercontent.com/d/1AplgM9Tf9RH9IKcQINTgHSUn1FUR5K8l" alt="History Club" class="header-logo">
         </div>
@@ -105,17 +148,8 @@ function initHC32Navigation(activePageId) {
             <span></span><span></span><span></span>
         </button>
     `;
-    
-    // Cek apakah elemen header sudah ada, jika tidak buat baru
-    let headerEl = document.querySelector('header.app-header');
-    if (!headerEl) {
-        headerEl = document.createElement('header');
-        headerEl.className = 'app-header';
-        document.body.prepend(headerEl);
-    }
-    headerEl.innerHTML = headerHTML;
 
-    // 3. Render Sidebar & Overlay HTML
+    // 3. Render Sidebar
     const overlayEl = document.createElement('div');
     overlayEl.className = 'sidebar-overlay';
     overlayEl.id = 'hc32-sidebar-overlay';
@@ -124,7 +158,7 @@ function initHC32Navigation(activePageId) {
     sidebarEl.className = 'sidebar';
     sidebarEl.id = 'hc32-sidebar';
 
-    // Generate Menu Items
+    // Generate Menu Items (Looping dari Array)
     let menuItemsHTML = '';
     HC32_MENU.forEach(item => {
         if (item.type === 'category') {
@@ -132,7 +166,6 @@ function initHC32Navigation(activePageId) {
         } else {
             const isActive = item.id === activePageId ? 'active' : '';
             const className = item.id === 'beranda' ? 'nav-link-single' : 'nav-link';
-            // Jika href adalah halaman saat ini, gunakan # agar tidak reload
             const href = item.id === activePageId ? '#' : item.href;
             menuItemsHTML += `<a href="${href}" class="${className} ${isActive}">${item.text}</a>`;
         }
@@ -143,16 +176,60 @@ function initHC32Navigation(activePageId) {
             <span class="sidebar-title">Menu Navigasi</span>
             <button class="close-btn" id="hc32-btn-close">×</button>
         </div>
-        <div class="sidebar-content">
-            ${menuItemsHTML}
-        </div>
+        <div class="sidebar-content">${menuItemsHTML}</div>
     `;
 
-    // Masukkan ke Body
     document.body.appendChild(overlayEl);
     document.body.appendChild(sidebarEl);
 
-    // 4. Attach Event Listeners (Logic Animasi)
+    // 4. Render Footer (HTML Diambil dari pendaftaran.html)
+    let footerEl = document.querySelector('footer.site-footer');
+    if (!footerEl) {
+        footerEl = document.createElement('footer');
+        footerEl.className = 'site-footer';
+        document.body.appendChild(footerEl);
+    }
+
+    footerEl.innerHTML = `
+      <div class="footer-content">
+          <div class="footer-brand">
+              <img src="https://lh3.googleusercontent.com/d/16VXxbcOF9h5zAzYEo2faAzmgqqhtHLlH" alt="HC Logo">
+              <h3>History Club</h3>
+              <p>Wadah bagi siswa SMAN 32 Jakarta untuk mengeksplorasi, belajar, dan melestarikan sejarah dengan cara yang menyenangkan.</p>
+          </div>
+          <div class="footer-col">
+              <h4>PROFIL</h4>
+              <ul>
+                  <li><a href="https://sites.google.com/view/historyclub32/profil/tentang-kami">Tentang Kami</a></li>
+                  <li><a href="https://sites.google.com/view/historyclub32/profil/sejarah">Sejarah</a></li>
+                  <li><a href="https://sites.google.com/view/historyclub32/profil/kepengurusan">Kepengurusan</a></li>
+              </ul>
+          </div>
+          <div class="footer-col">
+              <h4>KEANGGOTAAN</h4>
+              <ul>
+                  <li><a href="https://sites.google.com/view/historyclub32/keanggotaan/anggota">Daftar Anggota</a></li>
+                  <li><a href="https://sites.google.com/view/historyclub32/keanggotaan/presensi">Presensi</a></li>
+                  <li><a href="pendaftaran.html">Pendaftaran</a></li>
+              </ul>
+          </div>
+          <div class="footer-col">
+              <h4>IKUTI KAMI</h4>
+              <ul>
+                  <li><a href="https://instagram.com/historyclub32jkt" target="_blank">Instagram</a></li>
+              </ul>
+          </div>
+      </div>
+      <div class="footer-bottom">
+          <p style="margin: 0;">© 2025 History Club SMAN 32 Jakarta.</p>
+          <p style="margin: 4px 0 0 0; opacity: 0.8;">
+              Dibuat dan dikembangkan dengan penuh bangga oleh 
+              <a href="https://instagram.com/vitezegi" target="_blank" style="color: #ecec17; text-decoration: none; font-weight: 500;">@vitezegi</a>
+          </p>
+      </div>
+    `;
+
+    // 5. Event Listeners (Untuk Animasi Sidebar)
     const btnMenu = document.getElementById('hc32-btn-menu');
     const btnClose = document.getElementById('hc32-btn-close');
     const overlay = document.getElementById('hc32-sidebar-overlay');
@@ -163,7 +240,7 @@ function initHC32Navigation(activePageId) {
         overlay.classList.toggle('active');
     }
 
-    btnMenu.addEventListener('click', toggleSidebar);
-    btnClose.addEventListener('click', toggleSidebar);
-    overlay.addEventListener('click', toggleSidebar);
+    if(btnMenu) btnMenu.addEventListener('click', toggleSidebar);
+    if(btnClose) btnClose.addEventListener('click', toggleSidebar);
+    if(overlay) overlay.addEventListener('click', toggleSidebar);
 }
