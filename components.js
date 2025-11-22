@@ -21,6 +21,9 @@ const HC32_MENU = [
 
 // === CSS GABUNGAN ===
 const HC32_STYLES = `
+    /* Import Font Khusus untuk Slogan */
+    @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap');
+
     :root {
         --hc-blue: #1a4787; --hc-toska: #0f8a94; --hc-dark: #2e2e2e;
         --hc-green: #15a256; --hc-red: #d30e14; --hc-bg: #f8fafc;
@@ -30,15 +33,17 @@ const HC32_STYLES = `
     /* HEADER STYLES */
     .app-header {
         position: sticky; top: 0; left: 0; right: 0;
-        height: 64px; background: #fff;
+        height: 60px; background: #fff; /* Tinggi sedikit dikurangi */
         display: flex; align-items: center; justify-content: space-between;
-        padding: 0 24px;
+        padding: 0 20px;
         box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         z-index: 1000; 
         border-bottom: 3px solid var(--hc-yellow); 
     }
     .header-left { display: flex; align-items: center; }
-    .header-logo { height: 36px; width: auto; object-fit: contain; }
+    /* Logo Header Diperkecil */
+    .header-logo { height: 32px; width: auto; object-fit: contain; }
+    
     .menu-btn {
         background: none; border: none; cursor: pointer;
         display: flex; flex-direction: column; gap: 5px; padding: 5px;
@@ -88,34 +93,43 @@ const HC32_STYLES = `
     /* FOOTER STYLES */
     .site-footer {
         background-color: #0f172a; /* Dark Slate Blue */
-        color: #fff; padding: 60px 20px 30px;
+        color: #fff; padding: 50px 20px 30px;
         margin-top: auto; 
     }
+    
+    /* Layout Footer Utama: Grid yang fleksibel */
     .footer-content {
         max-width: 1100px; margin: 0 auto;
-        display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-        gap: 30px; text-align: left;
+        display: grid; 
+        /* Default (Desktop): 4 Kolom (Brand, Profil, Aktivitas, Keanggotaan, Ikuti) */
+        grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr; 
+        gap: 40px; text-align: left;
     }
     
-    /* --- PERBAIKAN LOGO DI SINI --- */
     .footer-brand img { 
-        width: auto;          /* Lebar otomatis mengikuti aspek rasio */
-        height: 80px;         /* Tinggi tetap agar rapi */
-        border-radius: 0;     /* HAPUS LINGKARAN (0 = kotak) */
-        margin-bottom: 15px; 
-        object-fit: contain;  /* Pastikan gambar pas di dalam kotak tanpa terpotong */
+        width: auto; height: 70px; border-radius: 0; 
+        margin-bottom: 15px; object-fit: contain;
     }
     
-    .footer-brand p { font-size: 13px; color: #94a3b8; margin-top: 10px; line-height: 1.6; }
+    /* Slogan Style (Mirip Lampiran) */
+    .footer-slogan { 
+        font-family: 'Dancing Script', cursive; /* Font tulisan tangan */
+        font-size: 24px; 
+        color: #fff; 
+        margin-top: 10px; 
+        line-height: 1.3;
+        opacity: 0.9;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
     
     .footer-col h4 { 
-        font-size: 12px; font-weight: 700; color: #94a3b8; 
-        text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px;
+        font-size: 11px; font-weight: 700; color: #94a3b8; 
+        text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px;
     }
     .footer-col ul { list-style: none; padding: 0; margin: 0; }
-    .footer-col ul li { margin-bottom: 12px; }
+    .footer-col ul li { margin-bottom: 10px; }
     .footer-col ul li a { 
-        color: #fff; text-decoration: none; font-size: 14px; font-weight: 500; transition: 0.2s; 
+        color: #fff; text-decoration: none; font-size: 13px; font-weight: 500; transition: 0.2s; 
     }
     .footer-col ul li a:hover { color: var(--hc-toska); padding-left: 5px; }
 
@@ -129,9 +143,31 @@ const HC32_STYLES = `
     body { display: flex; flex-direction: column; min-height: 100vh; }
     main { margin-left: 0 !important; width: 100% !important; box-sizing: border-box; }
     
+    /* RESPONSIVE (MOBILE) */
     @media (max-width: 768px) {
         .app-header { padding: 0 16px; }
-        .footer-content { grid-template-columns: 1fr; gap: 30px; text-align: center; }
+        
+        /* Ubah Grid Footer menjadi 2 Kolom di HP */
+        .footer-content { 
+            grid-template-columns: 1fr 1fr; /* 2 Kolom sejajar */
+            gap: 30px 20px; /* Gap antar baris 30px, antar kolom 20px */
+        }
+        
+        /* Logo & Slogan mengambil lebar penuh (span 2 kolom) */
+        .footer-brand { 
+            grid-column: span 2; 
+            text-align: center; 
+            border-bottom: 1px solid #1e293b;
+            padding-bottom: 20px;
+            margin-bottom: 10px;
+        }
+        
+        /* Kolom Ikuti Kami juga span penuh agar rapi di bawah */
+        .footer-col:last-child {
+            grid-column: span 2;
+            text-align: center;
+            margin-top: 10px;
+        }
     }
 `;
 
@@ -201,7 +237,9 @@ function initHC32Navigation(activePageId) {
       <div class="footer-content">
           <div class="footer-brand">
               <img src="https://lh3.googleusercontent.com/d/1-n36cU02E5foAGs4gQbg1pzfbDdCee_f" alt="HC Logo">
-              <p>Wadah bagi siswa SMAN 32 Jakarta untuk mengeksplorasi, belajar, dan melestarikan sejarah dengan cara yang menyenangkan.</p>
+              <div class="footer-slogan">
+                  History Victory!<br>Historia Delectat!
+              </div>
           </div>
           
           <div class="footer-col">
