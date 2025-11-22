@@ -13,16 +13,16 @@
   <script src="components.js"></script>
   
   <style>
-    /* Variable spesifik halaman ini (Variable utama sudah di components.js) */
+    /* HANYA CSS SPESIFIK FORM (Header & Footer sudah di components.js) */
     body {
         font-family: 'Poppins', sans-serif;
-        background-color: #f8fafc; /* Fallback color */
+        background-color: #f8fafc;
         color: #2e2e2e;
         margin: 0; padding: 0;
         display: flex; flex-direction: column; min-height: 100vh;
     }
 
-    /* === MAIN CONTENT LAYOUT === */
+    /* === MAIN CONTENT === */
     .main-wrapper { flex: 1; padding: 40px 20px; }
     .container { max-width: 600px; margin: 0 auto; }
     
@@ -42,7 +42,7 @@
 
     /* Form Elements */
     .row { margin-bottom: 20px; }
-    label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; color: var(--hc-dark); }
+    label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; color: #2e2e2e; }
     input, select {
         width: 100%; padding: 12px 16px; border: 1px solid #cbd5e1;
         border-radius: 10px; font-size: 15px; outline: none;
@@ -83,31 +83,6 @@
     canvas#sig-canvas { width: 100%; height: 100%; display: block; }
     .sig-clear-btn { position: absolute; top: 10px; right: 10px; z-index: 10; }
 
-    /* === FOOTER === */
-    .site-footer {
-        background-color: #0f172a; color: #fff; padding: 60px 20px 30px; margin-top: auto;
-    }
-    .footer-content {
-        max-width: 1100px; margin: 0 auto;
-        display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 40px; text-align: left;
-    }
-    .footer-brand img { width: 60px; height: 60px; border-radius: 50%; margin-bottom: 15px; }
-    .footer-brand h3 { margin: 0; font-size: 24px; font-weight: 700; color: #fff; }
-    .footer-brand p { font-size: 13px; color: #94a3b8; margin-top: 10px; line-height: 1.6; }
-    
-    .footer-col h4 { font-size: 12px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px; }
-    .footer-col ul { list-style: none; padding: 0; margin: 0; }
-    .footer-col ul li { margin-bottom: 12px; }
-    .footer-col ul li a { color: #fff; text-decoration: none; font-size: 14px; font-weight: 500; transition: 0.2s; }
-    .footer-col ul li a:hover { color: var(--hc-toska); padding-left: 5px; }
-
-    .footer-bottom {
-        max-width: 1100px; margin: 40px auto 0; padding-top: 20px;
-        border-top: 1px solid #1e293b; text-align: center;
-        font-size: 12px; color: #64748b;
-    }
-
     /* === POP-UP NOTIFIKASI === */
     .status-modal-overlay {
         position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 4000;
@@ -127,7 +102,7 @@
     .status-icon-svg { width: 40px; height: 40px; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; fill: none; }
     .success .status-icon-svg { stroke: var(--hc-green); }
     .error .status-icon-svg { stroke: var(--hc-red); }
-    .status-title { font-size: 20px; font-weight: 700; color: var(--hc-dark); margin-bottom: 8px; }
+    .status-title { font-size: 20px; font-weight: 700; color: #2e2e2e; margin-bottom: 8px; }
     .status-desc { font-size: 14px; color: #64748b; margin-bottom: 24px; line-height: 1.5; }
     .status-btn { width: 100%; padding: 12px; border: none; border-radius: 10px; background: var(--hc-blue); color: white; font-weight: 600; font-size: 15px; cursor: pointer; transition: 0.2s; }
     .status-btn:hover { background: #153a6f; }
@@ -141,7 +116,7 @@
     .hc-loader { position: relative; width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; }
     .hc-loader-spinner { position: absolute; inset: 0; border-radius: 50%; border: 5px solid var(--hc-blue); border-top-color: var(--hc-toska); animation: hcspin 1s linear infinite; }
     .hc-loader-logo { width: 50px; height: 50px; border-radius: 50%; object-fit: contain; }
-    .hc-loader-text { font-size: 16px; font-weight: 600; color: var(--hc-dark); }
+    .hc-loader-text { font-size: 16px; font-weight: 600; color: #2e2e2e; }
     @keyframes hcspin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
     /* Modals Camera/Crop */
@@ -162,7 +137,6 @@
     @media (max-width: 600px) {
         .two-col { grid-template-columns: 1fr; }
         .card { padding: 20px; }
-        .footer-content { grid-template-columns: 1fr; gap: 30px; text-align: center; }
     }
   </style>
 </head>
@@ -283,45 +257,6 @@
       </div>
   </div>
 
-  <footer class="site-footer">
-      <div class="footer-content">
-          <div class="footer-brand">
-              <img src="https://lh3.googleusercontent.com/d/16VXxbcOF9h5zAzYEo2faAzmgqqhtHLlH" alt="HC Logo">
-              <h3>History Club</h3>
-              <p>Wadah bagi siswa SMAN 32 Jakarta untuk mengeksplorasi, belajar, dan melestarikan sejarah dengan cara yang menyenangkan.</p>
-          </div>
-          <div class="footer-col">
-              <h4>PROFIL</h4>
-              <ul>
-                  <li><a href="https://sites.google.com/view/historyclub32/profil/tentang-kami">Tentang Kami</a></li>
-                  <li><a href="https://sites.google.com/view/historyclub32/profil/sejarah">Sejarah</a></li>
-                  <li><a href="https://sites.google.com/view/historyclub32/profil/kepengurusan">Kepengurusan</a></li>
-              </ul>
-          </div>
-          <div class="footer-col">
-              <h4>KEANGGOTAAN</h4>
-              <ul>
-                  <li><a href="https://sites.google.com/view/historyclub32/keanggotaan/anggota">Daftar Anggota</a></li>
-                  <li><a href="https://sites.google.com/view/historyclub32/keanggotaan/presensi">Presensi</a></li>
-                  <li><a href="#">Pendaftaran</a></li>
-              </ul>
-          </div>
-          <div class="footer-col">
-              <h4>IKUTI KAMI</h4>
-              <ul>
-                  <li><a href="https://instagram.com/historyclub32jkt" target="_blank">Instagram</a></li>
-              </ul>
-          </div>
-      </div>
-      <div class="footer-bottom">
-          <p style="margin: 0;">© 2025 History Club SMAN 32 Jakarta.</p>
-          <p style="margin: 4px 0 0 0; opacity: 0.8;">
-              Dibuat dan dikembangkan dengan penuh bangga oleh 
-              <a href="https://instagram.com/vitezegi" target="_blank" style="color: #ecec17; text-decoration: none; font-weight: 500;">@vitezegi</a>
-          </p>
-      </div>
-  </footer>
-
   <div id="cam-popup" class="modal-overlay">
       <div class="cam-popup-content">
           <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
@@ -355,17 +290,15 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 
   <script>
-    // ==== UI LOGIC (Menggunakan Components.js) ====
-    // Panggil Navigasi saat halaman dimuat
+    // ==== INIT NAVIGASI ====
     document.addEventListener('DOMContentLoaded', () => {
-        // 'pendaftaran' adalah ID halaman untuk menandai menu aktif
         initHC32Navigation('pendaftaran'); 
     });
 
+    // ==== UI LOGIC (LOADER & POPUP) ====
     const loader = document.getElementById("hc32-loading-overlay");
     const loadingText = document.getElementById("loading-text");
     
-    // Status Modal Elements
     const statusModal = document.getElementById('status-modal');
     const statusTitle = document.getElementById('status-title');
     const statusDesc = document.getElementById('status-desc');
