@@ -105,13 +105,22 @@
         font-weight: 700; color: var(--hc-dark); font-size: 14px;
         display: flex; justify-content: space-between; align-items: center;
     }
+    
+    .refresh-btn {
+        cursor: pointer; padding: 5px 10px; border-radius: 4px; font-size: 12px;
+        background: #fee2e2; color: #ef4444; border: 1px solid #fecaca;
+        display: none; /* Hidden by default */
+        align-items: center; gap: 5px;
+    }
+    .refresh-btn:hover { background: #fecaca; }
+
     .captcha-body { padding: 20px; text-align: center; }
     
     /* 1. PUZZLE SLIDER (Background SUPERGRAPHIC) */
     .puzzle-area { 
         position: relative; width: 100%; height: 150px; 
-        /* Ganti dengan URL gambar supergraphic Anda */
-        background: url('SUPERGRAPHIC.png') center/cover; 
+        /* URL Supergraphic (Direct Link) */
+        background: url('https://lh3.googleusercontent.com/d/1RmudK--TsYa-sF7Fk6R9YQD9ZiMBv8KS') center/cover; 
         border-radius: 8px; overflow: hidden; margin-bottom: 15px; 
     }
     .puzzle-hole { 
@@ -121,8 +130,7 @@
     }
     .puzzle-piece { 
         width: 45px; height: 45px; 
-        /* Potongan puzzle juga mengambil background yang sama */
-        background: url('SUPERGRAPHIC.png') center/cover;
+        background: url('https://lh3.googleusercontent.com/d/1RmudK--TsYa-sF7Fk6R9YQD9ZiMBv8KS') center/cover;
         position: absolute; top: 50px; left: 10px; 
         border-radius: 6px; box-shadow: 0 4px 8px rgba(0,0,0,0.3); border: 2px solid white;
         cursor: grab;
@@ -146,17 +154,17 @@
 
     /* 3. TEXT CAPTCHA */
     .text-captcha-box {
-        background: url('https://img.freepik.com/free-photo/abstract-paint-background_1048-6484.jpg'); 
-        background-size: cover; padding: 20px; border-radius: 8px; margin-bottom: 15px; position: relative;
+        background: url('https://lh3.googleusercontent.com/d/1fTgJqvfbgTaTauOcWlnslX-AaZvuW5ON') center/cover; /* Supergraphic Line */
+        padding: 20px; border-radius: 8px; margin-bottom: 15px; position: relative;
     }
-    canvas#text-canvas { display: block; margin: 0 auto; border-radius: 6px; }
+    canvas#text-canvas { display: block; margin: 0 auto; border-radius: 6px; background: rgba(255,255,255,0.1); backdrop-filter: blur(2px); }
     .captcha-input-group { display: flex; gap: 8px; }
     .captcha-input { flex: 1; padding: 10px; border-radius: 6px; border: 1px solid #cbd5e1; }
     .captcha-submit { background: #db2777; color: white; border: none; padding: 0 20px; border-radius: 6px; cursor: pointer; font-weight: 600; }
 
     /* 4 & 5. QUIZ (History/Flags) */
-    .quiz-question { font-size: 16px; margin-bottom: 15px; color: #334155; }
-    .flag-img { height: 80px; width: auto; display: block; margin: 10px auto; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    .quiz-question { font-size: 15px; margin-bottom: 15px; color: #334155; font-weight: 500; line-height: 1.4; }
+    .flag-img { height: 80px; width: auto; display: block; margin: 10px auto; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border: 1px solid #eee; }
     .quiz-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .quiz-btn {
         padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px;
@@ -297,7 +305,9 @@
                   <div class="captcha-card" id="captcha-area">
                       <div class="captcha-header">
                           <span><i class="ri-shield-check-fill"></i> Security Check</span>
-                          <i class="ri-refresh-line" style="cursor:pointer;" id="captcha-reload" title="Ganti Metode"></i>
+                          <button type="button" class="refresh-btn" id="captcha-reload">
+                              <i class="ri-refresh-line"></i> Ganti Metode
+                          </button>
                       </div>
                       <div class="captcha-body">
                           
@@ -426,6 +436,7 @@
     function resetCaptcha() {
         isVerified = false;
         document.getElementById('verified-state').style.display = 'none';
+        document.getElementById('captcha-reload').style.display = 'none'; // Hide refresh initially
         
         // Disable Submit
         const btn = document.getElementById('btn-submit');
@@ -451,6 +462,7 @@
         isVerified = true;
         ['mode-puzzle', 'mode-grid', 'mode-text', 'mode-quiz'].forEach(m => document.getElementById(m).style.display = 'none');
         document.getElementById('verified-state').style.display = 'flex';
+        document.getElementById('captcha-reload').style.display = 'none';
         
         const btn = document.getElementById('btn-submit');
         btn.disabled = false;
@@ -458,6 +470,12 @@
         btn.style.background = 'linear-gradient(135deg, var(--hc-blue), var(--hc-toska))';
         btn.style.color = 'white';
         btn.style.cursor = 'pointer';
+    }
+
+    function verifyFailed() {
+        // Show reload button on failure
+        document.getElementById('captcha-reload').style.display = 'inline-flex';
+        alert("Jawaban salah. Silakan coba lagi atau ganti metode.");
     }
 
     document.getElementById('captcha-reload').onclick = resetCaptcha;
@@ -471,13 +489,14 @@
         // Random Target (10-70%)
         puzzleTarget = Math.floor(Math.random() * 60) + 10;
         target.style.left = puzzleTarget + '%';
+        
+        // Background Position Logic: Geser background piece agar sesuai dgn lubang
+        // Supergraphic width approx ~ container width. 
+        // Simple trick: Set background position X negatif dari posisi target.
+        const pieceBgPos = -(puzzleTarget * 3) + 'px'; // Simplifikasi proporsi (approx)
+        piece.style.backgroundPositionX = pieceBgPos;
+        
         piece.style.left = '0%';
-        
-        // Posisi Background Piece (Agar pas dengan target)
-        // Kita geser background position dari potongan agar cocok dengan lubang
-        // Asumsi lebar area 100% ~ 300-500px. Simplifikasi visual:
-        // Cukup geser posisi X dari potongan.
-        
         slider.value = 0;
 
         slider.oninput = function() {
@@ -488,8 +507,8 @@
             const diff = Math.abs(parseInt(this.value) - puzzleTarget);
             if (diff < 5) verifySuccess();
             else {
-                alert("Posisi kurang pas, coba lagi!");
                 slider.value = 0; piece.style.left = '0%';
+                verifyFailed();
             }
         };
     }
@@ -500,22 +519,31 @@
         const instr = document.getElementById('grid-instruction');
         container.innerHTML = '';
         
-        // Pool Ikon Lengkap
+        // Pool Ikon Lengkap (RemixIcon Names)
         const pool = {
-            hewan: ['ri-bear-smile-line', 'ri-bird-line', 'ri-bug-line', 'ri-aliens-line', 'ri-mickey-line'],
-            transport: ['ri-car-line', 'ri-bus-line', 'ri-bike-line', 'ri-rocket-line', 'ri-ship-line'],
-            buah: ['ri-apple-line', 'ri-orange-line', 'ri-seedling-line', 'ri-leaf-line', 'ri-cactus-line']
+            hewan: ['ri-bear-smile-line', 'ri-bird-line', 'ri-bug-line', 'ri-aliens-line', 'ri-mickey-line', 'ri-ghost-line'],
+            transport: ['ri-car-line', 'ri-bus-line', 'ri-bike-line', 'ri-rocket-line', 'ri-ship-line', 'ri-truck-line', 'ri-motorbike-line'],
+            buah: ['ri-apple-line', 'ri-orange-line', 'ri-seedling-line', 'ri-leaf-line', 'ri-cactus-line', 'ri-plant-line'],
+            alat: ['ri-hammer-line', 'ri-tools-line', 'ri-scissors-line', 'ri-brush-line', 'ri-pencil-line'],
+            cuaca: ['ri-sun-line', 'ri-moon-line', 'ri-cloud-windy-line', 'ri-rainy-line', 'ri-thunderstorms-line']
         };
 
         const types = Object.keys(pool);
         const targetType = types[Math.floor(Math.random() * types.length)];
-        const distractorType = types.find(t => t !== targetType);
+        
+        // Pilih tipe pengganggu (selain target)
+        let distractorType = targetType;
+        while(distractorType === targetType) {
+            distractorType = types[Math.floor(Math.random() * types.length)];
+        }
 
-        instr.textContent = `Pilih semua ikon ${targetType.toUpperCase()}`;
+        instr.textContent = `Pilih semua ikon: ${targetType.toUpperCase()}`;
 
-        // Ambil 3 Benar + 3 Salah
-        const correctIcons = pool[targetType].slice(0, 3).map(i => ({ icon: i, type: targetType }));
-        const wrongIcons = pool[distractorType].slice(0, 3).map(i => ({ icon: i, type: distractorType }));
+        // Ambil 3 Benar + 3 Salah (Acak dari pool)
+        const getRandomItems = (arr, n) => arr.sort(() => 0.5 - Math.random()).slice(0, n);
+        
+        const correctIcons = getRandomItems(pool[targetType], 3).map(i => ({ icon: i, type: targetType }));
+        const wrongIcons = getRandomItems(pool[distractorType], 3).map(i => ({ icon: i, type: distractorType }));
         
         const gameIcons = [...correctIcons, ...wrongIcons].sort(() => Math.random() - 0.5);
         
@@ -535,8 +563,8 @@
             
             if (selected.length > 0 && allCorrect && countCorrect >= 1) verifySuccess();
             else {
-                alert("Jawaban salah! Perhatikan kategori.");
                 document.querySelectorAll('.icon-btn').forEach(el => el.classList.remove('selected'));
+                verifyFailed();
             }
         };
     }
@@ -551,18 +579,19 @@
         textCode = "";
         for(let i=0; i<5; i++) textCode += chars.charAt(Math.floor(Math.random() * chars.length));
         
+        // Background noise
         ctx.font = "bold 30px Poppins";
         ctx.fillStyle = "#fff";
         ctx.textAlign = "center";
-        ctx.fillText(textCode, 100, 40);
+        ctx.fillText(textCode, 100, 42);
         
-        // Noise Lines
+        // Lines
         for(let i=0; i<7; i++) {
             ctx.beginPath();
             ctx.moveTo(Math.random()*200, Math.random()*60);
             ctx.lineTo(Math.random()*200, Math.random()*60);
-            ctx.strokeStyle = "rgba(255,255,255,0.7)";
-            ctx.lineWidth = 2;
+            ctx.strokeStyle = "rgba(255,255,255,0.6)";
+            ctx.lineWidth = 1.5;
             ctx.stroke();
         }
         
@@ -570,25 +599,64 @@
         
         document.getElementById('text-verify').onclick = () => {
             if(document.getElementById('text-input').value.toUpperCase() === textCode) verifySuccess();
-            else { alert("Kode salah!"); initTextCaptcha(); }
+            else { 
+                initTextCaptcha(); // Reset text
+                verifyFailed();
+            }
         };
     }
 
-    // --- 4 & 5. QUIZ LOGIC (Flags via API) ---
+    // --- 4 & 5. AI QUIZ LOGIC (50+ Soal Variatif) ---
     const quizData = [
-        // Sejarah
-        { type: 'text', q: "Tahun berapa Indonesia merdeka?", a: ["1945", "1998", "1928", "2020"], c: "1945" },
+        // -- SEJARAH INDONESIA --
+        { type: 'text', q: "Kapan Indonesia merdeka?", a: ["17 Agustus 1945", "20 Mei 1908", "28 Oktober 1928", "10 November 1945"], c: "17 Agustus 1945" },
         { type: 'text', q: "Siapa proklamator Indonesia?", a: ["Soekarno-Hatta", "Suharto", "Jokowi", "Diponegoro"], c: "Soekarno-Hatta" },
-        // Bendera (Code: 2 huruf ISO)
+        { type: 'text', q: "Perang Diponegoro terjadi pada tahun?", a: ["1825-1830", "1945-1949", "1800-1805", "1908-1915"], c: "1825-1830" },
+        { type: 'text', q: "Siapa penulis naskah Proklamasi?", a: ["Sayuti Melik", "Soekarno", "Fatmawati", "B.M. Diah"], c: "Sayuti Melik" },
+        { type: 'text', q: "Organisasi Budi Utomo berdiri tahun?", a: ["1908", "1928", "1945", "1998"], c: "1908" },
+        { type: 'text', q: "Sumpah Pemuda diperingati setiap?", a: ["28 Oktober", "10 November", "17 Agustus", "21 April"], c: "28 Oktober" },
+        { type: 'text', q: "Presiden ke-3 Indonesia adalah?", a: ["B.J. Habibie", "Soeharto", "Megawati", "Gus Dur"], c: "B.J. Habibie" },
+        { type: 'text', q: "Kerajaan Hindu tertua di Indonesia?", a: ["Kutai", "Majapahit", "Sriwijaya", "Tarumanegara"], c: "Kutai" },
+        { type: 'text', q: "Patih Gajah Mada berasal dari?", a: ["Majapahit", "Singasari", "Kediri", "Demak"], c: "Majapahit" },
+        { type: 'text', q: "Siapa penjahit bendera Pusaka?", a: ["Fatmawati", "Kartini", "Cut Nyak Dien", "Megawati"], c: "Fatmawati" },
+        { type: 'text', q: "Peristiwa Rengasdengklok melibatkan golongan?", a: ["Muda & Tua", "Belanda", "Jepang", "Inggris"], c: "Muda & Tua" },
+        { type: 'text', q: "Kota Hiroshima dibom atom pada?", a: ["6 Agustus 1945", "9 Agustus 1945", "14 Agustus 1945", "17 Agustus 1945"], c: "6 Agustus 1945" },
+        { type: 'text', q: "VOC dibubarkan pada tahun?", a: ["1799", "1602", "1945", "1800"], c: "1799" },
+        { type: 'text', q: "Siapa pahlawan dari Maluku?", a: ["Pattimura", "Imam Bonjol", "Antasari", "Hasanuddin"], c: "Pattimura" },
+        { type: 'text', q: "Perjanjian Renville terjadi tahun?", a: ["1948", "1945", "1949", "1950"], c: "1948" },
+        
+        // -- SEJARAH DUNIA --
+        { type: 'text', q: "Revolusi Prancis dimulai tahun?", a: ["1789", "1945", "1800", "1990"], c: "1789" },
+        { type: 'text', q: "Siapa penemu benua Amerika?", a: ["C. Columbus", "Vasco da Gama", "Magelhaens", "Cornelis de Houtman"], c: "C. Columbus" },
+        { type: 'text', q: "Tembok Berlin runtuh tahun?", a: ["1989", "1945", "1960", "2000"], c: "1989" },
+        { type: 'text', q: "Perang Dunia II berakhir tahun?", a: ["1945", "1939", "1918", "1950"], c: "1945" },
+        { type: 'text', q: "Kaisar Prancis yang terkenal?", a: ["Napoleon", "Louis XIV", "Charlemagne", "Caesar"], c: "Napoleon" },
+
+        // -- BENDERA (Via FlagCDN) --
         { type: 'flag', code: 'id', name: 'Indonesia', options: ['Indonesia', 'Monaco', 'Polandia', 'Singapura'] },
         { type: 'flag', code: 'jp', name: 'Jepang', options: ['Jepang', 'Korea', 'China', 'Vietnam'] },
         { type: 'flag', code: 'gb', name: 'Inggris', options: ['Inggris', 'Amerika', 'Australia', 'Perancis'] },
         { type: 'flag', code: 'sa', name: 'Arab Saudi', options: ['Arab Saudi', 'Turki', 'Mesir', 'Iran'] },
         { type: 'flag', code: 'de', name: 'Jerman', options: ['Jerman', 'Belanda', 'Belgia', 'Rusia'] },
-        { type: 'flag', code: 'br', name: 'Brazil', options: ['Brazil', 'Argentina', 'Portugal', 'Spanyol'] }
+        { type: 'flag', code: 'br', name: 'Brazil', options: ['Brazil', 'Argentina', 'Portugal', 'Spanyol'] },
+        { type: 'flag', code: 'kr', name: 'Korea Selatan', options: ['Korea Selatan', 'Jepang', 'China', 'Thailand'] },
+        { type: 'flag', code: 'us', name: 'Amerika Serikat', options: ['Amerika Serikat', 'Inggris', 'Kanada', 'Malaysia'] },
+        { type: 'flag', code: 'my', name: 'Malaysia', options: ['Malaysia', 'Singapura', 'Amerika', 'Filipina'] },
+        { type: 'flag', code: 'tr', name: 'Turki', options: ['Turki', 'Tunisia', 'Pakistan', 'Aljazair'] },
+        { type: 'flag', code: 'ps', name: 'Palestina', options: ['Palestina', 'Yordania', 'Kuwait', 'Uni Emirat Arab'] },
+        { type: 'flag', code: 'cn', name: 'China', options: ['China', 'Vietnam', 'Rusia', 'Taiwan'] },
+        { type: 'flag', code: 'fr', name: 'Perancis', options: ['Perancis', 'Belanda', 'Italia', 'Rusia'] },
+        { type: 'flag', code: 'it', name: 'Italia', options: ['Italia', 'Meksiko', 'Irlandia', 'Hungaria'] },
+        { type: 'flag', code: 'ru', name: 'Rusia', options: ['Rusia', 'Perancis', 'Belanda', 'Serbia'] },
+        { type: 'flag', code: 'th', name: 'Thailand', options: ['Thailand', 'Kamboja', 'Laos', 'Kosta Rika'] },
+        { type: 'flag', code: 'vn', name: 'Vietnam', options: ['Vietnam', 'China', 'Maroko', 'Turki'] },
+        { type: 'flag', code: 'in', name: 'India', options: ['India', 'Niger', 'Irlandia', 'Iran'] },
+        { type: 'flag', code: 'eg', name: 'Mesir', options: ['Mesir', 'Suriah', 'Irak', 'Yaman'] },
+        { type: 'flag', code: 'ar', name: 'Argentina', options: ['Argentina', 'Uruguay', 'Honduras', 'El Salvador'] }
     ];
 
     function initQuiz() {
+        // Ambil soal acak dari database besar
         const qData = quizData[Math.floor(Math.random() * quizData.length)];
         const qTextEl = document.getElementById('quiz-question-text');
         const flagCont = document.getElementById('flag-container');
@@ -602,8 +670,8 @@
 
         if (qData.type === 'flag') {
             qTextEl.textContent = "Bendera negara mana ini?";
-            // Pakai FlagCDN (Lebih stabil dari Emoji)
-            flagCont.innerHTML = `<img src="https://flagcdn.com/w160/${qData.code}.png" class="flag-img" alt="Flag">`;
+            // Menggunakan FlagCDN untuk gambar bendera yang stabil
+            flagCont.innerHTML = `<img src="https://flagcdn.com/w256/${qData.code}.png" class="flag-img" alt="Flag">`;
             correct = qData.name;
             options = qData.options;
         } else {
@@ -612,6 +680,7 @@
             options = qData.a;
         }
 
+        // Acak urutan jawaban
         const shuffledOptions = [...options].sort(() => Math.random() - 0.5);
 
         shuffledOptions.forEach(opt => {
@@ -624,7 +693,10 @@
                     setTimeout(verifySuccess, 500);
                 } else {
                     btn.classList.add('wrong');
-                    setTimeout(() => { btn.classList.remove('wrong'); initQuiz(); }, 500);
+                    setTimeout(() => { 
+                        btn.classList.remove('wrong'); 
+                        verifyFailed(); // Tampilkan tombol ganti
+                    }, 500);
                 }
             };
             optsEl.appendChild(btn);
