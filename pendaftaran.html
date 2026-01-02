@@ -15,14 +15,14 @@
   <script src="components.js"></script>
   
   <style>
-    /* Styling Dasar Sesuai Pedoman Identitas Visual */
+    /* === Styling Spesifik Halaman Pendaftaran === */
     :root {
-        --hc-blue: #1a4787;   /* Warna Utama 1 */
-        --hc-toska: #0f8a94;  /* Warna Utama 2 */
-        --hc-dark: #2e2e2e;   /* Warna Pendamping */
+        --hc-blue: #1a4787;
+        --hc-toska: #0f8a94;
+        --hc-dark: #2e2e2e;
         --hc-green: #15a256; 
-        --hc-red: #d30e14;    /* Warna Alert */
-        --hc-yellow: #ecec17; /* Warna Aksen */
+        --hc-red: #d30e14;
+        --hc-yellow: #ecec17;
         --hc-bg: #f8fafc;
         --card-shadow: 0 8px 30px rgba(26, 71, 135, 0.08);
     }
@@ -51,40 +51,20 @@
     .note { font-size: 12px; color: #64748b; margin-top: 6px; }
     .legend { font-size: 12px; color: #64748b; margin-top: 20px; border-top: 1px solid #e2e8f0; padding-top: 10px; text-align: right; font-style: italic; }
 
-    /* Buttons Main */
+    /* Buttons */
     button[type="submit"] { width: 100%; background: linear-gradient(135deg, var(--hc-blue), var(--hc-toska)); color: #fff; border: none; padding: 16px; border-radius: 10px; font-weight: 600; font-size: 16px; cursor: pointer; margin-top: 10px; box-shadow: 0 4px 15px rgba(15, 138, 148, 0.3); transition: 0.2s; }
     button[type="submit"]:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(15, 138, 148, 0.4); }
     button[type="submit"]:disabled { background: #cbd5e1; cursor: not-allowed; transform: none; box-shadow: none; color: #64748b; }
-
-    /* === TOMBOL KECIL (SHARED STYLE: KAMERA & TTD) === */
-    .btn-small {
-        padding: 10px 20px; border-radius: 10px; font-size: 13px; font-weight: 600;
-        border: 1px solid #e2e8f0; color: var(--hc-dark);
-        background: #fff; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;
-        transition: all 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-    }
-    .btn-small:hover { background: #f8fafc; border-color: #cbd5e1; transform: translateY(-1px); }
-    .btn-small:active { transform: translateY(0); }
-    
-    .btn-small.primary { color: var(--hc-blue); border-color: var(--hc-blue); background: #f0f9ff; }
-    .btn-small.primary:hover { background: var(--hc-blue); color: #fff; }
-    
-    .btn-small.danger { color: var(--hc-red); border-color: #fecaca; background: #fef2f2; }
-    .btn-small.danger:hover { background: var(--hc-red); color: #fff; border-color: var(--hc-red); }
 
     /* === UI FOTO UTAMA === */
     .photo-area { border: 2px dashed var(--hc-toska); border-radius: 16px; padding: 24px; text-align: center; background: #f0f9fa; position: relative; }
     #foto-preview-container { width: 150px; height: 150px; margin: 0 auto 16px; border-radius: 50%; overflow: hidden; border: 4px solid #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.1); background: #e2e8f0; display: none; position: relative; }
     #foto-preview-img { width: 100%; height: 100%; object-fit: cover; }
     
-    .photo-btn-group { display: flex; gap: 12px; justify-content: center; margin-top: 15px; }
-
-    /* === SIGNATURE (STYLE SERAGAM) === */
-    .sig-wrapper { height: 180px; border: 1px solid #cbd5e1; border-radius: 10px; position: relative; background: #fff; overflow: hidden; }
-    canvas#sig-canvas { width: 100%; height: 100%; display: block; }
+    .btn-main-camera { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: white; border: 1px solid var(--hc-blue); color: var(--hc-blue); padding: 12px 24px; border-radius: 50px; font-weight: 600; font-size: 14px; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+    .btn-main-camera:hover { background: var(--hc-blue); color: white; }
     
-    .sig-tools { position: absolute; top: 10px; right: 10px; z-index: 10; display: flex; gap: 8px; }
-    /* Tombol Undo & Ulangi menggunakan class .btn-small agar sama dengan kamera */
+    .btn-delete-photo { background: #fee2e2; color: #ef4444; border: none; margin-top: 10px; padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; display: none; }
 
     /* === WINDOWED CAMERA MODAL === */
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2500; display: none; align-items: center; justify-content: center; padding: 20px; }
@@ -109,8 +89,37 @@
     .btn-modal.cancel { background: #334155; color: white; }
     .btn-modal.confirm { background: var(--hc-blue); color: white; }
 
+    /* === SIGNATURE (Dengan Fix Touch-Action) === */
+    .sig-wrapper { 
+        height: 180px; border: 1px solid #cbd5e1; border-radius: 10px; 
+        position: relative; background: #fff; overflow: hidden; 
+    }
+    
+    /* PENTING: Mencegah scroll saat tanda tangan agar garis tidak putus */
+    canvas#sig-canvas { 
+        width: 100%; height: 100%; display: block; 
+        touch-action: none; /* <-- FIX UTAMA UTK GARIS PUTUS */
+    }
+    
+    .sig-tools { position: absolute; top: 10px; right: 10px; z-index: 10; display: flex; gap: 8px; }
+    
+    /* Style Tombol Signature (Seragam dengan Kamera) */
+    .sig-btn { 
+        padding: 8px 16px; font-size: 12px; border: none; border-radius: 50px; cursor: pointer; 
+        display: flex; align-items: center; gap: 6px; font-weight: 600; font-family: 'Poppins', sans-serif;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: all 0.2s;
+    }
+    .sig-btn:active { transform: scale(0.95); }
+    
+    /* Warna Tombol Signature */
+    .sig-btn-undo { background: #e0f2fe; color: #0284c7; border: 1px solid #bae6fd; }
+    .sig-btn-undo:hover { background: #bae6fd; }
+    
+    .sig-btn-clear { background: #fee2e2; color: #ef4444; border: 1px solid #fecaca; }
+    .sig-btn-clear:hover { background: #fecaca; }
+
     /* =========================================
-       SECURITY CHECK STYLES (4 MODELS AI)
+       SECURITY CHECK STYLES (4 MODELS AI - NO FLAGS)
        ========================================= */
     .captcha-card { margin: 30px 0 20px; background: #fff; border-radius: 12px; border: 1px solid #cbd5e1; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
     .captcha-header { background: linear-gradient(to right, #f8fafc, #fff); padding: 12px 20px; border-bottom: 1px solid #e2e8f0; font-weight: 700; color: var(--hc-dark); font-size: 14px; display: flex; justify-content: space-between; align-items: center; }
@@ -120,7 +129,6 @@
 
     .captcha-body { padding: 20px; text-align: center; }
     
-    /* INLINE ERROR MESSAGE */
     .captcha-error {
         color: #dc2626; font-size: 13px; font-weight: 600; margin-top: 10px;
         background: #fef2f2; padding: 10px; border-radius: 8px; border: 1px solid #fee2e2;
@@ -274,7 +282,7 @@
                   </div>
                   
                   <div id="group-lulus" class="row hidden">
-                      <label>Tahun Lulus <span id="star-lulus" class="req-star">*</span></label>
+                      <label id="label-lulus">Tahun Lulus</label>
                       <input id="fd-thn-lulus" type="number" placeholder="YYYY" />
                   </div>
 
@@ -292,22 +300,16 @@
                               <img id="foto-preview-img" src="" alt="Preview">
                           </div>
                           
-                          <div class="photo-btn-group" id="photo-buttons">
-                              <button type="button" class="btn-small primary" id="btn-open-cam">
-                                  <i class="ri-camera-fill"></i> Kamera
-                              </button>
-                              <button type="button" class="btn-small primary" id="btn-open-file">
-                                  <i class="ri-folder-open-fill"></i> Upload
-                              </button>
-                          </div>
+                          <button type="button" class="btn-main-camera" id="btn-open-camera-ui">
+                              <i class="ri-camera-fill"></i> Aktifkan Kamera
+                          </button>
                           
-                          <div style="display:flex; justify-content:center; margin-top:10px;">
-                              <button type="button" class="btn-small danger hidden" id="btn-hapus-foto">
+                          <div style="display:flex; justify-content:center;">
+                              <button type="button" class="btn-delete-photo" id="btn-hapus-foto">
                                   <i class="ri-delete-bin-line"></i> Hapus Foto
                               </button>
                           </div>
 
-                          <input type="file" id="inp-file-foto" accept="image/*" hidden>
                           <input type="hidden" id="fd-foto-base64">
                       </div>
                   </div>
@@ -317,10 +319,10 @@
                       <div class="sig-wrapper">
                           <canvas id="sig-canvas"></canvas>
                           <div class="sig-tools">
-                              <button type="button" class="btn-small primary" id="sig-undo" title="Undo per garis">
+                              <button type="button" class="sig-btn sig-btn-undo" id="sig-undo" title="Undo per garis">
                                   <i class="ri-arrow-go-back-line"></i> Undo
                               </button>
-                              <button type="button" class="btn-small danger" id="sig-clear" title="Hapus semua">
+                              <button type="button" class="sig-btn sig-btn-clear" id="sig-clear" title="Hapus semua">
                                   <i class="ri-delete-bin-line"></i> Ulangi
                               </button>
                           </div>
@@ -708,7 +710,6 @@
     const btnDeletePhoto = document.getElementById('btn-hapus-foto');
     const previewContainer = document.getElementById('foto-preview-container');
     const previewImg = document.getElementById('foto-preview-img');
-    const photoBtns = document.getElementById('photo-buttons');
     const hiddenBase64 = document.getElementById('fd-foto-base64');
 
     btnOpenCam.addEventListener('click', () => openCameraStream());
@@ -744,7 +745,6 @@
     }
 
     document.getElementById('btn-cam-cancel').addEventListener('click', stopCameraStream);
-    document.getElementById('btn-cam-close').addEventListener('click', stopCameraStream);
     
     document.getElementById('btn-cam-switch').addEventListener('click', () => {
         currentFacingMode = (currentFacingMode === 'user') ? 'environment' : 'user';
@@ -802,8 +802,8 @@
             hiddenBase64.value = finalData;
             previewImg.src = finalData;
             previewContainer.style.display = 'block';
-            photoBtns.classList.add('hidden');
-            btnDeletePhoto.classList.remove('hidden');
+            btnOpenCam.innerHTML = '<i class="ri-camera-fill"></i> Ulangi Foto';
+            btnDeletePhoto.style.display = 'block';
             cropModal.style.display = 'none';
             if(cropper) cropper.destroy();
         }, 'image/jpeg');
@@ -813,8 +813,8 @@
         hiddenBase64.value = '';
         previewImg.src = '';
         previewContainer.style.display = 'none';
-        photoBtns.classList.remove('hidden');
-        btnDeletePhoto.classList.add('hidden');
+        btnDeletePhoto.style.display = 'none';
+        btnOpenCam.innerHTML = '<i class="ri-camera-fill"></i> Aktifkan Kamera';
         document.getElementById('inp-file-foto').value = '';
     });
 
@@ -829,32 +829,43 @@
         [2026, 2027, 2028].forEach(yr => angkatanSelect.add(new Option(yr, yr)));
     }
 
-    tipeSel.addEventListener('change', () => {
-        const v = tipeSel.value;
-        document.querySelectorAll('#group-siswa, #group-jabatan, #group-lulus').forEach(el => el.classList.add('hidden'));
-        
-        // Default Hidden
-        document.getElementById('star-lulus').classList.add('hidden'); // Hide star default
+    // ===== UI LOGIC BARU: TAHUN LULUS OPSIONAL UNTUK GURU =====
+    const grpSiswa = document.getElementById('group-siswa');
+    const grpJab = document.getElementById('group-jabatan');
+    const grpLulus = document.getElementById('group-lulus');
+    const lblLulus = document.getElementById('label-lulus'); // Label Dinamis
 
-        if (v === 'siswa') document.getElementById('group-siswa').classList.remove('hidden');
+    function applyTypeUI() {
+        const v = tipeSel.value;
+        grpSiswa.classList.add('hidden');
+        grpJab.classList.add('hidden');
+        grpLulus.classList.add('hidden');
+
+        if (v === 'siswa') {
+            grpSiswa.classList.remove('hidden');
+        } 
         else if (v === 'guru') {
-            document.getElementById('group-jabatan').classList.remove('hidden');
-            document.getElementById('group-lulus').classList.remove('hidden');
-            // Guru: Tahun Lulus Optional (Star Hidden)
+            grpJab.classList.remove('hidden');
+            grpLulus.classList.remove('hidden');
+            // GURU: Tahun lulus OPSIONAL (Tidak ada bintang)
+            lblLulus.innerHTML = 'Tahun Lulus'; 
         } 
         else if (v === 'alumni') {
-            document.getElementById('group-lulus').classList.remove('hidden');
-            // Alumni: Tahun Lulus Wajib (Show Star)
-            document.getElementById('star-lulus').classList.remove('hidden');
+            grpLulus.classList.remove('hidden');
+            // ALUMNI: Tahun lulus WAJIB (Ada bintang merah)
+            lblLulus.innerHTML = 'Tahun Lulus <span class="req-star">*</span>';
+        } 
+        else { // Lainnya
+            grpJab.classList.remove('hidden');
         }
-        else document.getElementById('group-jabatan').classList.remove('hidden');
-    });
+    }
+    
+    tipeSel.addEventListener('change', applyTypeUI);
 
-    // ==== SIGNATURE (PAUSE DETECTION) ====
+    // ==== SIGNATURE (WITH FIX: TOUCH ACTION) ====
     const sigCanvas = document.getElementById('sig-canvas');
     let signaturePad = new SignaturePad(sigCanvas, { backgroundColor: 'rgba(255,255,255,0)' });
-    let strokeTimer = null;
-
+    
     function resizeSig() {
         const ratio = Math.max(window.devicePixelRatio || 1, 1);
         sigCanvas.width = sigCanvas.offsetWidth * ratio;
@@ -865,29 +876,20 @@
     window.addEventListener('resize', resizeSig);
     
     document.getElementById('sig-clear').addEventListener('click', () => signaturePad.clear());
+    
+    // Fitur Undo
     document.getElementById('sig-undo').addEventListener('click', () => {
         const data = signaturePad.toData();
-        if (data && data.length > 0) { data.pop(); signaturePad.fromData(data); }
+        if (data && data.length > 0) {
+            data.pop(); // Hapus stroke terakhir
+            signaturePad.fromData(data);
+        }
     });
-
-    // Detect Pause Logic
-    function handleStrokePause() {
-        clearTimeout(strokeTimer);
-        strokeTimer = setTimeout(() => {
-            // Force end stroke if paused for 700ms
-            if(signaturePad._mouseButtonDown || signaturePad._touchStart) {
-                signaturePad.endStroke();
-                // Note: The library requires lifting to start new stroke cleanly, 
-                // but ending it here effectively splits the line for Undo purposes.
-            }
-        }, 700);
-    }
-    sigCanvas.addEventListener('mousemove', handleStrokePause);
-    sigCanvas.addEventListener('touchmove', handleStrokePause);
 
     // ==== SUBMIT ====
     document.addEventListener('DOMContentLoaded', () => {
         populateDropdowns();
+        applyTypeUI(); // Jalankan logic UI awal
         resizeSig();
         resetCaptcha(); 
     });
@@ -895,11 +897,14 @@
     document.getElementById('form-daftar').addEventListener('submit', async (e) => {
         e.preventDefault();
         
-        if (!isVerified) { showCaptchaError("Harap selesaikan Security Check."); return; }
-        if(signaturePad.isEmpty()) { showStatusPopup('error', 'Tanda Tangan', 'Wajib diisi.'); return; }
-        if(!hiddenBase64.value) { showStatusPopup('error', 'Foto Profil', 'Wajib upload foto.'); return; }
+        if (!isVerified) { 
+            showCaptchaError("Harap selesaikan Security Check."); 
+            return; 
+        }
+        if(signaturePad.isEmpty()) { showStatus('error', 'Tanda Tangan', 'Wajib diisi.'); return; }
+        if(!hiddenBase64.value) { showStatus('error', 'Foto Profil', 'Wajib upload foto.'); return; }
 
-        showLoader("Mengirim Data...");
+        showLoader("Mengirim Data Pendaftaran...");
         const btn = document.getElementById('btn-submit');
         btn.disabled = true;
 
@@ -907,11 +912,24 @@
             const rawId = document.getElementById('fd-nis').value.trim().replace(/\D+/g, '');
             const tipe = tipeSel.value === 'siswa' ? 'siswa-aktif' : tipeSel.value === 'lain' ? 'non-32' : tipeSel.value;
             
-            // Validation Logic Fix
+            // VALIDASI MANDATORY FIELDS
+            const dataNama = document.getElementById('fd-nama').value.trim();
+            const dataEmail = document.getElementById('fd-email').value.trim();
+            const dataTglLahir = document.getElementById('fd-tgllahir').value;
+            const dataJabatan = document.getElementById('fd-jabatan').value.trim();
             const dataThnLulus = document.getElementById('fd-thn-lulus').value.trim();
+
+            if (!dataEmail) { showStatus('error', 'Email Wajib', 'Mohon isi alamat email Anda.'); btn.disabled = false; hideLoader(); return; }
+            if (!dataTglLahir) { showStatus('error', 'Tanggal Lahir Wajib', 'Mohon isi tanggal lahir Anda.'); btn.disabled = false; hideLoader(); return; }
+            
+            // Validasi Jabatan (Wajib untuk Guru & Lainnya)
+            if ((tipe === 'guru' || tipe === 'non-32') && !dataJabatan) {
+                showStatus('error', 'Jabatan Wajib', 'Mohon isi jabatan Anda.'); btn.disabled = false; hideLoader(); return;
+            }
+            
+            // Validasi Tahun Lulus (HANYA WAJIB UNTUK ALUMNI)
             if (tipe === 'alumni' && !dataThnLulus) {
-                showStatusPopup('error', 'Data Kurang', 'Tahun Lulus wajib untuk Alumni.'); 
-                hideLoader(); btn.disabled = false; return;
+                showStatus('error', 'Tahun Lulus Wajib', 'Mohon isi tahun lulus Anda.'); btn.disabled = false; hideLoader(); return;
             }
 
             let pl = { nis:'', nisn:'', nip:'' };
@@ -927,32 +945,32 @@
 
             const data = {
                 ...pl,
-                nama: document.getElementById('fd-nama').value.trim(),
+                nama: dataNama,
                 tipe: tipe,
                 kelas: tipe === 'siswa-aktif' ? document.getElementById('fd-kelas').value : '',
                 angkatan: tipe === 'siswa-aktif' ? document.getElementById('fd-angkatan').value : '',
                 nohp: document.getElementById('fd-nohp').value.trim(),
-                email: document.getElementById('fd-email').value.trim(),
+                email: dataEmail,
                 fotoBase64: hiddenBase64.value,
-                jabatan: document.getElementById('fd-jabatan').value || '',
+                jabatan: dataJabatan,
                 tahunLulus: dataThnLulus,
-                tanggalLahir: document.getElementById('fd-tgllahir').value,
+                tanggalLahir: dataTglLahir,
                 tandaTangan: signaturePad.toDataURL('image/png')
             };
 
             const res = await hc32_post('pendaftaran', data);
             
             if(res.status === 'ok') {
-                showStatusPopup('success', 'Berhasil', 'Pendaftaran Anda diterima.');
+                showStatus('success', 'Berhasil', 'Pendaftaran Anda diterima.');
                 e.target.reset(); signaturePad.clear(); btnDeletePhoto.click();
-                resetCaptcha();
+                resetCaptcha(); 
             } else if(res.status === 'already') {
-                showStatusPopup('error', 'Gagal', 'Nomor identitas sudah terdaftar.');
+                showStatus('error', 'Gagal', 'Nomor identitas sudah terdaftar.');
             } else {
-                showStatusPopup('error', 'Error', res.message);
+                showStatus('error', 'Error', res.message);
             }
         } catch(err) {
-            showStatusPopup('error', 'Koneksi', err.message);
+            showStatus('error', 'Koneksi', err.message);
         } finally {
             hideLoader();
             btn.disabled = false;
