@@ -147,14 +147,14 @@ function initHC32Navigation(activePageId) {
     styleTag.textContent = HC32_STYLES;
     document.head.appendChild(styleTag);
 
-    // BUILD LOADER HTML (Spinner Baru)
+    // BUILD LOADER HTML (Spinner Baru dengan Link Thumbnail Stabil)
     if (!document.getElementById('hc32-global-overlay')) {
         const overlayHTML = `
             <div id="hc32-global-overlay">
                 <div class="hc-status-card" id="hc32-status-card">
                     <div class="hc-spinner-box" id="hc32-spinner-box">
                         <div class="hc-spinner-ring"></div>
-                        <img src="https://drive.google.com/uc?export=view&id=1uBiuujXrUc6qEhKHnHjvveaAueQxR2IO" class="hc-spinner-logo" alt="HC">
+                        <img src="https://drive.google.com/thumbnail?id=1uBiuujXrUc6qEhKHnHjvveaAueQxR2IO&sz=w200" class="hc-spinner-logo" alt="HC">
                     </div>
                     <div class="hc-status-icon-box" id="hc32-status-icon-box">
                         <i id="hc32-status-icon"></i>
@@ -213,7 +213,7 @@ function initHC32Navigation(activePageId) {
         setTimeout(() => overlay.style.display = 'none', 300);
     };
 
-    // HEADER
+    // HEADER (Link Thumbnail untuk Logo)
     let headerEl = document.querySelector('header.app-header');
     if (!headerEl) {
         headerEl = document.createElement('header');
@@ -222,7 +222,7 @@ function initHC32Navigation(activePageId) {
     }
     headerEl.innerHTML = `
         <div class="header-left">
-            <img src="https://drive.google.com/uc?export=view&id=1uBiuujXrUc6qEhKHnHjvveaAueQxR2IO" alt="History Club" class="header-logo">
+            <img src="https://drive.google.com/thumbnail?id=1uBiuujXrUc6qEhKHnHjvveaAueQxR2IO&sz=w200" alt="History Club" class="header-logo">
         </div>
         <button class="menu-btn" id="hc32-btn-menu" aria-label="Menu"><span></span><span></span><span></span></button>
     `;
@@ -251,7 +251,7 @@ function initHC32Navigation(activePageId) {
     document.body.appendChild(sideOverlay);
     document.body.appendChild(sidebarEl);
 
-    // FOOTER (UPDATED LOGO & SLOGAN & CREDIT)
+    // FOOTER (Link Thumbnail Stabil)
     let footerEl = document.querySelector('footer.site-footer');
     if (!footerEl) {
         footerEl = document.createElement('footer');
@@ -262,8 +262,8 @@ function initHC32Navigation(activePageId) {
     footerEl.innerHTML = `
       <div class="footer-content">
           <div class="footer-brand">
-              <img src="https://drive.google.com/uc?export=view&id=1uBiuujXrUc6qEhKHnHjvveaAueQxR2IO" alt="HC Logo" class="f-logo">
-              <img src="https://drive.google.com/uc?export=view&id=1kNumtFhyzrMmiwbQf_Xu7LWPhXMz2wHj" alt="History Victory" class="f-slogan">
+              <img src="https://drive.google.com/thumbnail?id=1uBiuujXrUc6qEhKHnHjvveaAueQxR2IO&sz=w400" alt="HC Logo" class="f-logo">
+              <img src="https://drive.google.com/thumbnail?id=1kNumtFhyzrMmiwbQf_Xu7LWPhXMz2wHj&sz=w600" alt="History Victory" class="f-slogan">
           </div>
           <div class="footer-col">
               <h4>PROFIL</h4>
