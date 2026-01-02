@@ -1,6 +1,6 @@
 /**
  * HISTORY CLUB 32 - SHARED UI COMPONENTS
- * (Header, Sidebar, Footer, Global Loader & Status)
+ * (Header, Sidebar, Footer, Global Loader & Status System)
  */
 
 // === KONFIGURASI MENU SIDEBAR ===
@@ -45,7 +45,7 @@ const HC32_STYLES = `
     }
     #hc32-global-overlay.active .hc-status-card { transform: scale(1); opacity: 1; }
 
-    /* NEW SPINNER DESIGN (Logo inside Ring) */
+    /* === NEW SPINNER DESIGN (Logo inside Ring) === */
     .hc-spinner-box {
         position: relative; width: 80px; height: 80px; margin: 0 auto 20px;
     }
@@ -66,7 +66,7 @@ const HC32_STYLES = `
     .hc-status-icon-box {
         width: 80px; height: 80px; margin: 0 auto 20px; border-radius: 50%;
         display: flex; align-items: center; justify-content: center;
-        font-size: 40px; display: none; /* Hidden by default (shown for non-loading) */
+        font-size: 40px; display: none; /* Hidden by default */
     }
     
     .state-success .hc-status-icon-box { display: flex; background: #dcfce7; color: var(--hc-green); border: 4px solid #bbf7d0; animation: popIn 0.4s; }
@@ -87,13 +87,15 @@ const HC32_STYLES = `
     @keyframes popIn { 0%{transform:scale(0)} 80%{transform:scale(1.1)} 100%{transform:scale(1)} }
     @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-5px)} 75%{transform:translateX(5px)} }
 
-    /* HEADER & SIDEBAR (Standard) */
+    /* HEADER & SIDEBAR */
     .app-header {
         position: sticky; top: 0; left: 0; right: 0; height: 60px; background: #fff; 
         display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
         box-shadow: 0 2px 10px rgba(0,0,0,0.05); z-index: 1000; border-bottom: 3px solid var(--hc-yellow); 
     }
+    /* Logo Header pakai yang lama atau bisa diganti juga */
     .header-logo { height: 32px; width: auto; object-fit: contain; }
+    
     .menu-btn { background: none; border: none; cursor: pointer; display: flex; flex-direction: column; gap: 5px; padding: 5px; }
     .menu-btn span { display: block; width: 24px; height: 3px; background-color: var(--hc-blue); border-radius: 2px; }
 
@@ -119,8 +121,8 @@ const HC32_STYLES = `
     .site-footer { background-color: #0f172a; color: #fff; padding: 50px 20px 30px; margin-top: auto; font-family: 'Poppins', sans-serif; }
     .footer-content { max-width: 1100px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 30px; text-align: left; }
     .footer-brand { flex: 1 1 250px; min-width: 200px; }
-    .footer-brand img.f-logo { width: auto; height: 60px; margin-bottom: 15px; }
-    .footer-brand img.f-slogan { width: 180px; height: auto; display: block; opacity: 0.9; }
+    .footer-brand img.f-logo { width: auto; height: 70px; margin-bottom: 15px; } /* Logo Baru */
+    .footer-brand img.f-slogan { width: 200px; height: auto; display: block; opacity: 0.9; } /* Slogan Baru */
     
     .footer-col { flex: 0 1 auto; min-width: 120px; }
     .footer-col h4 { font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; }
@@ -145,7 +147,7 @@ function initHC32Navigation(activePageId) {
     styleTag.textContent = HC32_STYLES;
     document.head.appendChild(styleTag);
 
-    // BUILD LOADER HTML
+    // BUILD LOADER HTML (New Design)
     if (!document.getElementById('hc32-global-overlay')) {
         const overlayHTML = `
             <div id="hc32-global-overlay">
@@ -211,6 +213,10 @@ function initHC32Navigation(activePageId) {
         setTimeout(() => overlay.style.display = 'none', 300);
     };
 
+    // Backward Compatibility
+    window.showHC32Loader = (text) => window.showHC32Status('loading', 'Mohon Tunggu', text);
+    window.hideHC32Loader = window.hideHC32Status;
+
     // HEADER
     let headerEl = document.querySelector('header.app-header');
     if (!headerEl) {
@@ -249,7 +255,7 @@ function initHC32Navigation(activePageId) {
     document.body.appendChild(sideOverlay);
     document.body.appendChild(sidebarEl);
 
-    // FOOTER (UPDATED LOGO & SLOGAN & CREDIT)
+    // FOOTER
     let footerEl = document.querySelector('footer.site-footer');
     if (!footerEl) {
         footerEl = document.createElement('footer');
