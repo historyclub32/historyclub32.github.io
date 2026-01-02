@@ -16,6 +16,13 @@
   
   <style>
     /* Styling Dasar */
+    :root {
+        /* Memastikan variabel warna tersedia jika components.js belum load CSS */
+        --hc-blue: #1a4787; --hc-toska: #0f8a94; --hc-dark: #2e2e2e;
+        --hc-green: #15a256; --hc-red: #d30e14; --hc-bg: #f8fafc;
+        --hc-yellow: #ecec17; --border: #cbd5e1; --card: #ffffff;
+    }
+
     body { font-family: 'Poppins', sans-serif; background-color: #f8fafc; color: #2e2e2e; margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh; }
     .main-wrapper { flex: 1; padding: 40px 20px; }
     .container { max-width: 600px; margin: 0 auto; }
@@ -71,7 +78,7 @@
         cursor: pointer; display: none; /* Hidden default */
     }
 
-    /* === WINDOWED CAMERA MODAL (Sesuai Lampiran) === */
+    /* === WINDOWED CAMERA MODAL (Style Baru) === */
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2500; display: none; align-items: center; justify-content: center; padding: 20px; }
     
     .cam-window-box {
@@ -135,7 +142,14 @@
         display: flex; align-items: center; justify-content: center; gap: 8px;
     }
     .btn-red-action { background: #dc2626; color: white; } /* Tutup Kamera */
-    .btn-gray-action { background: #e2e8f0; color: #475569; } /* Upload File */
+    
+    /* --- TOMBOL KUNING (Pilih File) --- */
+    .btn-yellow-action { 
+        background: var(--hc-yellow); 
+        color: var(--hc-dark); 
+        transition: background 0.2s;
+    }
+    .btn-yellow-action:hover { background: #d4d40d; }
 
     /* Crop Modal */
     #crop-modal .modal-box { background: #1e293b; color: white; }
@@ -291,7 +305,7 @@
               <button class="btn-cam-action btn-red-action" id="btn-cam-cancel">
                   <i class="ri-close-circle-line"></i> Tutup Kamera
               </button>
-              <button class="btn-cam-action btn-gray-action" id="btn-cam-upload">
+              <button class="btn-cam-action btn-yellow-action" id="btn-cam-upload">
                   <i class="ri-folder-open-line"></i> Pilih File
               </button>
               <input type="file" id="inp-file-foto" accept="image/*" hidden>
