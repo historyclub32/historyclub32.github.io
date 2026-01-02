@@ -15,22 +15,26 @@
   <script src="components.js"></script>
   
   <style>
-    /* Styling Dasar Sesuai Pedoman Identitas Visual */
+    /* === Styling Spesifik Halaman Pendaftaran === */
     :root {
-        --hc-blue: #1a4787;   /* Warna Utama 1 */
-        --hc-toska: #0f8a94;  /* Warna Utama 2 */
-        --hc-dark: #2e2e2e;   /* Warna Pendamping */
+        --hc-blue: #1a4787;
+        --hc-toska: #0f8a94;
+        --hc-dark: #2e2e2e;
         --hc-green: #15a256; 
-        --hc-red: #d30e14;    /* Warna Alert */
-        --hc-yellow: #ecec17; /* Warna Aksen */
+        --hc-red: #d30e14;
+        --hc-yellow: #ecec17;
         --hc-bg: #f8fafc;
+        --card-shadow: 0 8px 30px rgba(26, 71, 135, 0.08);
     }
 
     body { font-family: 'Poppins', sans-serif; background-color: #f8fafc; color: #2e2e2e; margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh; }
     .main-wrapper { flex: 1; padding: 40px 20px; }
     .container { max-width: 600px; margin: 0 auto; }
     
-    .card { background: #ffffff; border-radius: 16px; box-shadow: 0 8px 30px rgba(26, 71, 135, 0.08); padding: 30px; border: 1px solid #cbd5e1; }
+    /* Card Container */
+    .card { background: #ffffff; border-radius: 16px; box-shadow: var(--card-shadow); padding: 30px; border: 1px solid #cbd5e1; }
+    
+    /* Banner Header */
     .welcome-banner { background: linear-gradient(135deg, var(--hc-blue) 0%, var(--hc-toska) 100%); color: #fff; padding: 24px; border-radius: 12px; margin-bottom: 28px; text-align: center; }
     .welcome-banner h2 { margin: 0 0 6px; font-size: 24px; font-weight: 700; }
     .welcome-banner p { margin: 0; opacity: 0.9; font-size: 14px; font-weight: 300; }
@@ -38,14 +42,14 @@
     /* Form Elements */
     .row { margin-bottom: 20px; }
     label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; color: #2e2e2e; }
-    .req-star { color: var(--hc-red); margin-left: 2px; } /* Bintang Merah Wajib */
+    .req-star { color: var(--hc-red); margin-left: 2px; font-weight: bold; } /* Bintang Merah Wajib */
     
     input, select { width: 100%; padding: 12px 16px; border: 1px solid #cbd5e1; border-radius: 10px; font-size: 15px; outline: none; background: #fff; box-sizing: border-box; transition: 0.2s; font-family: 'Poppins', sans-serif; }
     input:focus, select:focus { border-color: var(--hc-blue); box-shadow: 0 0 0 3px rgba(26, 71, 135, 0.15); }
     .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
     .hidden { display: none !important; }
     .note { font-size: 12px; color: #64748b; margin-top: 6px; }
-    .legend { font-size: 13px; color: #64748b; margin-top: 20px; border-top: 1px solid #e2e8f0; padding-top: 10px; }
+    .legend { font-size: 12px; color: #64748b; margin-top: 20px; border-top: 1px solid #e2e8f0; padding-top: 10px; text-align: right; font-style: italic; }
 
     /* Buttons */
     button[type="submit"] { width: 100%; background: linear-gradient(135deg, var(--hc-blue), var(--hc-toska)); color: #fff; border: none; padding: 16px; border-radius: 10px; font-weight: 600; font-size: 16px; cursor: pointer; margin-top: 10px; box-shadow: 0 4px 15px rgba(15, 138, 148, 0.3); transition: 0.2s; }
@@ -85,13 +89,27 @@
     .btn-modal.cancel { background: #334155; color: white; }
     .btn-modal.confirm { background: var(--hc-blue); color: white; }
 
-    /* === SIGNATURE (WITH UNDO) === */
+    /* === SIGNATURE (SERAGAM DENGAN TOMBOL KAMERA) === */
     .sig-wrapper { height: 180px; border: 1px solid #cbd5e1; border-radius: 10px; position: relative; background: #fff; overflow: hidden; }
     canvas#sig-canvas { width: 100%; height: 100%; display: block; }
-    .sig-tools { position: absolute; top: 10px; right: 10px; z-index: 10; display: flex; gap: 5px; }
-    .sig-btn { padding: 5px 10px; font-size: 12px; border: none; border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 4px; }
-    .sig-btn-clear { background: #fee2e2; color: #ef4444; }
-    .sig-btn-undo { background: #e0f2fe; color: #0284c7; }
+    
+    .sig-tools { position: absolute; top: 10px; right: 10px; z-index: 10; display: flex; gap: 8px; }
+    
+    /* Tombol Signature didesain ulang agar mirip tombol Kamera */
+    .sig-btn { 
+        padding: 8px 16px; font-size: 12px; border: none; border-radius: 50px; cursor: pointer; 
+        display: flex; align-items: center; gap: 6px; font-weight: 600; font-family: 'Poppins', sans-serif;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: all 0.2s;
+    }
+    .sig-btn:active { transform: scale(0.95); }
+    
+    /* Tombol Undo (Biru Muda seperti secondary action) */
+    .sig-btn-undo { background: #e0f2fe; color: #0284c7; border: 1px solid #bae6fd; }
+    .sig-btn-undo:hover { background: #bae6fd; }
+    
+    /* Tombol Ulangi (Merah Muda seperti delete) */
+    .sig-btn-clear { background: #fee2e2; color: #ef4444; border: 1px solid #fecaca; }
+    .sig-btn-clear:hover { background: #fecaca; }
 
     /* =========================================
        SECURITY CHECK STYLES (4 MODELS AI - NO FLAGS)
@@ -114,7 +132,6 @@
     /* 1. PUZZLE SLIDER (SUPERGRAPHIC) */
     .puzzle-area { 
         position: relative; width: 100%; height: 160px; 
-        /* Supergraphic Direct Link */
         background: url('https://lh3.googleusercontent.com/d/1RmudK--TsYa-sF7Fk6R9YQD9ZiMBv8KS') center/cover; 
         border-radius: 8px; overflow: hidden; margin-bottom: 15px; 
         box-shadow: inset 0 0 20px rgba(0,0,0,0.1);
@@ -159,7 +176,7 @@
     .captcha-input { flex: 1; padding: 10px; border-radius: 6px; border: 1px solid #cbd5e1; }
     .captcha-submit { background: var(--hc-toska); color: white; border: none; padding: 0 20px; border-radius: 6px; cursor: pointer; font-weight: 600; }
 
-    /* 4. QUIZ (History Only - No Flags) */
+    /* 4. QUIZ (History Only) */
     .quiz-question { font-size: 15px; margin-bottom: 15px; color: #334155; font-weight: 500; line-height: 1.4; }
     .quiz-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .quiz-btn {
@@ -812,7 +829,7 @@
         if (v === 'siswa') document.getElementById('group-siswa').classList.remove('hidden');
         else if (v === 'guru') {
             document.getElementById('group-jabatan').classList.remove('hidden');
-            document.getElementById('group-lulus').classList.remove('hidden');
+            document.getElementById('group-lulus').classList.remove('hidden'); // Shown but not strictly required by logic unless needed
         } 
         else if (v === 'alumni') document.getElementById('group-lulus').classList.remove('hidden');
         else document.getElementById('group-jabatan').classList.remove('hidden');
@@ -877,11 +894,11 @@
             if (!dataEmail) { showStatus('error', 'Email Wajib', 'Mohon isi alamat email Anda.'); btn.disabled = false; hideLoader(); return; }
             if (!dataTglLahir) { showStatus('error', 'Tanggal Lahir Wajib', 'Mohon isi tanggal lahir Anda.'); btn.disabled = false; hideLoader(); return; }
             
-            // Validasi Jabatan (Guru/Lainnya)
+            // Validasi Jabatan (Wajib untuk Guru/Lainnya)
             if ((tipe === 'guru' || tipe === 'non-32') && !dataJabatan) {
                 showStatus('error', 'Jabatan Wajib', 'Mohon isi jabatan Anda.'); btn.disabled = false; hideLoader(); return;
             }
-            // Validasi Tahun Lulus (Alumni)
+            // Validasi Tahun Lulus (Wajib HANYA untuk Alumni)
             if (tipe === 'alumni' && !dataThnLulus) {
                 showStatus('error', 'Tahun Lulus Wajib', 'Mohon isi tahun lulus Anda.'); btn.disabled = false; hideLoader(); return;
             }
