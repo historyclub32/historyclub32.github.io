@@ -45,9 +45,7 @@ const HC32_STYLES = `
     }
     #hc32-global-overlay.active .hc-status-card { transform: scale(1); opacity: 1; }
 
-    /* === ANIMASI DASAR (SPINNER & ICONS) === */
-    
-    /* 1. Spinner (Loading) */
+    /* NEW SPINNER DESIGN (Logo inside Ring) */
     .hc-spinner-box {
         position: relative; width: 80px; height: 80px; margin: 0 auto 20px;
     }
@@ -60,21 +58,18 @@ const HC32_STYLES = `
     }
     .hc-spinner-logo {
         position: absolute; inset: 0; margin: auto;
-        width: 45px; height: 45px; object-fit: contain;
+        width: 50px; height: 50px; object-fit: contain;
         border-radius: 50%;
     }
 
-    /* 2. Icon Box (Success/Error) */
+    /* Icon Box for Success/Error */
     .hc-status-icon-box {
         width: 80px; height: 80px; margin: 0 auto 20px; border-radius: 50%;
         display: flex; align-items: center; justify-content: center;
         font-size: 40px; display: none; /* Hidden by default */
     }
     
-    /* Styling Ceklis Hijau */
     .state-success .hc-status-icon-box { display: flex; background: #dcfce7; color: var(--hc-green); border: 4px solid #bbf7d0; animation: popIn 0.4s; }
-    
-    /* Styling X Merah */
     .state-error .hc-status-icon-box { display: flex; background: #fee2e2; color: var(--hc-red); border: 4px solid #fecaca; animation: shake 0.4s; }
     
     /* Text Styles */
@@ -92,7 +87,7 @@ const HC32_STYLES = `
     @keyframes popIn { 0%{transform:scale(0)} 80%{transform:scale(1.1)} 100%{transform:scale(1)} }
     @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-5px)} 75%{transform:translateX(5px)} }
 
-    /* HEADER & SIDEBAR */
+    /* HEADER & SIDEBAR (Standard) */
     .app-header {
         position: sticky; top: 0; left: 0; right: 0; height: 60px; background: #fff; 
         display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
@@ -148,14 +143,14 @@ function initHC32Navigation(activePageId) {
     styleTag.textContent = HC32_STYLES;
     document.head.appendChild(styleTag);
 
-    // BUILD LOADER HTML (Satu-satunya di aplikasi)
+    // BUILD LOADER HTML (Spinner Baru dengan Logo dari link yang diberikan)
     if (!document.getElementById('hc32-global-overlay')) {
         const overlayHTML = `
             <div id="hc32-global-overlay">
                 <div class="hc-status-card" id="hc32-status-card">
                     <div class="hc-spinner-box" id="hc32-spinner-box">
                         <div class="hc-spinner-ring"></div>
-                        <img src="https://drive.google.com/thumbnail?id=1uBiuujXrUc6qEhKHnHjvveaAueQxR2IO&sz=w200" class="hc-spinner-logo" alt="HC">
+                        <img src="https://drive.google.com/thumbnail?id=16VXxbcOF9h5zAzYEo2faAzmgqqhtHLlH&sz=w200" class="hc-spinner-logo" alt="HC">
                     </div>
                     <div class="hc-status-icon-box" id="hc32-status-icon-box">
                         <i id="hc32-status-icon"></i>
@@ -163,20 +158,15 @@ function initHC32Navigation(activePageId) {
                     
                     <div id="hc32-status-title" class="hc-status-title">Memuat...</div>
                     <div id="hc32-status-desc" class="hc-status-desc"></div>
-                    
                     <button id="hc32-status-btn" class="hc-status-btn">Oke</button>
                 </div>
             </div>
         `;
         document.body.insertAdjacentHTML('beforeend', overlayHTML);
-        
-        // PASTI JALAN: Event Listener Tombol Oke
-        document.getElementById('hc32-status-btn').addEventListener('click', () => {
-            window.hideHC32Status();
-        });
+        document.getElementById('hc32-status-btn').addEventListener('click', window.hideHC32Status);
     }
 
-    // FUNGSI GLOBAL
+    // EXPOSE FUNCTIONS
     const overlay = document.getElementById('hc32-global-overlay');
     const card = document.getElementById('hc32-status-card');
     const spinnerBox = document.getElementById('hc32-spinner-box');
@@ -187,10 +177,9 @@ function initHC32Navigation(activePageId) {
     const btn = document.getElementById('hc32-status-btn');
 
     window.showHC32Status = (type, title, message) => {
-        // Reset state
         card.classList.remove('state-success', 'state-error');
         overlay.style.display = 'flex';
-        void overlay.offsetWidth; // Trigger reflow
+        void overlay.offsetWidth; 
         overlay.classList.add('active');
 
         titleEl.textContent = title;
@@ -199,11 +188,11 @@ function initHC32Navigation(activePageId) {
         if (type === 'loading') {
             spinnerBox.style.display = 'block';
             iconBox.style.display = 'none';
-            btn.style.display = 'none'; // Sembunyikan tombol saat loading
+            btn.style.display = 'none';
         } else {
             spinnerBox.style.display = 'none';
             iconBox.style.display = 'flex';
-            btn.style.display = 'block'; // Tampilkan tombol untuk Success/Error
+            btn.style.display = 'block';
             
             if (type === 'success') {
                 card.classList.add('state-success');
