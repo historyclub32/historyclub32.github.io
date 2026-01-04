@@ -147,7 +147,7 @@ function initHC32Navigation(activePageId) {
     styleTag.textContent = HC32_STYLES;
     document.head.appendChild(styleTag);
 
-    // BUILD LOADER HTML (Spinner Baru dengan Logo ID Baru)
+    // BUILD LOADER HTML (Spinner Baru dengan Logo dari User)
     if (!document.getElementById('hc32-global-overlay')) {
         const overlayHTML = `
             <div id="hc32-global-overlay">
