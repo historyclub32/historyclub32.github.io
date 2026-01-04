@@ -30,7 +30,7 @@ const HC32_STYLES = `
         --hc-yellow: #ecec17; --border: #cbd5e1; --card: #ffffff;
     }
     
-    /* GLOBAL OVERLAY (Loader & Status) */
+    /* === GLOBAL OVERLAY (Loader & Status) === */
     #hc32-global-overlay {
         position: fixed; inset: 0; background: rgba(255, 255, 255, 0.95);
         display: none; flex-direction: column; align-items: center; justify-content: center;
@@ -40,12 +40,12 @@ const HC32_STYLES = `
     .hc-status-card {
         background: white; padding: 30px; border-radius: 24px;
         box-shadow: 0 20px 60px rgba(0,0,0,0.15); text-align: center;
-        max-width: 320px; width: 90%; transform: scale(0.9); opacity: 0;
+        max-width: 320px; width: 85%; transform: scale(0.9); opacity: 0;
         transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
     #hc32-global-overlay.active .hc-status-card { transform: scale(1); opacity: 1; }
 
-    /* NEW SPINNER DESIGN (Logo inside Ring) */
+    /* SPINNER (Logo inside Ring) */
     .hc-spinner-box {
         position: relative; width: 80px; height: 80px; margin: 0 auto 20px;
     }
@@ -62,11 +62,11 @@ const HC32_STYLES = `
         border-radius: 50%;
     }
 
-    /* Icon Box for Success/Error */
+    /* STATUS ICONS (Success/Error) */
     .hc-status-icon-box {
         width: 80px; height: 80px; margin: 0 auto 20px; border-radius: 50%;
         display: flex; align-items: center; justify-content: center;
-        font-size: 40px; display: none; /* Hidden by default */
+        font-size: 40px; display: none; 
     }
     
     .state-success .hc-status-icon-box { display: flex; background: #dcfce7; color: var(--hc-green); border: 4px solid #bbf7d0; animation: popIn 0.4s; }
@@ -74,20 +74,22 @@ const HC32_STYLES = `
     
     /* Text Styles */
     .hc-status-title { font-family: 'Poppins', sans-serif; font-size: 18px; font-weight: 700; color: var(--hc-dark); margin-bottom: 8px; }
-    .hc-status-desc { font-family: 'Poppins', sans-serif; font-size: 14px; color: #64748b; line-height: 1.5; margin-bottom: 20px; }
+    .hc-status-desc { font-family: 'Poppins', sans-serif; font-size: 14px; color: #64748b; line-height: 1.5; margin-bottom: 24px; }
     
+    /* TOMBOL OKE (Berubah Warna saat ditekan) */
     .hc-status-btn {
         width: 100%; padding: 14px; border: none; border-radius: 12px;
         background: var(--hc-blue); color: white; font-weight: 600; font-family: 'Poppins', sans-serif;
-        cursor: pointer; transition: 0.2s; display: none; box-shadow: 0 4px 12px rgba(26, 71, 135, 0.2);
+        cursor: pointer; transition: all 0.2s; display: none; box-shadow: 0 4px 12px rgba(26, 71, 135, 0.2);
     }
-    .hc-status-btn:hover { background: var(--hc-toska); transform: translateY(-2px); }
+    .hc-status-btn:hover { background: #153c73; }
+    .hc-status-btn:active { background: var(--hc-toska); transform: scale(0.98); }
 
     @keyframes hcspin { to { transform: rotate(360deg); } }
     @keyframes popIn { 0%{transform:scale(0)} 80%{transform:scale(1.1)} 100%{transform:scale(1)} }
     @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-5px)} 75%{transform:translateX(5px)} }
 
-    /* HEADER & SIDEBAR (Standard) */
+    /* HEADER & SIDEBAR */
     .app-header {
         position: sticky; top: 0; left: 0; right: 0; height: 60px; background: #fff; 
         display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
@@ -147,7 +149,7 @@ function initHC32Navigation(activePageId) {
     styleTag.textContent = HC32_STYLES;
     document.head.appendChild(styleTag);
 
-    // BUILD LOADER HTML (Spinner Baru dengan Logo dari User)
+    // === BUILD GLOBAL LOADER HTML ===
     if (!document.getElementById('hc32-global-overlay')) {
         const overlayHTML = `
             <div id="hc32-global-overlay">
@@ -170,7 +172,7 @@ function initHC32Navigation(activePageId) {
         document.getElementById('hc32-status-btn').addEventListener('click', window.hideHC32Status);
     }
 
-    // EXPOSE FUNCTIONS
+    // === EXPOSE FUNCTIONS ===
     const overlay = document.getElementById('hc32-global-overlay');
     const card = document.getElementById('hc32-status-card');
     const spinnerBox = document.getElementById('hc32-spinner-box');
