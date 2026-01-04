@@ -47,17 +47,19 @@ const HC32_STYLES = `
 
     /* === ANIMASI SPINNER & STATUS (UNIVERSAL) === */
     
-    /* 1. Spinner Box (Logo di Tengah) */
+    /* 1. Spinner Box */
     .hc-spinner-box {
         position: relative; width: 80px; height: 80px; margin: 0 auto 20px;
     }
+    
+    /* Cincin Spinner (Revisi Warna: Base Biru, Spin Toska) */
     .hc-spinner-ring {
         position: absolute; inset: 0; border-radius: 50%;
-        border: 4px solid rgba(26, 71, 135, 0.1);
-        border-top-color: var(--hc-blue);
-        border-right-color: var(--hc-toska);
+        border: 5px solid var(--hc-blue); /* Base Ring: Biru HC */
+        border-top-color: var(--hc-toska); /* Spinner: Toska HC */
         animation: hcspin 1s linear infinite;
     }
+    
     .hc-spinner-logo {
         position: absolute; inset: 0; margin: auto;
         width: 45px; height: 45px; object-fit: contain;
@@ -224,7 +226,7 @@ function initHC32Navigation(activePageId) {
         `;
         document.body.insertAdjacentHTML('beforeend', overlayHTML);
         
-        // 3. BIND EVENT LISTENER (PASTI AMAN KARENA FUNGSI SUDAH ADA)
+        // 3. BIND EVENT LISTENER
         document.getElementById('hc32-status-btn').onclick = window.hideHC32Status;
     }
 
