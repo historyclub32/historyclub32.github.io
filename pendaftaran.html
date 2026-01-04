@@ -39,12 +39,8 @@
     input:focus, select:focus { border-color: var(--hc-blue); box-shadow: 0 0 0 3px rgba(26, 71, 135, 0.15); }
     input:disabled, select:disabled { background-color: #f1f5f9; color: #64748b; cursor: not-allowed; border-color: #e2e8f0; }
     
-    /* ERROR STATE (RED BORDER) */
-    .input-error {
-        border-color: var(--hc-red) !important;
-        box-shadow: 0 0 0 3px rgba(211, 14, 20, 0.1) !important;
-        animation: shakeInput 0.3s;
-    }
+    /* ERROR STATE */
+    .input-error { border-color: var(--hc-red) !important; box-shadow: 0 0 0 3px rgba(211, 14, 20, 0.1) !important; animation: shakeInput 0.3s; }
     @keyframes shakeInput { 0%{transform:translateX(0)} 25%{transform:translateX(-2px)} 75%{transform:translateX(2px)} }
 
     /* Phone Group Style */
@@ -61,23 +57,12 @@
     button[type="submit"]:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(15, 138, 148, 0.4); }
     button[type="submit"]:disabled { background: #cbd5e1; cursor: not-allowed; transform: none; box-shadow: none; color: #64748b; }
 
-    /* INFO CARD BAR (PANDUAN) */
-    .info-card {
-        margin-top: 20px; background: #fff; border-radius: 16px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.05); overflow: hidden;
-        border-left: 4px solid var(--hc-yellow);
-        transition: all 0.3s ease;
-    }
-    .info-header {
-        padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;
-        cursor: pointer; background: #fff;
-    }
+    /* INFO CARD */
+    .info-card { margin-top: 20px; background: #fff; border-radius: 16px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); overflow: hidden; border-left: 4px solid var(--hc-yellow); transition: all 0.3s ease; }
+    .info-header { padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; background: #fff; }
     .info-header:hover { background: #fcfcfc; }
     .info-title { font-weight: 600; font-size: 14px; color: var(--hc-dark); display: flex; align-items: center; gap: 8px; }
-    .info-body {
-        padding: 0 20px 20px; display: none; font-size: 13px; color: #64748b; line-height: 1.6;
-        border-top: 1px solid #f1f5f9;
-    }
+    .info-body { padding: 0 20px 20px; display: none; font-size: 13px; color: #64748b; line-height: 1.6; border-top: 1px solid #f1f5f9; }
     .info-body ul { padding-left: 15px; margin: 10px 0 0; }
     .info-body li { margin-bottom: 8px; text-align: justify; }
     .info-body b { color: var(--hc-blue); }
@@ -86,12 +71,7 @@
     .info-card.open .info-icon { transform: rotate(180deg); }
 
     /* HELP CARD */
-    .help-card {
-        margin-top: 20px; margin-bottom: 10px; background: #fff; border-radius: 16px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.05); padding: 16px 20px;
-        display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 12px;
-        border-left: 4px solid var(--hc-blue);
-    }
+    .help-card { margin-top: 20px; margin-bottom: 10px; background: #fff; border-radius: 16px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); padding: 16px 20px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 12px; border-left: 4px solid var(--hc-blue); }
     @media (min-width: 600px) { .help-card { flex-direction: row; } }
     .help-title { font-weight: 600; font-size: 14px; color: var(--hc-dark); margin: 0; }
     .help-desc { font-size: 12px; color: #64748b; margin: 2px 0 0; }
@@ -99,7 +79,7 @@
     .help-btn { display: inline-flex; align-items: center; gap: 8px; background: var(--hc-blue); color: white; padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 500; text-decoration: none; transition: 0.2s; }
     .help-btn:hover { opacity: 0.9; }
 
-    /* UI FOTO & Modal (Sama seperti sebelumnya) */
+    /* UI FOTO & Modal */
     .photo-area { border: 2px dashed var(--hc-toska); border-radius: 16px; padding: 24px; text-align: center; background: #f0f9fa; position: relative; }
     #foto-preview-container { width: 150px; height: 150px; margin: 0 auto 16px; border-radius: 50%; overflow: hidden; border: 4px solid #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.1); background: #e2e8f0; display: none; position: relative; }
     #foto-preview-img { width: 100%; height: 100%; object-fit: cover; }
@@ -129,7 +109,7 @@
     .sig-btn-undo { background: #e0f2fe; color: #0284c7; border: 1px solid #bae6fd; }
     .sig-btn-clear { background: #fee2e2; color: #ef4444; border: 1px solid #fecaca; }
 
-    /* Security Check & Models */
+    /* Security Check */
     .captcha-card { margin: 30px 0 20px; background: #fff; border-radius: 12px; border: 1px solid #cbd5e1; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
     .captcha-header { background: linear-gradient(to right, #f8fafc, #fff); padding: 12px 20px; border-bottom: 1px solid #e2e8f0; font-weight: 700; color: var(--hc-dark); font-size: 14px; display: flex; justify-content: space-between; align-items: center; }
     .refresh-btn { cursor: pointer; padding: 5px 10px; border-radius: 4px; font-size: 12px; background: #fee2e2; color: #ef4444; border: 1px solid #fecaca; display: none; align-items: center; gap: 5px; }
@@ -140,6 +120,7 @@
     .verified-text { font-weight: 700; font-size: 16px; }
     .status-btn { width: 100%; padding: 12px; border: none; border-radius: 10px; background: linear-gradient(135deg, var(--hc-blue), var(--hc-toska)); color: white; font-weight: 600; margin-top: 15px; cursor: pointer; box-shadow: 0 4px 15px rgba(15, 138, 148, 0.3); transition: transform 0.2s; }
     
+    /* Security Models */
     .puzzle-area { position: relative; width: 100%; height: 160px; background: url('https://drive.google.com/thumbnail?id=1RmudK--TsYa-sF7Fk6R9YQD9ZiMBv8KS&sz=w1000') center/cover; border-radius: 8px; overflow: hidden; margin-bottom: 15px; box-shadow: inset 0 0 20px rgba(0,0,0,0.1); }
     .puzzle-hole { width: 48px; height: 48px; background: rgba(0,0,0,0.5); box-shadow: inset 0 2px 5px rgba(0,0,0,0.8); position: absolute; border-radius: 6px; border: 1px solid rgba(255,255,255,0.4); }
     .puzzle-piece { width: 48px; height: 48px; background: url('https://drive.google.com/thumbnail?id=1RmudK--TsYa-sF7Fk6R9YQD9ZiMBv8KS&sz=w1000') center/cover; position: absolute; left: 10px; border-radius: 6px; box-shadow: 0 4px 8px rgba(0,0,0,0.5); border: 2px solid #fff; cursor: grab; z-index: 10; }
@@ -718,7 +699,7 @@
     document.getElementById('inp-file-foto').addEventListener('change', (e) => {
         if(e.target.files[0]) {
             const file = e.target.files[0];
-            if(file.size > 1.1*1024*1024) { 
+            if(file.size > 1.0*1024*1024) { 
                 window.showHC32Status('error', 'File Besar', 'Maksimal ukuran foto adalah 1 MB.');
                 document.getElementById('inp-file-foto').value = ''; 
                 return; 
