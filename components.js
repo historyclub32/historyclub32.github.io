@@ -119,14 +119,18 @@ const HC32_STYLES = `
     .site-footer { background-color: #0f172a; color: #fff; padding: 50px 20px 30px; margin-top: auto; font-family: 'Poppins', sans-serif; }
     .footer-content { max-width: 1100px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 30px; text-align: left; }
     .footer-brand { flex: 1 1 250px; min-width: 200px; }
+    
+    /* Logo Footer */
     .footer-brand img.f-logo { width: auto; height: 60px; margin-bottom: 15px; }
     .footer-brand img.f-slogan { width: 180px; height: auto; display: block; opacity: 0.9; }
+    
     .footer-col { flex: 0 1 auto; min-width: 120px; }
     .footer-col h4 { font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; }
     .footer-col ul { list-style: none; padding: 0; margin: 0; }
     .footer-col ul li { margin-bottom: 10px; }
     .footer-col ul li a { color: #fff; text-decoration: none; font-size: 13px; font-weight: 500; transition: 0.2s; }
     .footer-col ul li a:hover { color: var(--hc-toska); padding-left: 5px; }
+    
     .footer-bottom { max-width: 1100px; margin: 40px auto 0; padding-top: 20px; border-top: 1px solid #1e293b; text-align: center; font-size: 12px; color: #64748b; }
 
     body { display: flex; flex-direction: column; min-height: 100vh; }
@@ -143,7 +147,7 @@ function initHC32Navigation(activePageId) {
     styleTag.textContent = HC32_STYLES;
     document.head.appendChild(styleTag);
 
-    // BUILD LOADER HTML (Spinner Baru dengan Logo dari link yang diberikan)
+    // BUILD LOADER HTML (Spinner Baru dengan URL Logo Yang Benar)
     if (!document.getElementById('hc32-global-overlay')) {
         const overlayHTML = `
             <div id="hc32-global-overlay">
