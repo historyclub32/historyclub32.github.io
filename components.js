@@ -51,15 +51,12 @@ const HC32_STYLES = `
     .hc-spinner-box {
         position: relative; width: 80px; height: 80px; margin: 0 auto 20px;
     }
-    
-    /* Cincin Spinner (Revisi Warna: Base Biru, Spin Toska) */
     .hc-spinner-ring {
         position: absolute; inset: 0; border-radius: 50%;
-        border: 5px solid var(--hc-blue); /* Base Ring: Biru HC */
-        border-top-color: var(--hc-toska); /* Spinner: Toska HC */
+        border: 5px solid var(--hc-blue);
+        border-top-color: var(--hc-toska);
         animation: hcspin 1s linear infinite;
     }
-    
     .hc-spinner-logo {
         position: absolute; inset: 0; margin: auto;
         width: 45px; height: 45px; object-fit: contain;
@@ -77,7 +74,7 @@ const HC32_STYLES = `
     .state-success .hc-status-icon-box { display: flex; background: #dcfce7; color: var(--hc-green); border: 4px solid #bbf7d0; animation: popIn 0.4s; }
     .state-error .hc-status-icon-box { display: flex; background: #fee2e2; color: var(--hc-red); border: 4px solid #fecaca; animation: shake 0.4s; }
     
-    /* Teks Keterangan */
+    /* Text Styles */
     .hc-status-title { font-family: 'Poppins', sans-serif; font-size: 18px; font-weight: 700; color: var(--hc-dark); margin-bottom: 8px; }
     .hc-status-desc { font-family: 'Poppins', sans-serif; font-size: 14px; color: #64748b; line-height: 1.5; margin-bottom: 20px; }
     
@@ -184,7 +181,10 @@ function initHC32Navigation(activePageId) {
         overlay.classList.add('active');
 
         titleEl.textContent = title;
-        descEl.textContent = message || '';
+        
+        // --- PERBAIKAN UTAMA: Gunakan innerHTML untuk render tag HTML ---
+        descEl.innerHTML = message || ''; 
+        // -----------------------------------------------------------------
 
         if (type === 'loading') {
             spinnerBox.style.display = 'block';
