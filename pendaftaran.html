@@ -39,8 +39,12 @@
     input:focus, select:focus { border-color: var(--hc-blue); box-shadow: 0 0 0 3px rgba(26, 71, 135, 0.15); }
     input:disabled, select:disabled { background-color: #f1f5f9; color: #64748b; cursor: not-allowed; border-color: #e2e8f0; }
     
-    /* ERROR STATE */
-    .input-error { border-color: var(--hc-red) !important; box-shadow: 0 0 0 3px rgba(211, 14, 20, 0.1) !important; animation: shakeInput 0.3s; }
+    /* ERROR STATE (RED BORDER) */
+    .input-error {
+        border-color: var(--hc-red) !important;
+        box-shadow: 0 0 0 3px rgba(211, 14, 20, 0.1) !important;
+        animation: shakeInput 0.3s;
+    }
     @keyframes shakeInput { 0%{transform:translateX(0)} 25%{transform:translateX(-2px)} 75%{transform:translateX(2px)} }
 
     /* Phone Group Style */
@@ -57,22 +61,37 @@
     button[type="submit"]:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(15, 138, 148, 0.4); }
     button[type="submit"]:disabled { background: #cbd5e1; cursor: not-allowed; transform: none; box-shadow: none; color: #64748b; }
 
-    /* INFO CARD (PANDUAN) */
-    .info-card { margin-top: 20px; background: #fff; border-radius: 16px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); overflow: hidden; border-left: 4px solid var(--hc-yellow); transition: all 0.3s ease; }
-    .info-header { padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; background: #fff; }
+    /* INFO CARD BAR */
+    .info-card {
+        margin-top: 20px; background: #fff; border-radius: 16px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05); overflow: hidden;
+        border-left: 4px solid var(--hc-yellow);
+        transition: all 0.3s ease;
+    }
+    .info-header {
+        padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;
+        cursor: pointer; background: #fff;
+    }
     .info-header:hover { background: #fcfcfc; }
     .info-title { font-weight: 600; font-size: 14px; color: var(--hc-dark); display: flex; align-items: center; gap: 8px; }
-    .info-body { padding: 0 20px 20px; display: none; font-size: 13px; color: #64748b; line-height: 1.6; border-top: 1px solid #f1f5f9; }
+    .info-body {
+        padding: 0 20px 20px; display: none; font-size: 13px; color: #64748b; line-height: 1.6;
+        border-top: 1px solid #f1f5f9;
+    }
     .info-body ul { padding-left: 15px; margin: 10px 0 0; }
     .info-body li { margin-bottom: 8px; text-align: justify; }
-    /* FIXED: Strong Bold Color for Mobile */
     .info-body b, .info-body strong { color: var(--hc-blue); font-weight: 700; }
     .info-icon { transition: transform 0.3s; }
     .info-card.open .info-body { display: block; }
     .info-card.open .info-icon { transform: rotate(180deg); }
 
     /* HELP CARD */
-    .help-card { margin-top: 20px; margin-bottom: 10px; background: #fff; border-radius: 16px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); padding: 16px 20px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 12px; border-left: 4px solid var(--hc-blue); }
+    .help-card {
+        margin-top: 20px; margin-bottom: 10px; background: #fff; border-radius: 16px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05); padding: 16px 20px;
+        display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 12px;
+        border-left: 4px solid var(--hc-blue);
+    }
     @media (min-width: 600px) { .help-card { flex-direction: row; } }
     .help-title { font-weight: 600; font-size: 14px; color: var(--hc-dark); margin: 0; }
     .help-desc { font-size: 12px; color: #64748b; margin: 2px 0 0; }
@@ -101,14 +120,12 @@
     .btn-shutter-cam::after { content: ''; position: absolute; inset: 2px; border-radius: 50%; border: 2px solid #2e2e2e; }
     .btn-switch-cam { width: 50px; height: 50px; border-radius: 50%; background-color: #1a4787; color: white; border: none; font-size: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 10px rgba(26, 71, 135, 0.4); }
 
-    /* Crop Modal (Tombol Baru: Merah & Biru) */
+    /* Crop Modal */
     #crop-modal .modal-box { background: #1e293b; color: white; width: 90%; max-width: 400px; border-radius: 16px; padding: 20px; }
     .crop-actions { display: flex; gap: 10px; margin-top: 20px; }
     .btn-modal { flex: 1; padding: 12px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; }
-    /* BATAL = MERAH */
-    .btn-modal.cancel { background: var(--hc-red); color: white; } 
-    /* SIMPAN = TOSKA */
-    .btn-modal.confirm { background: var(--hc-toska); color: white; }
+    .btn-modal.cancel { background: var(--hc-red); color: white; }
+    .btn-modal.confirm { background: var(--hc-blue); color: white; }
 
     /* Signature */
     .sig-wrapper { height: 180px; border: 1px solid #cbd5e1; border-radius: 10px; position: relative; background: #fff; overflow: hidden; }
@@ -151,6 +168,8 @@
     .quiz-btn.correct { background: var(--hc-green); color: white; border-color: var(--hc-green); }
     .quiz-btn.wrong { background: var(--hc-red); color: white; border-color: var(--hc-red); animation: shake 0.3s; }
 
+    /* Modal OK Button */
+    .modal-ok-btn { width: 100%; padding: 12px; border: none; border-radius: 10px; background: var(--hc-blue); color: white; font-weight: 600; margin-top: 15px; cursor: pointer; }
     /* Status Modal Styles */
     .status-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 4000; display: none; align-items: center; justify-content: center; }
     .status-modal-box { background: white; padding: 30px; border-radius: 20px; width: 90%; max-width: 320px; text-align: center; }
@@ -725,11 +744,9 @@
 
     document.getElementById('btn-cam-upload').addEventListener('click', () => document.getElementById('inp-file-foto').click());
     
-    // FIXED: TOMBOL OKE POPUP FILE BESAR
     document.getElementById('inp-file-foto').addEventListener('change', (e) => {
         if(e.target.files[0]) {
             const file = e.target.files[0];
-            // 1.0 MB Limit
             if(file.size > 1.0*1024*1024) { 
                 window.showHC32Status('error', 'File Besar', 'Maksimal ukuran foto adalah 1 MB.');
                 document.getElementById('inp-file-foto').value = ''; 
@@ -848,7 +865,24 @@
                 window.showHC32Status('success', 'Berhasil!', 'Pendaftaran diterima.');
                 e.target.reset(); sigPad.clear(); document.querySelector('.btn-delete-photo').click(); resetCaptcha();
             } else if(res.status === 'already') {
-                window.showHC32Status('error', 'Gagal', 'Nomor identitas sudah terdaftar.');
+                // LOGIKA DETEKSI DUPLIKAT SPESIFIK
+                let msgRaw = (res.message || "").toLowerCase();
+                let duplicates = [];
+                if (msgRaw.includes('identitas') || msgRaw.includes('nis') || msgRaw.includes('nip')) duplicates.push("No. Identitas");
+                if (msgRaw.includes('nama')) duplicates.push("Nama Lengkap");
+                if (msgRaw.includes('hp') || msgRaw.includes('wa') || msgRaw.includes('telepon')) duplicates.push("No. HP (WA)");
+                if (msgRaw.includes('email')) duplicates.push("Email");
+
+                let finalTitle = "Data Terdaftar";
+                let finalMsg = "Data yang Anda masukkan sudah ada di sistem.";
+
+                if (duplicates.length > 0) {
+                    finalMsg = "Data berikut sudah terdaftar: <br><b>" + duplicates.join(", ") + "</b>";
+                } else if (msgRaw.length > 0) {
+                    finalMsg = res.message;
+                }
+
+                window.showHC32Status('error', finalTitle, finalMsg);
             } else {
                 window.showHC32Status('error', 'Error', res.message);
             }
