@@ -1,18 +1,13 @@
 /**
  * HISTORY CLUB 32 - SHARED UI COMPONENTS
  * (Header, Sidebar, Footer, Global Loader & Status System)
- * Updated to match GitHub structure: historyclub32.github.io
+ * Updated Structure: historyclub32.github.io
  */
 
 // === FUNGSI BANTUAN UNTUK PATH RELATIF ===
-// Mendeteksi kedalaman folder untuk menyesuaikan link href
 function getBasePath() {
     const path = window.location.pathname;
-    // Hitung berapa kali '/' muncul setelah root domain
-    // Asumsi di GitHub Pages: /repo-name/folder/subfolder/index.html
-    // Atau local: /folder/subfolder/index.html
-    
-    // Cara sederhana: Cek posisi file index.html saat ini
+    // Cek kedalaman folder untuk menentukan path root
     if (path.includes('/keanggotaan/pendaftaran/') || 
         path.includes('/keanggotaan/presensi/') || 
         path.includes('/keanggotaan/anggota/') || 
@@ -27,35 +22,34 @@ function getBasePath() {
         path.includes('/bantuan/track/')) {
         return '../../'; // Naik 2 level
     }
-    // Jika di root (index.html utama)
-    return ''; 
+    return ''; // Root
 }
 
 const BASE = getBasePath();
 
-// === KONFIGURASI MENU SIDEBAR LENGKAP ===
+// === KONFIGURASI MENU SIDEBAR (LINK TANPA INDEX.HTML) ===
 const HC32_MENU = [
-    { type: 'link', text: 'Beranda', href: BASE + 'index.html', id: 'beranda' },
+    { type: 'link', text: 'Beranda', href: BASE + './', id: 'beranda' }, // Link ke root
     
     { type: 'category', text: 'Profil' },
-    { type: 'link', text: 'Tentang Kami', href: BASE + 'profil/tentang/index.html', id: 'tentang' },
-    { type: 'link', text: 'Sejarah', href: BASE + 'profil/sejarah/index.html', id: 'sejarah' },
-    { type: 'link', text: 'Kepengurusan', href: BASE + 'profil/kepengurusan/index.html', id: 'kepengurusan' },
+    { type: 'link', text: 'Tentang Kami', href: BASE + 'profil/tentang/', id: 'tentang' },
+    { type: 'link', text: 'Sejarah', href: BASE + 'profil/sejarah/', id: 'sejarah' },
+    { type: 'link', text: 'Kepengurusan', href: BASE + 'profil/kepengurusan/', id: 'kepengurusan' },
     
     { type: 'category', text: 'Aktivitas' },
-    { type: 'link', text: 'Agenda', href: BASE + 'aktivitas/agenda/index.html', id: 'agenda' },
-    { type: 'link', text: 'Kegiatan', href: BASE + 'aktivitas/kegiatan/index.html', id: 'kegiatan' },
-    { type: 'link', text: 'Informasi', href: BASE + 'aktivitas/informasi/index.html', id: 'informasi' },
+    { type: 'link', text: 'Agenda', href: BASE + 'aktivitas/agenda/', id: 'agenda' },
+    { type: 'link', text: 'Kegiatan', href: BASE + 'aktivitas/kegiatan/', id: 'kegiatan' },
+    { type: 'link', text: 'Informasi', href: BASE + 'aktivitas/informasi/', id: 'informasi' },
     
     { type: 'category', text: 'Keanggotaan' },
-    { type: 'link', text: 'Daftar Anggota', href: BASE + 'keanggotaan/anggota/index.html', id: 'anggota' },
-    { type: 'link', text: 'Presensi', href: BASE + 'keanggotaan/presensi/index.html', id: 'presensi' },
-    { type: 'link', text: 'Pendaftaran', href: BASE + 'keanggotaan/pendaftaran/index.html', id: 'pendaftaran' },
-    { type: 'link', text: 'Login Pengurus', href: BASE + 'keanggotaan/login pengurus/index.html', id: 'login' },
+    { type: 'link', text: 'Daftar Anggota', href: BASE + 'keanggotaan/anggota/', id: 'anggota' },
+    { type: 'link', text: 'Presensi', href: BASE + 'keanggotaan/presensi/', id: 'presensi' },
+    { type: 'link', text: 'Pendaftaran', href: BASE + 'keanggotaan/pendaftaran/', id: 'pendaftaran' },
+    { type: 'link', text: 'Login Pengurus', href: BASE + 'keanggotaan/login pengurus/', id: 'login' },
     
-    { type: 'category', text: 'Bantuan' },
-    { type: 'link', text: 'Lacak Status', href: BASE + 'bantuan/track/index.html', id: 'track' },
-    { type: 'link', text: 'FAQ', href: BASE + 'bantuan/faq/index.html', id: 'faq' }
+    { type: 'category', text: 'Bantuan/Layanan' },
+    { type: 'link', text: 'Lacak Status', href: BASE + 'bantuan/track/', id: 'track' },
+    { type: 'link', text: 'FAQ', href: BASE + 'bantuan/faq/', id: 'faq' }
 ];
 
 // === CSS GABUNGAN ===
@@ -69,7 +63,7 @@ const HC32_STYLES = `
         --hc-yellow: #ecec17; --border: #cbd5e1; --card: #ffffff;
     }
     
-    /* GLOBAL OVERLAY (Loader & Status) */
+    /* GLOBAL OVERLAY */
     #hc32-global-overlay {
         position: fixed; inset: 0; background: rgba(255, 255, 255, 0.95);
         display: none; flex-direction: column; align-items: center; justify-content: center;
@@ -84,12 +78,9 @@ const HC32_STYLES = `
     }
     #hc32-global-overlay.active .hc-status-card { transform: scale(1); opacity: 1; }
 
-    /* === ANIMASI SPINNER & STATUS (UNIVERSAL) === */
+    /* === ANIMASI SPINNER & STATUS === */
+    .hc-spinner-box { position: relative; width: 80px; height: 80px; margin: 0 auto 20px; }
     
-    /* 1. Spinner Box */
-    .hc-spinner-box {
-        position: relative; width: 80px; height: 80px; margin: 0 auto 20px;
-    }
     /* Cincin Spinner (Base Biru, Spin Toska) */
     .hc-spinner-ring {
         position: absolute; inset: 0; border-radius: 50%;
@@ -103,7 +94,6 @@ const HC32_STYLES = `
         border-radius: 50%;
     }
 
-    /* 2. Icon Box (Ceklis/Silang) */
     .hc-status-icon-box {
         width: 80px; height: 80px; margin: 0 auto 20px; border-radius: 50%;
         display: flex; align-items: center; justify-content: center;
@@ -112,11 +102,9 @@ const HC32_STYLES = `
     .state-success .hc-status-icon-box { display: flex; background: #dcfce7; color: var(--hc-green); border: 4px solid #bbf7d0; animation: popIn 0.4s; }
     .state-error .hc-status-icon-box { display: flex; background: #fee2e2; color: var(--hc-red); border: 4px solid #fecaca; animation: shake 0.4s; }
     
-    /* Teks Keterangan */
     .hc-status-title { font-family: 'Poppins', sans-serif; font-size: 18px; font-weight: 700; color: var(--hc-dark); margin-bottom: 8px; }
     .hc-status-desc { font-family: 'Poppins', sans-serif; font-size: 14px; color: #64748b; line-height: 1.5; margin-bottom: 20px; }
     
-    /* TOMBOL OKE */
     .hc-status-btn {
         width: 100%; padding: 14px; border: none; border-radius: 12px;
         background: var(--hc-blue); color: white; font-weight: 600; font-family: 'Poppins', sans-serif;
@@ -137,7 +125,9 @@ const HC32_STYLES = `
         display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
         box-shadow: 0 2px 10px rgba(0,0,0,0.05); z-index: 1000; border-bottom: 3px solid var(--hc-yellow); 
     }
-    .header-logo { height: 32px; width: auto; object-fit: contain; }
+    /* Logo Header: Disesuaikan agar proporsional */
+    .header-logo { height: 42px; width: auto; object-fit: contain; }
+    
     .menu-btn { background: none; border: none; cursor: pointer; display: flex; flex-direction: column; gap: 5px; padding: 5px; }
     .menu-btn span { display: block; width: 24px; height: 3px; background-color: var(--hc-blue); border-radius: 2px; }
 
@@ -163,8 +153,11 @@ const HC32_STYLES = `
     .site-footer { background-color: #0f172a; color: #fff; padding: 50px 20px 30px; margin-top: auto; font-family: 'Poppins', sans-serif; }
     .footer-content { max-width: 1100px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 30px; text-align: left; }
     .footer-brand { flex: 1 1 250px; min-width: 200px; }
-    .footer-brand img.f-logo { width: auto; height: 60px; margin-bottom: 15px; }
+    
+    /* Logo Footer: Diperbesar agar seimbang dengan slogan */
+    .footer-brand img.f-logo { width: auto; height: 85px; margin-bottom: 15px; }
     .footer-brand img.f-slogan { width: 180px; height: auto; display: block; opacity: 0.9; }
+    
     .footer-col { flex: 0 1 auto; min-width: 120px; }
     .footer-col h4 { font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; }
     .footer-col ul { list-style: none; padding: 0; margin: 0; }
@@ -207,14 +200,13 @@ function initHC32Navigation(activePageId) {
 
         if (!overlay) return;
 
-        // Reset state
         card.classList.remove('state-success', 'state-error');
         overlay.style.display = 'flex';
         void overlay.offsetWidth; 
         overlay.classList.add('active');
 
         titleEl.textContent = title;
-        descEl.innerHTML = message || ''; // Use innerHTML for <br> support
+        descEl.innerHTML = message || '';
 
         if (type === 'loading') {
             spinnerBox.style.display = 'block';
@@ -254,12 +246,10 @@ function initHC32Navigation(activePageId) {
             </div>
         `;
         document.body.insertAdjacentHTML('beforeend', overlayHTML);
-        
-        // EVENT LISTENER
         document.getElementById('hc32-status-btn').onclick = window.hideHC32Status;
     }
 
-    // HEADER
+    // HEADER (Logo Baru)
     let headerEl = document.querySelector('header.app-header');
     if (!headerEl) {
         headerEl = document.createElement('header');
@@ -268,8 +258,8 @@ function initHC32Navigation(activePageId) {
     }
     headerEl.innerHTML = `
         <div class="header-left">
-            <a href="${BASE}index.html">
-                <img src="https://drive.google.com/thumbnail?id=1uBiuujXrUc6qEhKHnHjvveaAueQxR2IO&sz=w200" alt="History Club" class="header-logo">
+            <a href="${BASE}./">
+                <img src="https://drive.google.com/thumbnail?id=1vq3Lj2j0jNa6DAIyB79nwglKzI1On-1w&sz=w400" alt="History Club" class="header-logo">
             </a>
         </div>
         <button class="menu-btn" id="hc32-btn-menu" aria-label="Menu"><span></span><span></span><span></span></button>
@@ -300,7 +290,7 @@ function initHC32Navigation(activePageId) {
     document.body.appendChild(sideOverlay);
     document.body.appendChild(sidebarEl);
 
-    // FOOTER (DIPERBARUI DENGAN LINK YANG SESUAI)
+    // FOOTER (Update Link & Logo Size)
     let footerEl = document.querySelector('footer.site-footer');
     if (!footerEl) {
         footerEl = document.createElement('footer');
@@ -317,33 +307,33 @@ function initHC32Navigation(activePageId) {
           <div class="footer-col">
               <h4>PROFIL</h4>
               <ul>
-                  <li><a href="${BASE}profil/tentang/index.html">Tentang Kami</a></li>
-                  <li><a href="${BASE}profil/sejarah/index.html">Sejarah</a></li>
-                  <li><a href="${BASE}profil/kepengurusan/index.html">Kepengurusan</a></li>
+                  <li><a href="${BASE}profil/tentang/">Tentang Kami</a></li>
+                  <li><a href="${BASE}profil/sejarah/">Sejarah</a></li>
+                  <li><a href="${BASE}profil/kepengurusan/">Kepengurusan</a></li>
               </ul>
           </div>
           <div class="footer-col">
               <h4>AKTIVITAS</h4>
               <ul>
-                  <li><a href="${BASE}aktivitas/agenda/index.html">Agenda</a></li>
-                  <li><a href="${BASE}aktivitas/kegiatan/index.html">Kegiatan</a></li>
-                  <li><a href="${BASE}aktivitas/informasi/index.html">Informasi</a></li>
+                  <li><a href="${BASE}aktivitas/agenda/">Agenda</a></li>
+                  <li><a href="${BASE}aktivitas/kegiatan/">Kegiatan</a></li>
+                  <li><a href="${BASE}aktivitas/informasi/">Informasi</a></li>
               </ul>
           </div>
           <div class="footer-col">
               <h4>KEANGGOTAAN</h4>
               <ul>
-                  <li><a href="${BASE}keanggotaan/anggota/index.html">Daftar Anggota</a></li>
-                  <li><a href="${BASE}keanggotaan/presensi/index.html">Presensi</a></li>
-                  <li><a href="${BASE}keanggotaan/pendaftaran/index.html">Pendaftaran</a></li>
-                  <li><a href="${BASE}keanggotaan/login pengurus/index.html">Login Pengurus</a></li>
+                  <li><a href="${BASE}keanggotaan/anggota/">Daftar Anggota</a></li>
+                  <li><a href="${BASE}keanggotaan/presensi/">Presensi</a></li>
+                  <li><a href="${BASE}keanggotaan/pendaftaran/">Pendaftaran</a></li>
+                  <li><a href="${BASE}keanggotaan/login pengurus/">Login Pengurus</a></li>
               </ul>
           </div>
           <div class="footer-col">
-              <h4>BANTUAN</h4>
+              <h4>BANTUAN/LAYANAN</h4>
               <ul>
-                  <li><a href="${BASE}bantuan/track/index.html">Lacak Status</a></li>
-                  <li><a href="${BASE}bantuan/faq/index.html">FAQ / Bantuan</a></li>
+                  <li><a href="${BASE}bantuan/track/">Lacak Status</a></li>
+                  <li><a href="${BASE}bantuan/faq/">FAQ</a></li>
                   <li><a href="https://instagram.com/historyclub32jkt" target="_blank">Instagram</a></li>
               </ul>
           </div>
