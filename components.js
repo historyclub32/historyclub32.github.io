@@ -4,6 +4,61 @@
  * Updated Structure: historyclub32.github.io
  */
 
+/* =========================
+   0) SITE ICONS + PWA SETUP
+   ========================= */
+
+// Direct image links (bukan /view) - dari logo yang kamu kirim
+const HC32_ICON_FAVICON_32 = "https://lh3.googleusercontent.com/d/1fo2n6rqQngLG0HiCdGkwPudPJ2Z_JyJt";
+const HC32_ICON_APPLE_180  = "https://lh3.googleusercontent.com/d/1WBrlmXV4v_NqoKBF4nPsGsW772Dcv4AJ";
+
+// manifest.webmanifest & sw.js sudah kamu buat di root repo
+const HC32_MANIFEST_PATH = "/manifest.webmanifest";
+const HC32_SW_PATH       = "/sw.js";
+const HC32_THEME_COLOR   = "#1a4787";
+
+/**
+ * Inject favicon, apple-touch-icon, manifest, theme-color (sekali untuk semua halaman)
+ */
+function hc32EnsureSiteIcons() {
+    const head = document.head;
+
+    const ensure = (tag, attrs) => {
+        const exists = [...head.querySelectorAll(tag)].some(el =>
+            Object.entries(attrs).every(([k, v]) => el.getAttribute(k) === v)
+        );
+        if (exists) return;
+
+        const el = document.createElement(tag);
+        Object.entries(attrs).forEach(([k, v]) => el.setAttribute(k, v));
+        head.appendChild(el);
+    };
+
+    // Favicon tab
+    ensure("link", { rel: "icon", type: "image/png", sizes: "32x32", href: HC32_ICON_FAVICON_32 });
+
+    // iOS icon
+    ensure("link", { rel: "apple-touch-icon", sizes: "180x180", href: HC32_ICON_APPLE_180 });
+
+    // Manifest (berisi icon 192 & 512)
+    ensure("link", { rel: "manifest", href: HC32_MANIFEST_PATH });
+
+    // Theme color (status bar mobile)
+    ensure("meta", { name: "theme-color", content: HC32_THEME_COLOR });
+}
+
+/**
+ * Register service worker supaya bisa "Install" (PWA)
+ */
+function hc32RegisterSW() {
+    if (!("serviceWorker" in navigator)) return;
+
+    window.addEventListener("load", () => {
+        navigator.serviceWorker.register(HC32_SW_PATH).catch(() => {});
+    });
+}
+
+
 // === FUNGSI BANTUAN UNTUK PATH RELATIF ===
 function getBasePath() {
     const path = window.location.pathname;
@@ -176,6 +231,10 @@ const HC32_STYLES = `
 `;
 
 function initHC32Navigation(activePageId) {
+    // ====== NEW: pastikan icon + manifest + sw selalu aktif ======
+    hc32EnsureSiteIcons();
+    hc32RegisterSW();
+
     const styleTag = document.createElement('style');
     styleTag.textContent = HC32_STYLES;
     document.head.appendChild(styleTag);
