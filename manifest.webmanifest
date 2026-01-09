@@ -1,0 +1,23 @@
+{
+  "name": "History Club SMAN 32 Jakarta",
+  "short_name": "HC32",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1a4787",
+  "icons": [
+    {
+      "src": "https://lh3.googleusercontent.com/d/1GcYDEm7LSIDEPkZaKRWZZMmWtwFOupWx",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://lh3.googleusercontent.com/d/17Qb1FjaH74n9TiBC1N7_NELsYNVcj2KL",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
