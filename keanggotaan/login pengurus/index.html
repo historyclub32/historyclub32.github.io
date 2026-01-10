@@ -227,6 +227,34 @@
     }
     .help-btn:hover { opacity: 0.9; }
 
+    /* Modal OTP */
+    .modal-overlay {
+        position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+        display: none; align-items: center; justify-content: center; z-index: 2000;
+        backdrop-filter: blur(3px);
+    }
+    .modal-overlay.active { display: flex; }
+    .modal-card {
+        background: white; width: 90%; max-width: 400px; padding: 25px;
+        border-radius: 16px; position: relative; text-align: center;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        animation: slideUp 0.3s ease-out;
+    }
+    @keyframes slideUp { from {transform: translateY(20px); opacity:0;} to {transform: translateY(0); opacity:1;} }
+    
+    .otp-inputs { display: flex; justify-content: center; gap: 8px; margin: 20px 0; }
+    .otp-input {
+        width: 45px; height: 50px; border: 1px solid #cbd5e1; border-radius: 8px;
+        font-size: 24px; text-align: center; font-weight: bold; color: var(--hc-blue);
+    }
+    .otp-input:focus { border-color: var(--hc-toska); outline: none; box-shadow: 0 0 0 3px rgba(15,138,148,0.1); }
+
+    .link-lupa {
+        font-size: 12px; color: var(--hc-blue); text-decoration: none; 
+        font-weight: 600; float: right; margin-top: 5px; cursor: pointer;
+    }
+    .link-lupa:hover { text-decoration: underline; }
+    
   </style>
 </head>
 <body>
@@ -262,9 +290,11 @@
               <button type="submit" id="login-btn" class="btn-login">Masuk Sekarang</button>
           </form>
 
-          <div class="info-box">
-              Hanya untuk pengurus aktif History Club 32 Jakarta.<br>
-              Jika lupa password, hubungi Ketua.
+          <div class="form-group">
+              <i class="ri-eye-off-line toggle-password" id="toggle-password" title="Lihat Password"></i>
+          </div>
+          <div style="margin-top: -15px; margin-bottom: 20px; text-align: right;">
+              <a href="#" class="link-lupa" onclick="openOtpModal()">Lupa Kata Sandi? / Login OTP</a>
           </div>
       </div>
 
@@ -351,6 +381,140 @@
             window.showHC32Status('error', 'Kesalahan Koneksi', 'Gagal menghubungi server. Periksa internet Anda.');
         }
     });
-  </script>
+
+    // --- OTP SYSTEM ---
+    let currentOtpUser = '';
+
+    function openOtpModal() {
+        document.getElementById('modal-otp-request').classList.add('active');
+        document.getElementById('modal-otp-verify').classList.remove('active');
+        // Prefill jika user sudah mengetik di form login utama
+        const mainUser = document.getElementById('login-username').value;
+        if(mainUser) document.getElementById('otp-username-req').value = mainUser;
+    }
+
+    function closeOtpModal() {
+        document.getElementById('modal-otp-request').classList.remove('active');
+        document.getElementById('modal-otp-verify').classList.remove('active');
+    }
+
+    // Input digit otomatis pindah
+    function digitInput(el, idx) {
+        el.value = el.value.replace(/[^0-9]/g, '');
+        if(el.value.length >= 1) {
+            const next = el.nextElementSibling;
+            if(next) next.focus();
+        }
+    }
+
+    async function requestOtp() {
+        const user = document.getElementById('otp-username-req').value.trim();
+        if(!user) return alert("Masukkan ID Pengurus");
+
+        const btn = document.getElementById('btn-req-otp');
+        btn.innerText = "Mengirim...";
+        btn.disabled = true;
+
+        try {
+            const res = await fetch(API_URL, {
+                method: "POST",
+                body: JSON.stringify({ action: "requestOtpAdmin", username: user })
+            });
+            const out = await res.json();
+            
+            if(out.status === 'ok') {
+                currentOtpUser = user;
+                document.getElementById('otp-email-display').innerText = out.email;
+                document.getElementById('modal-otp-request').classList.remove('active');
+                document.getElementById('modal-otp-verify').classList.add('active');
+                // Clear inputs
+                document.querySelectorAll('.otp-input').forEach(i => i.value = '');
+                document.querySelector('.otp-input').focus();
+            } else {
+                alert(out.message);
+            }
+        } catch(e) {
+            alert("Gagal koneksi: " + e.message);
+        }
+        btn.innerText = "Kirim Kode OTP";
+        btn.disabled = false;
+    }
+
+    async function verifyOtp() {
+        // Gabungkan 6 digit
+        let code = '';
+        document.querySelectorAll('.otp-input').forEach(i => code += i.value);
+        
+        if(code.length < 6) return alert("Masukkan 6 digit kode");
+
+        window.showHC32Status('loading', 'Verifikasi...', 'Memeriksa kode OTP.');
+
+        try {
+             const res = await fetch(API_URL, {
+                method: "POST",
+                body: JSON.stringify({ 
+                    action: "verifyOtpAdmin", 
+                    username: currentOtpUser,
+                    otp: code
+                })
+            });
+            const out = await res.json();
+
+            if (out.status === "ok") {
+                window.showHC32Status('success', 'Verifikasi Berhasil!', 'Mengarahkan ke Dashboard...');
+                
+                // Gunakan DASHBOARD_BASE yang sudah ada
+                const url = new URL(DASHBOARD_BASE);
+                url.searchParams.set("token", out.token);
+                url.searchParams.set("u", out.username);
+                url.searchParams.set("n", out.nama);
+                url.searchParams.set("r", out.role);
+                url.searchParams.set("t", out.tipe || "");
+                url.searchParams.set("j", out.jabatan || "Admin");
+                url.searchParams.set("f", out.foto || "");
+
+                setTimeout(() => {
+                    window.open(url.toString(), "_blank");
+                    window.location.reload(); 
+                }, 1500);
+            } else {
+                window.showHC32Status('error', 'Gagal', out.message);
+            }
+        } catch(e) {
+             window.showHC32Status('error', 'Error', e.message);
+        }
+    }
+  </script
+
+  <div class="modal-overlay" id="modal-otp-request">
+      <div class="modal-card">
+          <button onclick="closeOtpModal()" style="position:absolute; top:15px; right:15px; border:none; background:none; font-size:24px; cursor:pointer;">&times;</button>
+          <h3 style="margin-top:0; color:var(--hc-blue);">Login dengan OTP</h3>
+          <p style="font-size:13px; color:#64748b; margin-bottom:20px;">Masukkan ID Pengurus Anda. Kami akan mengirimkan kode akses ke email yang terdaftar di sistem.</p>
+        
+          <input type="text" id="otp-username-req" class="form-input" placeholder="Masukkan ID Pengurus (NIS/Username)" style="text-align:center; margin-bottom:15px;">
+        
+          <button onclick="requestOtp()" class="btn-login" id="btn-req-otp">Kirim Kode OTP</button>
+      </div>
+   </div>
+
+   <div class="modal-overlay" id="modal-otp-verify">
+       <div class="modal-card">
+           <h3 style="margin-top:0; color:var(--hc-blue);">Verifikasi Kode</h3>
+           <p style="font-size:13px; color:#64748b;">Masukkan 6 digit kode yang dikirim ke <br><strong id="otp-email-display">email</strong></p>
+        
+           <div class="otp-inputs" id="otp-container">
+               <input type="text" class="otp-input" maxlength="1" oninput="digitInput(this,1)">
+               <input type="text" class="otp-input" maxlength="1" oninput="digitInput(this,2)">
+               <input type="text" class="otp-input" maxlength="1" oninput="digitInput(this,3)">
+               <input type="text" class="otp-input" maxlength="1" oninput="digitInput(this,4)">
+               <input type="text" class="otp-input" maxlength="1" oninput="digitInput(this,5)">
+               <input type="text" class="otp-input" maxlength="1" oninput="digitInput(this,6)">
+           </div>
+        
+           <button onclick="verifyOtp()" class="btn-login">Verifikasi & Masuk</button>
+           <p style="font-size:12px; margin-top:15px; cursor:pointer; color:#64748b;" onclick="openOtpModal()">Kirim Ulang Kode?</p>
+       </div>
+   </div> 
 </body>
 </html>
