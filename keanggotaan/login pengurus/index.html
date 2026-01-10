@@ -36,24 +36,27 @@
     .login-wrapper {
         flex: 1;
         display: flex;
-        flex-direction: column; /* Stack vertikal untuk card bantuan */
+        flex-direction: column; /* Stack vertikal */
         align-items: center;
         justify-content: center;
         padding: 20px;
         gap: 20px; /* Jarak antar card */
+        width: 100%;
+        box-sizing: border-box;
     }
 
     /* Kartu Login */
     .login-card {
         background: white;
         width: 100%;
-        max-width: 400px;
+        max-width: 400px; /* Lebar maksimum konsisten */
         border-radius: 24px;
         box-shadow: 0 10px 40px rgba(0,0,0,0.08);
         padding: 40px 30px;
         text-align: center;
         position: relative;
         overflow: hidden;
+        box-sizing: border-box;
     }
 
     /* Hiasan Atas */
@@ -65,24 +68,22 @@
         background: linear-gradient(to right, var(--hc-blue), var(--hc-toska));
     }
 
-    /* Logo Header */
+    /* Logo Header (UPDATED) */
     .login-header-logo {
-        width: 80px;
-        height: 80px;
+        width: auto;
+        max-width: 150px; /* Batas lebar logo agar tidak terlalu besar */
+        height: auto;
         margin: 0 auto 20px;
         display: flex;
         align-items: center;
         justify-content: center;
-        background: #fff;
-        border-radius: 50%;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-        border: 1px solid #f1f5f9;
-        overflow: hidden; /* Agar gambar bulat rapi */
+        /* Hapus background putih & border bulat agar logo transparan menyatu */
     }
     .login-header-logo img {
         width: 100%;
-        height: 100%;
-        object-fit: cover; /* Cover agar penuh */
+        height: auto;
+        object-fit: contain; /* Tampil utuh */
+        display: block;
     }
 
     .login-title {
@@ -130,7 +131,7 @@
         color: #94a3b8;
         font-size: 18px;
         cursor: pointer;
-        padding: 5px; /* Area klik lebih luas */
+        padding: 5px;
     }
     .toggle-password:hover {
         color: var(--hc-blue);
@@ -138,7 +139,7 @@
 
     .form-input {
         width: 100%;
-        padding: 12px 40px 12px 42px; /* Padding kanan ditambah untuk ikon mata */
+        padding: 12px 40px 12px 42px;
         border: 1px solid #cbd5e1;
         border-radius: 12px;
         font-size: 14px;
@@ -184,10 +185,10 @@
         color: #94a3b8;
     }
 
-    /* HELP CARD (Mirip Pendaftaran) */
+    /* HELP CARD (Disamakan Ukurannya) */
     .help-card {
         width: 100%;
-        max-width: 400px;
+        max-width: 400px; /* Sama dengan login card */
         background: #fff; 
         border-radius: 16px;
         box-shadow: 0 2px 5px rgba(0,0,0,0.05); 
@@ -200,7 +201,10 @@
         border-left: 4px solid var(--hc-blue);
         box-sizing: border-box;
     }
-    @media (min-width: 600px) { .help-card { flex-direction: row; } }
+    @media (min-width: 600px) { 
+        .help-card { flex-direction: row; } 
+    }
+    
     .help-title { font-weight: 600; font-size: 14px; color: var(--hc-dark); margin: 0; }
     .help-desc { font-size: 12px; color: #64748b; margin: 2px 0 0; }
     .help-link { color: var(--hc-blue); font-weight: 600; text-decoration: none; }
@@ -227,11 +231,11 @@
       
       <div class="login-card">
           <div class="login-header-logo">
-              <img src="https://drive.google.com/thumbnail?id=1rIKjfE_2G_o1yMNYUk6-hGKzR0hfqwhB&sz=w400" alt="Logo HC">
+              <img src="https://drive.google.com/thumbnail?id=1kb_yesHbnVPtCrjzlWZGD_XXtfQoaLEe&sz=w600" alt="Logo HC">
           </div>
           
           <h2 class="login-title">Login Pengurus</h2>
-          <p class="login-subtitle">Login untuk mengakses Situs Web Pengurus HC 32</p>
+          <p class="login-subtitle">Masuk untuk mengakses Dashboard HC 32</p>
 
           <form id="login-form" onsubmit="event.preventDefault();">
               <div class="form-group">
@@ -286,11 +290,8 @@
     const passwordInput = document.getElementById('login-password');
 
     togglePassword.addEventListener('click', function () {
-        // Toggle tipe input
         const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
         passwordInput.setAttribute('type', type);
-        
-        // Toggle icon mata
         this.classList.toggle('ri-eye-line');
         this.classList.toggle('ri-eye-off-line');
     });
@@ -321,10 +322,8 @@
             const out = await res.json();
 
             if (out.status === "ok") {
-                // Login Berhasil
                 window.showHC32Status('success', 'Login Berhasil!', 'Mengarahkan ke Dashboard...');
                 
-                // Siapkan URL Dashboard
                 const url = new URL(DASHBOARD_BASE);
                 url.searchParams.set("token", out.token);
                 url.searchParams.set("u", out.username);
@@ -334,14 +333,12 @@
                 url.searchParams.set("j", out.jabatan || "Admin");
                 url.searchParams.set("f", out.foto || "");
 
-                // Redirect setelah jeda singkat agar animasi terlihat
                 setTimeout(() => {
                     window.open(url.toString(), "_blank");
-                    window.location.reload(); // Opsional: refresh halaman login agar bersih
+                    window.location.reload(); 
                 }, 1500);
 
             } else {
-                // Login Gagal (Password Salah / User Tidak Ditemukan)
                 window.showHC32Status('error', 'Login Gagal', out.message || 'ID atau Password salah.');
             }
 
