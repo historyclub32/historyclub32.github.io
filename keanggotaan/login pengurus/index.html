@@ -33,7 +33,7 @@
         min-height: 100vh;
     }
 
-    /* Container Utama Login */
+    /* Container Utama */
     .login-wrapper {
         flex: 1;
         display: flex;
@@ -50,7 +50,7 @@
         box-sizing: border-box;
     }
 
-    /* Kartu Login */
+    /* Kartu */
     .login-card {
         background: white;
         border-radius: 16px;
@@ -126,7 +126,7 @@
         color: #94a3b8;
         font-size: 18px;
     }
-    
+
     .toggle-password {
         position: absolute;
         right: 16px;
@@ -136,6 +136,7 @@
         font-size: 18px;
         cursor: pointer;
         padding: 5px;
+        user-select: none;
     }
     .toggle-password:hover {
         color: var(--hc-blue);
@@ -157,7 +158,7 @@
         box-shadow: 0 0 0 3px rgba(26, 71, 135, 0.15);
     }
 
-    /* Tombol Login */
+    /* Tombol */
     .btn-login {
         width: 100%;
         padding: 16px;
@@ -180,47 +181,62 @@
     .btn-login:active {
         transform: scale(0.98);
     }
-
-    /* Info Tambahan */
-    .info-box {
-        margin-top: 30px;
-        padding-top: 20px;
-        border-top: 1px solid #e2e8f0;
-        font-size: 12px;
-        color: #94a3b8;
-        font-style: italic;
+    .btn-login:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
     }
+
+    /* Link */
+    .link-lupa {
+        font-size: 12px; color: var(--hc-blue); text-decoration: none;
+        font-weight: 600; float: right; margin-top: 5px; cursor: pointer;
+    }
+    .link-lupa:hover { text-decoration: underline; }
+
+    .link-back {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 12px;
+        font-size: 12px;
+        color: #64748b;
+        text-decoration: none;
+        font-weight: 600;
+    }
+    .link-back:hover { color: var(--hc-blue); }
 
     /* HELP CARD */
     .help-card {
-        background: #fff; 
+        background: #fff;
         border-radius: 16px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.05); 
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         padding: 16px 20px;
-        display: flex; 
-        flex-direction: column; 
-        align-items: center; 
-        justify-content: space-between; 
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
         gap: 12px;
         border-left: 4px solid var(--hc-blue);
     }
     @media (min-width: 600px) { .help-card { flex-direction: row; } }
-    
+
     .help-title { font-weight: 600; font-size: 14px; color: var(--hc-dark); margin: 0; }
     .help-desc { font-size: 12px; color: #64748b; margin: 2px 0 0; }
     .help-link { color: var(--hc-blue); font-weight: 600; text-decoration: none; }
-    .help-btn { 
-        display: inline-flex; 
-        align-items: center; 
-        gap: 8px; 
-        background: var(--hc-blue); 
-        color: white; 
-        padding: 8px 16px; 
-        border-radius: 8px; 
-        font-size: 13px; 
-        font-weight: 500; 
-        text-decoration: none; 
-        transition: 0.2s; 
+    .help-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--hc-blue);
+        color: white;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: 0.2s;
     }
     .help-btn:hover { opacity: 0.9; }
 
@@ -238,7 +254,7 @@
         animation: slideUp 0.3s ease-out;
     }
     @keyframes slideUp { from {transform: translateY(20px); opacity:0;} to {transform: translateY(0); opacity:1;} }
-    
+
     .otp-inputs { display: flex; justify-content: center; gap: 8px; margin: 20px 0; }
     .otp-input {
         width: 45px; height: 50px; border: 1px solid #cbd5e1; border-radius: 8px;
@@ -246,23 +262,42 @@
     }
     .otp-input:focus { border-color: var(--hc-toska); outline: none; box-shadow: 0 0 0 3px rgba(15,138,148,0.1); }
 
-    .link-lupa {
-        font-size: 12px; color: var(--hc-blue); text-decoration: none; 
-        font-weight: 600; float: right; margin-top: 5px; cursor: pointer;
+    /* UTIL */
+    .hidden { display: none !important; }
+
+    /* Reset mode little info */
+    .reset-info {
+      margin: 10px 0 18px;
+      padding: 12px 14px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      text-align: left;
+      font-size: 12px;
+      color: #475569;
     }
-    .link-lupa:hover { text-decoration: underline; }
-    
+    .reset-info strong { color: var(--hc-dark); }
+    .small-note {
+      margin: 10px 0 0;
+      font-size: 12px;
+      color: #94a3b8;
+      font-style: italic;
+      text-align: left;
+    }
   </style>
 </head>
 <body>
 
   <div class="login-wrapper">
-      
-      <div class="login-card">
+
+      <!-- =========================
+           CARD: LOGIN (DEFAULT)
+           ========================= -->
+      <div class="login-card" id="card-login">
           <div class="login-header-logo">
               <img src="https://drive.google.com/thumbnail?id=1kb_yesHbnVPtCrjzlWZGD_XXtfQoaLEe&sz=w600" alt="History Club 32">
           </div>
-          
+
           <h2 class="login-title">Login Pengurus</h2>
           <p class="login-subtitle">Masuk untuk mengakses Dashboard HC 32</p>
 
@@ -292,7 +327,54 @@
           </div>
       </div>
 
-      <div class="help-card">
+      <!-- =========================
+           CARD: RESET PASSWORD (MODE reset=1)
+           ========================= -->
+      <div class="login-card hidden" id="card-reset">
+          <div class="login-header-logo">
+              <img src="https://drive.google.com/thumbnail?id=1kb_yesHbnVPtCrjzlWZGD_XXtfQoaLEe&sz=w600" alt="History Club 32">
+          </div>
+
+          <h2 class="login-title">Reset Kata Sandi</h2>
+          <p class="login-subtitle" id="reset-subtitle">Memeriksa tautan reset...</p>
+
+          <div class="reset-info" id="reset-info-box">
+            <div><strong>Status:</strong> <span id="reset-status-text">Memvalidasi token</span></div>
+            <div style="margin-top:6px;"><strong>Email:</strong> <span id="reset-email-text">-</span></div>
+            <div style="margin-top:4px;"><strong>Username:</strong> <span id="reset-user-text">-</span></div>
+          </div>
+
+          <form id="reset-form" onsubmit="event.preventDefault();">
+              <div class="form-group">
+                  <label class="form-label">Kata Sandi Baru</label>
+                  <div class="input-wrapper">
+                      <i class="ri-lock-password-line input-icon"></i>
+                      <input id="reset-pass-1" type="password" class="form-input" placeholder="Minimal 8 karakter" autocomplete="new-password">
+                      <i class="ri-eye-off-line toggle-password" id="toggle-reset-1" title="Lihat Password"></i>
+                  </div>
+              </div>
+
+              <div class="form-group">
+                  <label class="form-label">Ulangi Kata Sandi Baru</label>
+                  <div class="input-wrapper">
+                      <i class="ri-lock-password-line input-icon"></i>
+                      <input id="reset-pass-2" type="password" class="form-input" placeholder="Harus sama persis" autocomplete="new-password">
+                      <i class="ri-eye-off-line toggle-password" id="toggle-reset-2" title="Lihat Password"></i>
+                  </div>
+              </div>
+
+              <button type="submit" id="btn-reset-submit" class="btn-login" disabled>Simpan Kata Sandi</button>
+
+              <p class="small-note">Jika tautan reset sudah kedaluwarsa, minta tautan reset baru ke admin.</p>
+
+              <a class="link-back" href="./index.html">
+                <i class="ri-arrow-left-line"></i> Kembali ke Login
+              </a>
+          </form>
+      </div>
+
+      <!-- HELP -->
+      <div class="help-card" id="help-card">
           <div style="flex:1;">
               <p class="help-title">Butuh Bantuan?</p>
               <p class="help-desc">Hubungi Ketua HC <a href="https://instagram.com/mickovoitto" target="_blank" class="help-link">@mickovoitto</a> jika mengalami kendala sistem.</p>
@@ -305,14 +387,15 @@
 
   </div>
 
+  <!-- OTP MODALS (tetap ada, tapi akan dinonaktifkan secara UX saat mode reset) -->
   <div class="modal-overlay" id="modal-otp-request">
       <div class="modal-card">
           <button onclick="closeOtpModal()" style="position:absolute; top:15px; right:15px; border:none; background:none; font-size:24px; cursor:pointer;">&times;</button>
           <h3 style="margin-top:0; color:var(--hc-blue);">Login dengan OTP</h3>
           <p style="font-size:13px; color:#64748b; margin-bottom:20px;">Masukkan ID Pengurus Anda. Kami akan mengirimkan kode akses ke email yang terdaftar di sistem.</p>
-        
+
           <input type="text" id="otp-username-req" class="form-input" placeholder="Masukkan ID Pengurus (NIS/Username)" style="text-align:center; margin-bottom:15px;">
-        
+
           <button onclick="requestOtp()" class="btn-login" id="btn-req-otp">Kirim Kode OTP</button>
       </div>
    </div>
@@ -321,7 +404,7 @@
        <div class="modal-card">
            <h3 style="margin-top:0; color:var(--hc-blue);">Verifikasi Kode</h3>
            <p style="font-size:13px; color:#64748b;">Masukkan 6 digit kode yang dikirim ke <br><strong id="otp-email-display">email</strong></p>
-        
+
            <div class="otp-inputs" id="otp-container">
                <input type="text" class="otp-input" maxlength="1" oninput="digitInput(this,1)">
                <input type="text" class="otp-input" maxlength="1" oninput="digitInput(this,2)">
@@ -330,7 +413,7 @@
                <input type="text" class="otp-input" maxlength="1" oninput="digitInput(this,5)">
                <input type="text" class="otp-input" maxlength="1" oninput="digitInput(this,6)">
            </div>
-        
+
            <button onclick="verifyOtp()" class="btn-login">Verifikasi & Masuk</button>
            <p style="font-size:12px; margin-top:15px; cursor:pointer; color:#64748b;" onclick="openOtpModal()">Kirim Ulang Kode?</p>
        </div>
@@ -343,209 +426,358 @@
     const API_URL = (typeof GAS_URL !== 'undefined') ? GAS_URL : "URL_APPS_SCRIPT_ANDA";
     const DASHBOARD_BASE = "https://historyclub32.github.io/pengurus/dashboard.html";
 
-    // --- FITUR LIHAT PASSWORD ---
+    // ===============
+    // MODE DETECTOR
+    // ===============
+    const params = new URLSearchParams(window.location.search);
+    const isResetMode = params.get('reset') === '1';
+    const resetToken = (params.get('token') || '').trim();
+
+    // Tampilkan card sesuai mode
+    const cardLogin = document.getElementById('card-login');
+    const cardReset = document.getElementById('card-reset');
+
+    if (isResetMode) {
+      if (cardLogin) cardLogin.classList.add('hidden');
+      if (cardReset) cardReset.classList.remove('hidden');
+    } else {
+      if (cardReset) cardReset.classList.add('hidden');
+      if (cardLogin) cardLogin.classList.remove('hidden');
+    }
+
+    // --- FITUR LIHAT PASSWORD (Login) ---
     const togglePassword = document.getElementById('toggle-password');
     const passwordInput = document.getElementById('login-password');
-
     if(togglePassword && passwordInput) {
-        togglePassword.addEventListener('click', function () {
-            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-            passwordInput.setAttribute('type', type);
-            this.classList.toggle('ri-eye-line');
-            this.classList.toggle('ri-eye-off-line');
-        });
+      togglePassword.addEventListener('click', function () {
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+        this.classList.toggle('ri-eye-line');
+        this.classList.toggle('ri-eye-off-line');
+      });
     }
 
-    // Variable global untuk menyimpan username asli dari backend
+    // --- FITUR LIHAT PASSWORD (Reset) ---
+    function bindToggle(togglerId, inputId) {
+      const t = document.getElementById(togglerId);
+      const inp = document.getElementById(inputId);
+      if (!t || !inp) return;
+      t.addEventListener('click', function () {
+        const type = inp.getAttribute('type') === 'password' ? 'text' : 'password';
+        inp.setAttribute('type', type);
+        this.classList.toggle('ri-eye-line');
+        this.classList.toggle('ri-eye-off-line');
+      });
+    }
+    bindToggle('toggle-reset-1', 'reset-pass-1');
+    bindToggle('toggle-reset-2', 'reset-pass-2');
+
+    // Variable global untuk menyimpan username asli dari backend (OTP flow)
     let currentOtpUser = '';
 
-    // --- ALUR LOGIN UTAMA (PASSWORD -> 2FA) ---
+    // Helper fetch JSON (biar konsisten)
+    async function postJson(payload) {
+      const res = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      return res.json();
+    }
+
+    // =========================
+    // RESET MODE FLOW
+    // =========================
+    const resetStatusText = document.getElementById('reset-status-text');
+    const resetEmailText = document.getElementById('reset-email-text');
+    const resetUserText = document.getElementById('reset-user-text');
+    const resetSubtitle = document.getElementById('reset-subtitle');
+    const btnResetSubmit = document.getElementById('btn-reset-submit');
+    const resetForm = document.getElementById('reset-form');
+
+    let resetTokenValidated = false;
+
+    async function verifyResetTokenFront_() {
+      if (!isResetMode) return;
+      if (!resetToken) {
+        if (resetSubtitle) resetSubtitle.innerText = 'Token tidak ditemukan pada URL.';
+        if (resetStatusText) resetStatusText.innerText = 'Token kosong';
+        window.showHC32Status('error', 'Token Tidak Ada', 'Tautan reset tidak lengkap. Pastikan ada parameter token.');
+        if (btnResetSubmit) btnResetSubmit.disabled = true;
+        return;
+      }
+
+      window.showHC32Status('loading', 'Memvalidasi Token...', 'Mohon tunggu sebentar.');
+
+      try {
+        const out = await postJson({
+          action: "verifyResetTokenAdmin",
+          token: resetToken
+        });
+
+        if (out.status === 'ok') {
+          window.hideHC32Status();
+
+          resetTokenValidated = true;
+          if (resetSubtitle) resetSubtitle.innerText = 'Masukkan kata sandi baru Anda.';
+          if (resetStatusText) resetStatusText.innerText = 'Token valid';
+          if (resetEmailText) resetEmailText.innerText = out.email || '(email tidak tersedia)';
+          if (resetUserText) resetUserText.innerText = out.username || '(username tidak tersedia)';
+
+          if (btnResetSubmit) btnResetSubmit.disabled = false;
+
+        } else {
+          resetTokenValidated = false;
+          if (resetSubtitle) resetSubtitle.innerText = 'Tautan reset tidak valid / kedaluwarsa.';
+          if (resetStatusText) resetStatusText.innerText = 'Token tidak valid';
+          if (resetEmailText) resetEmailText.innerText = '-';
+          if (resetUserText) resetUserText.innerText = '-';
+
+          if (btnResetSubmit) btnResetSubmit.disabled = true;
+
+          window.showHC32Status('error', 'Token Reset Tidak Valid', out.message || 'Token tidak valid atau sudah kedaluwarsa.');
+        }
+
+      } catch (e) {
+        resetTokenValidated = false;
+        if (btnResetSubmit) btnResetSubmit.disabled = true;
+        window.showHC32Status('error', 'Kesalahan Koneksi', 'Gagal menghubungi server untuk validasi token.');
+      }
+    }
+
+    async function submitResetPasswordFront_() {
+      if (!isResetMode) return;
+
+      const p1 = (document.getElementById('reset-pass-1')?.value || '').trim();
+      const p2 = (document.getElementById('reset-pass-2')?.value || '').trim();
+
+      if (!resetTokenValidated) {
+        window.showHC32Status('error', 'Token Belum Valid', 'Token reset belum tervalidasi atau sudah kedaluwarsa.');
+        return;
+      }
+
+      if (!p1 || !p2) {
+        window.showHC32Status('error', 'Data Kosong', 'Mohon isi kata sandi baru dan konfirmasi.');
+        return;
+      }
+
+      if (p1.length < 8) {
+        window.showHC32Status('error', 'Terlalu Pendek', 'Kata sandi minimal 8 karakter.');
+        return;
+      }
+
+      if (p1 !== p2) {
+        window.showHC32Status('error', 'Tidak Cocok', 'Kata sandi dan konfirmasi harus sama.');
+        return;
+      }
+
+      window.showHC32Status('loading', 'Menyimpan...', 'Mengubah kata sandi Anda.');
+
+      try {
+        const out = await postJson({
+          action: "resetPasswordAdmin",
+          token: resetToken,
+          newPassword: p1
+        });
+
+        if (out.status === 'ok') {
+          window.showHC32Status('success', 'Berhasil!', 'Kata sandi berhasil diubah. Mengarahkan ke halaman login...');
+
+          // Bersihkan query reset agar balik ke login normal
+          setTimeout(() => {
+            const cleanUrl = new URL(window.location.href);
+            cleanUrl.searchParams.delete('reset');
+            cleanUrl.searchParams.delete('token');
+            window.location.href = cleanUrl.toString();
+          }, 1500);
+
+        } else {
+          window.showHC32Status('error', 'Gagal Reset Password', out.message || 'Tidak dapat mengubah kata sandi.');
+        }
+      } catch (e) {
+        window.showHC32Status('error', 'Kesalahan Koneksi', 'Gagal menghubungi server saat reset password.');
+      }
+    }
+
+    if (resetForm) {
+      resetForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        submitResetPasswordFront_();
+      });
+    }
+
+    // Jalankan verifikasi reset token saat mode reset aktif
+    if (isResetMode) {
+      // Nonaktifkan OTP modal secara UX (opsional)
+      // (biar user tidak bingung di mode reset)
+      // Kamu bisa hapus ini kalau tidak perlu:
+      window.openOtpModal = function() {
+        window.showHC32Status('info', 'Mode Reset Aktif', 'Saat ini Anda berada di mode reset kata sandi.');
+      };
+      verifyResetTokenFront_();
+    }
+
+    // =========================
+    // LOGIN FLOW (PASSWORD -> OTP)
+    // =========================
     const loginForm = document.getElementById("login-form");
     if(loginForm) {
-        loginForm.addEventListener("submit", async (e) => {
-            e.preventDefault(); // Mencegah reload
-            
-            const u = document.getElementById("login-username").value.trim();
-            const p = document.getElementById("login-password").value.trim();
+      loginForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
 
-            if (!u || !p) {
-                window.showHC32Status('error', 'Data Belum Lengkap', 'Mohon isi ID dan Kata Sandi.');
-                return;
-            }
+        const u = document.getElementById("login-username").value.trim();
+        const p = document.getElementById("login-password").value.trim();
 
-            // Loader Global
-            window.showHC32Status('loading', 'Memeriksa Akun...', 'Mohon tunggu sebentar.');
+        if (!u || !p) {
+          window.showHC32Status('error', 'Data Belum Lengkap', 'Mohon isi ID dan Kata Sandi.');
+          return;
+        }
 
-            try {
-                const res = await fetch(API_URL, {
-                    method: "POST",
-                    body: JSON.stringify({
-                        action: "loginAdmin",
-                        username: u,
-                        password: p
-                    })
-                });
-                
-                const out = await res.json();
+        window.showHC32Status('loading', 'Memeriksa Akun...', 'Mohon tunggu sebentar.');
 
-                // 1. Password Benar, Perlu OTP (Skenario Utama)
-                if (out.status === "otp_required") {
-                    window.hideHC32Status();
-                    
-                    // PENTING: Gunakan 'real_username' dari backend, BUKAN input user (u)
-                    // Ini memperbaiki bug "OTP Salah" jika login pakai Email/NIS
-                    currentOtpUser = out.real_username; 
-                    
-                    document.getElementById('otp-email-display').innerText = out.email;
-                    
-                    // Buka Modal
-                    document.getElementById('modal-otp-request').classList.remove('active'); 
-                    document.getElementById('modal-otp-verify').classList.add('active');
-                    
-                    // Fokus input pertama
-                    setTimeout(() => {
-                        const firstInput = document.querySelector('.otp-input');
-                        if(firstInput) firstInput.focus();
-                    }, 300);
+        try {
+          const out = await postJson({
+            action: "loginAdmin",
+            username: u,
+            password: p
+          });
 
-                } else if (out.status === "ok") {
-                    // Skenario Login Langsung (Jika OTP didisable/error logic)
-                    handleLoginSuccess(out);
-                
-                } else {
-                    // Skenario Gagal (Password salah / User tidak ada)
-                    // Menggunakan Modal Popup component.js sesuai permintaan
-                    window.showHC32Status('error', 'Login Gagal', out.message);
-                }
+          if (out.status === "otp_required") {
+            window.hideHC32Status();
 
-            } catch (err) {
-                console.error(err);
-                window.showHC32Status('error', 'Kesalahan Koneksi', 'Gagal menghubungi server.');
-            }
-        });
+            // PENTING: selalu gunakan real_username dari backend
+            currentOtpUser = out.real_username || u;
+
+            document.getElementById('otp-email-display').innerText = out.email || 'email';
+
+            document.getElementById('modal-otp-request').classList.remove('active');
+            document.getElementById('modal-otp-verify').classList.add('active');
+
+            setTimeout(() => {
+              const firstInput = document.querySelector('.otp-input');
+              if(firstInput) firstInput.focus();
+            }, 300);
+
+          } else if (out.status === "ok") {
+            handleLoginSuccess(out);
+
+          } else {
+            window.showHC32Status('error', 'Login Gagal', out.message);
+          }
+
+        } catch (err) {
+          console.error(err);
+          window.showHC32Status('error', 'Kesalahan Koneksi', 'Gagal menghubungi server.');
+        }
+      });
     }
 
-    // Helper: Redirect ke Dashboard
+    // Redirect ke Dashboard
     function handleLoginSuccess(out) {
-        window.showHC32Status('success', 'Login Berhasil!', 'Mengarahkan ke Dashboard...');
-        
-        const url = new URL(DASHBOARD_BASE);
-        url.searchParams.set("token", out.token);
-        url.searchParams.set("u", out.username);
-        url.searchParams.set("n", out.nama);
-        url.searchParams.set("r", out.role);
-        url.searchParams.set("t", out.tipe || "");
-        url.searchParams.set("j", out.jabatan || "Admin");
-        url.searchParams.set("f", out.foto || "");
+      window.showHC32Status('success', 'Login Berhasil!', 'Mengarahkan ke Dashboard...');
 
-        setTimeout(() => {
-            window.open(url.toString(), "_blank");
-            window.location.reload(); 
-        }, 1500);
+      const url = new URL(DASHBOARD_BASE);
+      url.searchParams.set("token", out.token);
+      url.searchParams.set("u", out.username);
+      url.searchParams.set("n", out.nama);
+      url.searchParams.set("r", out.role);
+      url.searchParams.set("t", out.tipe || "");
+      url.searchParams.set("j", out.jabatan || "Admin");
+      url.searchParams.set("f", out.foto || "");
+
+      setTimeout(() => {
+        window.open(url.toString(), "_blank");
+        window.location.reload();
+      }, 1500);
     }
 
-    // --- FUNGSI MODAL & OTP ---
-
-    // Buka Modal Request Manual (Link Lupa Password)
+    // =========================
+    // OTP MODAL & FLOW
+    // =========================
     window.openOtpModal = function() {
-        document.getElementById('modal-otp-request').classList.add('active');
-        document.getElementById('modal-otp-verify').classList.remove('active');
-        
-        const mainUser = document.getElementById('login-username').value;
-        if(mainUser) document.getElementById('otp-username-req').value = mainUser;
+      document.getElementById('modal-otp-request').classList.add('active');
+      document.getElementById('modal-otp-verify').classList.remove('active');
+
+      const mainUser = document.getElementById('login-username').value;
+      if(mainUser) document.getElementById('otp-username-req').value = mainUser;
     }
 
     window.closeOtpModal = function() {
-        document.getElementById('modal-otp-request').classList.remove('active');
-        document.getElementById('modal-otp-verify').classList.remove('active');
+      document.getElementById('modal-otp-request').classList.remove('active');
+      document.getElementById('modal-otp-verify').classList.remove('active');
     }
 
-    // Input digit otomatis pindah
     window.digitInput = function(el, idx) {
-        el.value = el.value.replace(/[^0-9]/g, '');
-        if(el.value.length >= 1) {
-            const next = el.nextElementSibling;
-            if(next) next.focus();
-        }
+      el.value = el.value.replace(/[^0-9]/g, '');
+      if(el.value.length >= 1) {
+        const next = el.nextElementSibling;
+        if(next) next.focus();
+      }
     }
 
-    // Request OTP Manual (Tombol Lupa Password)
     window.requestOtp = async function() {
-        const user = document.getElementById('otp-username-req').value.trim();
-        if(!user) {
-            window.showHC32Status('error', 'Data Kosong', 'Masukkan ID Pengurus/Email/NIS.');
-            return;
-        }
+      const user = document.getElementById('otp-username-req').value.trim();
+      if(!user) {
+        window.showHC32Status('error', 'Data Kosong', 'Masukkan ID Pengurus/Email/NIS.');
+        return;
+      }
 
-        const btn = document.getElementById('btn-req-otp');
-        const originalText = btn.innerText;
-        btn.innerText = "Mengirim...";
-        btn.disabled = true;
+      const btn = document.getElementById('btn-req-otp');
+      const originalText = btn.innerText;
+      btn.innerText = "Mengirim...";
+      btn.disabled = true;
 
-        try {
-            const res = await fetch(API_URL, {
-                method: "POST",
-                body: JSON.stringify({ action: "requestOtpAdmin", username: user }) // Menggunakan endpoint lama utk request manual
-                // Catatan: Anda mungkin perlu menyesuaikan endpoint ini di backend jika ingin support multi-login juga untuk lupa password
-            });
-            const out = await res.json();
-            
-            if(out.status === 'ok') {
-                // Disini backend requestOtpAdmin_ belum direvisi untuk return real_username (opsional)
-                // Sebaiknya requestOtpAdmin_ di backend juga disamakan logikanya.
-                // Untuk sekarang kita pakai user input dulu, tapi idealnya backend return real user.
-                currentOtpUser = user; 
-                
-                document.getElementById('otp-email-display').innerText = out.email;
-                document.getElementById('modal-otp-request').classList.remove('active');
-                document.getElementById('modal-otp-verify').classList.add('active');
-                
-                document.querySelectorAll('.otp-input').forEach(i => i.value = '');
-                document.querySelector('.otp-input').focus();
-            } else {
-                window.showHC32Status('error', 'Gagal', out.message);
-            }
-        } catch(e) {
-            window.showHC32Status('error', 'Error', e.message);
+      try {
+        const out = await postJson({ action: "requestOtpAdmin", username: user });
+
+        if(out.status === 'ok') {
+          // PAKAI real_username bila backend mengirimkannya
+          currentOtpUser = out.real_username || user;
+
+          document.getElementById('otp-email-display').innerText = out.email || 'email';
+          document.getElementById('modal-otp-request').classList.remove('active');
+          document.getElementById('modal-otp-verify').classList.add('active');
+
+          document.querySelectorAll('.otp-input').forEach(i => i.value = '');
+          document.querySelector('.otp-input')?.focus();
+        } else {
+          window.showHC32Status('error', 'Gagal', out.message);
         }
-        btn.innerText = originalText;
-        btn.disabled = false;
+      } catch(e) {
+        window.showHC32Status('error', 'Error', e.message);
+      }
+      btn.innerText = originalText;
+      btn.disabled = false;
     }
 
-    // Verifikasi OTP (Tombol di Modal Verify)
     window.verifyOtp = async function() {
-        let code = '';
-        document.querySelectorAll('.otp-input').forEach(i => code += i.value);
-        
-        if(code.length < 6) {
-            window.showHC32Status('error', 'Kode Tidak Lengkap', 'Masukkan 6 digit kode OTP.');
-            return;
+      let code = '';
+      document.querySelectorAll('.otp-input').forEach(i => code += i.value);
+
+      if(code.length < 6) {
+        window.showHC32Status('error', 'Kode Tidak Lengkap', 'Masukkan 6 digit kode OTP.');
+        return;
+      }
+
+      window.showHC32Status('loading', 'Verifikasi...', 'Memeriksa kode OTP.');
+
+      try {
+        const out = await postJson({
+          action: "verifyOtpAdmin",
+          username: currentOtpUser,
+          otp: code
+        });
+
+        if (out.status === "ok") {
+          handleLoginSuccess(out);
+        } else {
+          window.showHC32Status('error', 'Verifikasi Gagal', out.message);
+          document.querySelectorAll('.otp-input').forEach(i => i.value = '');
+          document.querySelector('.otp-input')?.focus();
         }
-
-        window.showHC32Status('loading', 'Verifikasi...', 'Memeriksa kode OTP.');
-
-        try {
-             const res = await fetch(API_URL, {
-                method: "POST",
-                body: JSON.stringify({ 
-                    action: "verifyOtpAdmin", 
-                    username: currentOtpUser, // Mengirim USERNAME ASLI dari hasil login awal
-                    otp: code
-                })
-            });
-            const out = await res.json();
-
-            if (out.status === "ok") {
-                handleLoginSuccess(out);
-            } else {
-                window.showHC32Status('error', 'Verifikasi Gagal', out.message);
-                // Clear input jika salah
-                document.querySelectorAll('.otp-input').forEach(i => i.value = '');
-                document.querySelector('.otp-input').focus();
-            }
-        } catch(e) {
-             window.showHC32Status('error', 'Error', e.message);
-        }
+      } catch(e) {
+        window.showHC32Status('error', 'Error', e.message);
+      }
     }
   </script>
 </body>
