@@ -410,8 +410,8 @@
     // Inisialisasi Navigasi
     document.addEventListener('DOMContentLoaded', () => initHC32Navigation('login'));
 
-    // AMBIL API URL dari Config.js, Jika tidak ada pakai placeholder
-    const API_URL = (typeof GAS_URL !== 'undefined') ? GAS_URL : "URL_APPS_SCRIPT_ANDA";
+    // GANTI URL INI
+    const API_URL = (typeof GAS_URL !== 'undefined') ? GAS_URL : "URL_APPS_SCRIPT_ANDA_DISINI";
     const DASHBOARD_BASE = "https://historyclub32.github.io/pengurus/dashboard.html";
 
     // ===============
@@ -421,13 +421,13 @@
       try {
         const res = await fetch(API_URL, {
           method: "POST",
-          headers: { "Content-Type": "text/plain" }, // PENTING: text/plain
+          headers: { "Content-Type": "text/plain" }, 
           body: JSON.stringify(payload)
         });
         if (!res.ok) throw new Error("HTTP " + res.status);
         return await res.json();
       } catch (e) {
-        throw e; // Lempar error agar ditangkap catch block pemanggil
+        throw e;
       }
     }
 
@@ -449,7 +449,7 @@
       if (cardLogin) cardLogin.classList.remove('hidden');
     }
 
-    // --- FITUR LIHAT PASSWORD (Login & Reset) ---
+    // --- FITUR LIHAT PASSWORD ---
     function setupToggle(toggleId, inputId) {
         const toggle = document.getElementById(toggleId);
         const input = document.getElementById(inputId);
@@ -470,7 +470,7 @@
     let currentOtpUser = '';
 
     // =========================
-    // RESET MODE FLOW (Saat user klik link dari email)
+    // RESET MODE FLOW (Perbaikan Logic Stuck)
     // =========================
     const resetStatusText = document.getElementById('reset-status-text');
     const resetEmailText = document.getElementById('reset-email-text');
@@ -497,9 +497,9 @@
           token: resetToken
         });
 
-        // Backend harus return { status:'ok', valid: true/false }
+        // FIX: Pastikan respon valid dan status OK
         if (out && out.status === 'ok' && out.valid === true) {
-          window.hideHC32Status(); // Hilangkan loading
+          window.hideHC32Status();
           resetTokenValidated = true;
           if (resetSubtitle) resetSubtitle.innerText = 'Silakan buat kata sandi baru.';
           if (resetStatusText) resetStatusText.innerText = 'Token Valid';
@@ -507,8 +507,8 @@
           if (resetUserText) resetUserText.innerText = out.username || '(Terkonfirmasi)';
           if (btnResetSubmit) btnResetSubmit.disabled = false;
         } else {
-          // Token Invalid / Expired
           resetTokenValidated = false;
+          window.hideHC32Status(); // Tutup loading dulu
           if (resetSubtitle) resetSubtitle.innerText = 'Tautan reset kedaluwarsa.';
           if (resetStatusText) resetStatusText.innerText = 'Tidak Valid';
           if (btnResetSubmit) btnResetSubmit.disabled = true;
@@ -516,7 +516,7 @@
         }
       } catch (e) {
         resetTokenValidated = false;
-        window.showHC32Status('error', 'Koneksi Gagal', 'Tidak dapat menghubungi server. Coba refresh.');
+        window.showHC32Status('error', 'Koneksi Gagal', 'Gagal memvalidasi token. Coba refresh halaman.');
       }
     }
 
@@ -574,6 +574,7 @@
       });
     }
 
+    // Jalankan verifikasi otomatis
     if (isResetMode) {
       verifyResetTokenFront_();
     }
