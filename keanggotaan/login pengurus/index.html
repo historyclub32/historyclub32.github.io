@@ -14,451 +14,541 @@
   <script src="../../components.js"></script>
 
   <style>
-    /* Variabel Warna dari Brand Guide */
-    :root {
-        --hc-blue: #1a4787;
-        --hc-toska: #0f8a94;
-        --hc-dark: #2e2e2e;
-        --hc-bg: #e7e9ea;
-        --card-shadow: 0 8px 30px rgba(26, 71, 135, 0.08);
+    :root{
+      --hc-blue:#1a4787;
+      --hc-toska:#0f8a94;
+      --hc-dark:#2e2e2e;
+      --hc-bg:#e7e9ea;
+      --hc-red:#d30e14;
+      --card-shadow:0 8px 30px rgba(26,71,135,.08);
     }
 
-    body {
-        font-family: 'Poppins', system-ui, -apple-system, sans-serif;
-        background-color: var(--hc-bg);
-        margin: 0;
-        padding: 0;
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh;
+    body{
+      font-family:'Poppins',system-ui,-apple-system,sans-serif;
+      background-color:var(--hc-bg);
+      margin:0;
+      padding:0;
+      display:flex;
+      flex-direction:column;
+      min-height:100vh;
     }
 
-    /* Container Utama */
-    .login-wrapper {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: 40px 20px;
-        gap: 20px;
+    .login-wrapper{
+      flex:1;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      padding:40px 20px;
+      gap:20px;
     }
 
-    .login-card, .help-card {
-        width: 100%;
-        max-width: 600px;
-        box-sizing: border-box;
+    .login-card,.help-card{
+      width:100%;
+      max-width:600px;
+      box-sizing:border-box;
     }
 
-    /* Kartu Login */
-    .login-card {
-        background: white;
-        border-radius: 16px;
-        box-shadow: var(--card-shadow);
-        border: 1px solid #cbd5e1;
-        padding: 30px;
-        text-align: center;
-        position: relative;
-        overflow: hidden;
+    .login-card{
+      background:#fff;
+      border-radius:16px;
+      box-shadow:var(--card-shadow);
+      border:1px solid #cbd5e1;
+      padding:30px;
+      text-align:center;
+      position:relative;
+      overflow:hidden;
     }
 
-    /* Hiasan Atas */
-    .login-card::before {
-        content: '';
-        position: absolute;
-        top: 0; left: 0; right: 0;
-        height: 6px;
-        background: linear-gradient(to right, var(--hc-blue), var(--hc-toska));
+    .login-card::before{
+      content:'';
+      position:absolute;
+      top:0;left:0;right:0;
+      height:6px;
+      background:linear-gradient(to right,var(--hc-blue),var(--hc-toska));
     }
 
-    /* Logo Header */
-    .login-header-logo {
-        width: 100%;
-        max-width: 250px;
-        height: auto;
-        margin: 0 auto 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: transparent;
-        box-shadow: none;
-        border: none;
+    .login-header-logo{
+      width:100%;
+      max-width:250px;
+      height:auto;
+      margin:0 auto 20px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:transparent;
+      box-shadow:none;
+      border:none;
     }
-    .login-header-logo img {
-        width: 100%;
-        height: auto;
-        object-fit: contain;
+    .login-header-logo img{width:100%;height:auto;object-fit:contain;}
+
+    .login-title{
+      font-size:24px;
+      font-weight:700;
+      color:var(--hc-dark);
+      margin-bottom:8px;
+    }
+    .login-subtitle{
+      font-size:14px;
+      color:#64748b;
+      margin-bottom:26px;
+      font-weight:300;
     }
 
-    .login-title {
-        font-size: 24px;
-        font-weight: 700;
-        color: var(--hc-dark);
-        margin-bottom: 8px;
-    }
-    .login-subtitle {
-        font-size: 14px;
-        color: #64748b;
-        margin-bottom: 30px;
-        font-weight: 300;
+    .form-group{ text-align:left; margin-bottom:18px; }
+    .form-label{
+      display:block;
+      font-size:13px;
+      font-weight:600;
+      color:var(--hc-dark);
+      margin-bottom:8px;
     }
 
-    /* Form Group */
-    .form-group {
-        text-align: left;
-        margin-bottom: 20px;
-    }
-    .form-label {
-        display: block;
-        font-size: 13px;
-        font-weight: 600;
-        color: var(--hc-dark);
-        margin-bottom: 8px;
-    }
-    .input-wrapper {
-        position: relative;
-    }
-    .input-icon {
-        position: absolute;
-        left: 16px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #94a3b8;
-        font-size: 18px;
+    .input-wrapper{ position:relative; }
+    .input-icon{
+      position:absolute;
+      left:16px;
+      top:50%;
+      transform:translateY(-50%);
+      color:#94a3b8;
+      font-size:18px;
+      pointer-events:none;
     }
 
-    /* Desain ikon mata (lihat password) */
-    .toggle-password,
-    .toggle-reset {
-        position: absolute;
-        right: 16px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #94a3b8;
-        font-size: 18px;
-        cursor: pointer;
-        padding: 6px;
-        border-radius: 10px;
-        user-select: none;
-        line-height: 1;
-        transition: background 0.15s, color 0.15s, transform 0.15s;
+    .form-input{
+      width:100%;
+      padding:12px 50px 12px 44px; /* kanan buat tombol mata */
+      border:1px solid #cbd5e1;
+      border-radius:10px;
+      font-size:15px;
+      outline:none;
+      transition:all .2s;
+      box-sizing:border-box;
+      font-family:'Poppins',sans-serif;
+      background:#fff;
     }
-    .toggle-password:hover,
-    .toggle-reset:hover {
-        color: var(--hc-blue);
-        background: rgba(26, 71, 135, 0.08);
-    }
-    .toggle-password:active,
-    .toggle-reset:active {
-        transform: translateY(-50%) scale(0.96);
+    .form-input:focus{
+      border-color:var(--hc-blue);
+      box-shadow:0 0 0 3px rgba(26,71,135,.15);
     }
 
-    .form-input {
-        width: 100%;
-        padding: 12px 44px 12px 44px; /* kanan dibikin aman buat ikon mata */
-        border: 1px solid #cbd5e1;
-        border-radius: 10px;
-        font-size: 15px;
-        outline: none;
-        transition: all 0.2s;
-        box-sizing: border-box;
-        font-family: 'Poppins', sans-serif;
+    /* Tombol mata (lebih rapi) */
+    .toggle-eye{
+      position:absolute;
+      right:10px;
+      top:50%;
+      transform:translateY(-50%);
+      width:38px;
+      height:38px;
+      border-radius:10px;
+      border:1px solid #e2e8f0;
+      background:#fff;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      color:#94a3b8;
+      transition:.18s;
+      padding:0;
     }
-    .form-input:focus {
-        border-color: var(--hc-blue);
-        box-shadow: 0 0 0 3px rgba(26, 71, 135, 0.15);
+    .toggle-eye:hover{
+      color:var(--hc-blue);
+      border-color:#cbd5e1;
+      box-shadow:0 4px 12px rgba(0,0,0,.06);
+    }
+    .toggle-eye:active{ transform:translateY(-50%) scale(.98); }
+    .toggle-eye i{ font-size:18px; line-height:1; }
+
+    /* ERROR STATE (mirip pendaftaran) */
+    .input-error{
+      border-color:var(--hc-red) !important;
+      box-shadow:0 0 0 3px rgba(211,14,20,.12) !important;
+      animation:shakeInput .3s;
+    }
+    @keyframes shakeInput{
+      0%{transform:translateX(0)}
+      25%{transform:translateX(-2px)}
+      75%{transform:translateX(2px)}
     }
 
-    /* Tombol */
-    .btn-login {
-        width: 100%;
-        padding: 16px;
-        border: none;
-        border-radius: 10px;
-        background: linear-gradient(135deg, var(--hc-blue), var(--hc-toska));
-        color: white;
-        font-weight: 600;
-        font-size: 16px;
-        cursor: pointer;
-        transition: transform 0.2s, box-shadow 0.2s;
-        margin-top: 10px;
-        font-family: 'Poppins', sans-serif;
-        box-shadow: 0 4px 15px rgba(15, 138, 148, 0.3);
+    .btn-login{
+      width:100%;
+      padding:16px;
+      border:none;
+      border-radius:10px;
+      background:linear-gradient(135deg,var(--hc-blue),var(--hc-toska));
+      color:#fff;
+      font-weight:600;
+      font-size:16px;
+      cursor:pointer;
+      transition:transform .2s, box-shadow .2s;
+      margin-top:10px;
+      font-family:'Poppins',sans-serif;
+      box-shadow:0 4px 15px rgba(15,138,148,.3);
     }
-    .btn-login:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(15, 138, 148, 0.4);
+    .btn-login:hover{
+      transform:translateY(-2px);
+      box-shadow:0 6px 20px rgba(15,138,148,.4);
     }
-    .btn-login:active {
-        transform: scale(0.98);
-    }
-    .btn-login:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
+    .btn-login:active{ transform:scale(.98); }
+    .btn-login:disabled{
+      opacity:.6;
+      cursor:not-allowed;
+      transform:none;
+      box-shadow:none;
     }
 
-    /* Link */
-    .link-lupa {
-        font-size: 12px; color: var(--hc-blue); text-decoration: none;
-        font-weight: 600; float: right; margin-top: 5px; cursor: pointer;
+    .link-lupa{
+      font-size:12px;
+      color:var(--hc-blue);
+      text-decoration:none;
+      font-weight:600;
+      float:right;
+      margin-top:5px;
+      cursor:pointer;
     }
-    .link-lupa:hover { text-decoration: underline; }
+    .link-lupa:hover{ text-decoration:underline; }
 
-    .link-back {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        margin-top: 12px;
-        font-size: 12px;
-        color: #64748b;
-        text-decoration: none;
-        font-weight: 600;
+    .link-back{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      margin-top:12px;
+      font-size:12px;
+      color:#64748b;
+      text-decoration:none;
+      font-weight:600;
     }
-    .link-back:hover { color: var(--hc-blue); }
+    .link-back:hover{ color:var(--hc-blue); }
 
     /* HELP CARD */
-    .help-card {
-        background: #fff;
-        border-radius: 16px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        padding: 16px 20px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-        border-left: 4px solid var(--hc-blue);
+    .help-card{
+      background:#fff;
+      border-radius:16px;
+      box-shadow:0 2px 5px rgba(0,0,0,.05);
+      padding:16px 20px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      border-left:4px solid var(--hc-blue);
     }
-    @media (min-width: 600px) { .help-card { flex-direction: row; } }
+    @media (min-width:600px){ .help-card{ flex-direction:row; } }
+    .help-title{ font-weight:600; font-size:14px; color:var(--hc-dark); margin:0; }
+    .help-desc{ font-size:12px; color:#64748b; margin:2px 0 0; }
+    .help-link{ color:var(--hc-blue); font-weight:600; text-decoration:none; }
+    .help-btn{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      background:var(--hc-blue);
+      color:#fff;
+      padding:8px 16px;
+      border-radius:8px;
+      font-size:13px;
+      font-weight:500;
+      text-decoration:none;
+      transition:.2s;
+    }
+    .help-btn:hover{ opacity:.9; }
 
-    .help-title { font-weight: 600; font-size: 14px; color: var(--hc-dark); margin: 0; }
-    .help-desc { font-size: 12px; color: #64748b; margin: 2px 0 0; }
-    .help-link { color: var(--hc-blue); font-weight: 600; text-decoration: none; }
-    .help-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        background: var(--hc-blue);
-        color: white;
-        padding: 8px 16px;
-        border-radius: 8px;
-        font-size: 13px;
-        font-weight: 500;
-        text-decoration: none;
-        transition: 0.2s;
+    /* Modal */
+    .modal-overlay{
+      position:fixed; inset:0;
+      background:rgba(0,0,0,.6);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:2000;
+      backdrop-filter:blur(3px);
     }
-    .help-btn:hover { opacity: 0.9; }
+    .modal-overlay.active{ display:flex; }
+    .modal-card{
+      background:#fff;
+      width:90%;
+      max-width:420px;
+      padding:22px;
+      border-radius:16px;
+      position:relative;
+      text-align:center;
+      box-shadow:0 10px 40px rgba(0,0,0,.2);
+      animation:slideUp .3s ease-out;
+    }
+    @keyframes slideUp{
+      from{ transform:translateY(20px); opacity:0; }
+      to{ transform:translateY(0); opacity:1; }
+    }
 
-    /* Modal OTP & Atur Ulang */
-    .modal-overlay {
-        position: fixed; inset: 0; background: rgba(0,0,0,0.6);
-        display: none; align-items: center; justify-content: center; z-index: 2000;
-        backdrop-filter: blur(3px);
+    .otp-inputs{ display:flex; justify-content:center; gap:8px; margin:20px 0; }
+    .otp-input{
+      width:45px; height:50px;
+      border:1px solid #cbd5e1;
+      border-radius:8px;
+      font-size:24px;
+      text-align:center;
+      font-weight:700;
+      color:var(--hc-blue);
+      font-family:'Poppins',sans-serif;
     }
-    .modal-overlay.active { display: flex; }
-    .modal-card {
-        background: white; width: 90%; max-width: 400px; padding: 25px;
-        border-radius: 16px; position: relative; text-align: center;
-        box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-        animation: slideUp 0.3s ease-out;
+    .otp-input:focus{
+      border-color:var(--hc-toska);
+      outline:none;
+      box-shadow:0 0 0 3px rgba(15,138,148,.1);
     }
-    @keyframes slideUp { from {transform: translateY(20px); opacity:0;} to {transform: translateY(0); opacity:1;} }
-
-    .otp-inputs { display: flex; justify-content: center; gap: 8px; margin: 20px 0; }
-    .otp-input {
-        width: 45px; height: 50px; border: 1px solid #cbd5e1; border-radius: 8px;
-        font-size: 24px; text-align: center; font-weight: bold; color: var(--hc-blue);
-    }
-    .otp-input:focus { border-color: var(--hc-toska); outline: none; box-shadow: 0 0 0 3px rgba(15,138,148,0.1); }
 
     /* UTIL */
-    .hidden { display: none !important; }
+    .hidden{ display:none !important; }
 
-    /* Box info token (rapi & lurus) */
-    .reset-info {
-      margin: 10px 0 18px;
-      padding: 12px 14px;
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 12px;
-      text-align: left;
-      font-size: 12px;
-      color: #475569;
+    /* Info token (status/email/username/countdown) rapi */
+    .token-info{
+      margin:10px 0 18px;
+      padding:12px 14px;
+      background:#f8fafc;
+      border:1px solid #e2e8f0;
+      border-radius:12px;
+      text-align:left;
+      font-size:12px;
+      color:#475569;
     }
-    .reset-row {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      margin: 4px 0;
+    .token-grid{
+      display:grid;
+      grid-template-columns: 110px 1fr;
+      gap:8px 10px;
+      align-items:center;
     }
-    .reset-label {
-      width: 90px;
-      font-weight: 700;
-      color: var(--hc-dark);
-      flex: 0 0 auto;
+    .token-label{
+      color:#334155;
+      font-weight:700;
+      white-space:nowrap;
     }
-    .reset-value {
-      flex: 1 1 auto;
-      min-width: 0;
-      word-break: break-word;
+    .token-value{
+      color:#0f172a;
+      font-weight:600;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+    .token-value.muted{ color:#64748b; font-weight:500; }
+    .token-pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 10px;
+      border-radius:999px;
+      font-weight:700;
+      font-size:12px;
+      border:1px solid #e2e8f0;
+      background:#fff;
+    }
+    .pill-ok{ color:#0f766e; border-color:rgba(15,138,148,.25); background:rgba(15,138,148,.08); }
+    .pill-bad{ color:#b91c1c; border-color:rgba(211,14,20,.25); background:rgba(211,14,20,.08); }
+
+    .small-note{
+      margin:10px 0 0;
+      font-size:12px;
+      color:#94a3b8;
+      font-style:italic;
+      text-align:left;
     }
 
-    .small-note {
-      margin: 10px 0 0;
-      font-size: 12px;
-      color: #94a3b8;
-      font-style: italic;
-      text-align: left;
+    /* Hint aturan kata sandi */
+    .pw-hint{
+      margin-top:8px;
+      font-size:12px;
+      color:#64748b;
+      line-height:1.5;
     }
+    .pw-hint b{ color:var(--hc-dark); }
+
+    /* tombol close di modal request */
+    .modal-close{
+      position:absolute;
+      top:12px;
+      right:12px;
+      width:40px;
+      height:40px;
+      border-radius:12px;
+      border:1px solid #e2e8f0;
+      background:#fff;
+      cursor:pointer;
+      font-size:22px;
+      line-height:1;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      transition:.15s;
+    }
+    .modal-close:hover{ box-shadow:0 6px 16px rgba(0,0,0,.08); color:var(--hc-blue); }
   </style>
 </head>
-<body>
 
+<body>
   <div class="login-wrapper">
 
-      <div class="login-card" id="card-login">
-          <div class="login-header-logo">
-              <img src="https://drive.google.com/thumbnail?id=1kb_yesHbnVPtCrjzlWZGD_XXtfQoaLEe&sz=w600" alt="History Club 32">
-          </div>
-
-          <h2 class="login-title">Login Pengurus</h2>
-          <p class="login-subtitle">Masuk untuk mengakses Dashboard HC 32</p>
-
-          <form id="login-form" onsubmit="event.preventDefault();">
-              <div class="form-group">
-                  <label class="form-label">ID HC / Username</label>
-                  <div class="input-wrapper">
-                      <i class="ri-user-line input-icon"></i>
-                      <input id="login-username" type="text" class="form-input" placeholder="Masukkan ID Pengurus" required autocomplete="username">
-                  </div>
-              </div>
-
-              <div class="form-group">
-                  <label class="form-label">Kata Sandi</label>
-                  <div class="input-wrapper">
-                      <i class="ri-lock-line input-icon"></i>
-                      <input id="login-password" type="password" class="form-input" placeholder="Masukkan Kata Sandi" required autocomplete="current-password">
-                      <i class="ri-eye-off-line toggle-password" id="toggle-password" title="Lihat Password"></i>
-                  </div>
-              </div>
-
-              <button type="submit" id="login-btn" class="btn-login">Masuk Sekarang</button>
-          </form>
-
-          <div style="margin-top: 15px; text-align: right;">
-              <a href="#" class="link-lupa" onclick="openResetModal()">Lupa Kata Sandi?</a>
-          </div>
+    <!-- CARD LOGIN -->
+    <div class="login-card" id="card-login">
+      <div class="login-header-logo">
+        <img src="https://drive.google.com/thumbnail?id=1kb_yesHbnVPtCrjzlWZGD_XXtfQoaLEe&sz=w600" alt="History Club 32">
       </div>
 
-      <div class="login-card hidden" id="card-reset">
-          <div class="login-header-logo">
-              <img src="https://drive.google.com/thumbnail?id=1kb_yesHbnVPtCrjzlWZGD_XXtfQoaLEe&sz=w600" alt="History Club 32">
+      <h2 class="login-title">Login Pengurus</h2>
+      <p class="login-subtitle">Masuk untuk mengakses Dashboard HC 32</p>
+
+      <form id="login-form" onsubmit="event.preventDefault();">
+        <div class="form-group">
+          <label class="form-label">ID HC / Username</label>
+          <div class="input-wrapper">
+            <i class="ri-user-line input-icon"></i>
+            <input id="login-username" type="text" class="form-input" placeholder="Masukkan ID Pengurus" required autocomplete="username">
           </div>
-          <h2 class="login-title">Atur Ulang Kata Sandi</h2>
-          <p class="login-subtitle" id="reset-subtitle">Memeriksa tautan atur ulang...</p>
+        </div>
 
-          <div class="reset-info" id="reset-info-box">
-            <div class="reset-row">
-              <div class="reset-label">Status</div>
-              <div class="reset-value"><span id="reset-status-text">Memvalidasi token</span></div>
-            </div>
-            <div class="reset-row">
-              <div class="reset-label">Email</div>
-              <div class="reset-value"><span id="reset-email-text">-</span></div>
-            </div>
-            <div class="reset-row">
-              <div class="reset-label">Username</div>
-              <div class="reset-value"><span id="reset-user-text">-</span></div>
-            </div>
-            <div class="reset-row">
-              <div class="reset-label">Sisa waktu</div>
-              <div class="reset-value"><span id="reset-countdown-text">-</span></div>
-            </div>
+        <div class="form-group">
+          <label class="form-label">Kata Sandi</label>
+          <div class="input-wrapper">
+            <i class="ri-lock-line input-icon"></i>
+            <input id="login-password" type="password" class="form-input" placeholder="Masukkan Kata Sandi" required autocomplete="current-password">
+            <button type="button" class="toggle-eye" id="toggle-password" title="Lihat Kata Sandi">
+              <i class="ri-eye-off-line"></i>
+            </button>
           </div>
+        </div>
 
-          <form id="reset-form" onsubmit="event.preventDefault();">
-              <div class="form-group">
-                  <label class="form-label">Kata Sandi Baru</label>
-                  <div class="input-wrapper">
-                      <i class="ri-lock-password-line input-icon"></i>
-                      <input id="reset-pass-1" type="password" class="form-input" placeholder="Minimal 8 karakter" autocomplete="new-password">
-                      <i class="ri-eye-off-line toggle-reset" data-target="reset-pass-1" title="Lihat Password"></i>
-                  </div>
-              </div>
+        <button type="submit" id="login-btn" class="btn-login">Masuk Sekarang</button>
+      </form>
 
-              <div class="form-group">
-                  <label class="form-label">Ulangi Kata Sandi Baru</label>
-                  <div class="input-wrapper">
-                      <i class="ri-lock-password-line input-icon"></i>
-                      <input id="reset-pass-2" type="password" class="form-input" placeholder="Harus sama persis" autocomplete="new-password">
-                      <i class="ri-eye-off-line toggle-reset" data-target="reset-pass-2" title="Lihat Password"></i>
-                  </div>
-              </div>
+      <div style="margin-top: 15px; text-align: right;">
+        <a href="#" class="link-lupa" onclick="openAturUlangModal()">Lupa Kata Sandi?</a>
+      </div>
+    </div>
 
-              <button type="submit" id="btn-reset-submit" class="btn-login" disabled>Simpan Kata Sandi</button>
-
-              <p class="small-note" id="note-rules">
-                Aturan kata sandi: minimal 8 karakter, tanpa spasi, dan gunakan kombinasi minimal 3 dari huruf kecil, huruf besar, angka, serta simbol. Jika tautan atur ulang sudah kedaluwarsa, minta tautan baru.
-              </p>
-
-              <a class="link-back" href="./">
-                <i class="ri-arrow-left-line"></i> Kembali ke Login
-              </a>
-          </form>
+    <!-- CARD ATUR ULANG -->
+    <div class="login-card hidden" id="card-reset">
+      <div class="login-header-logo">
+        <img src="https://drive.google.com/thumbnail?id=1kb_yesHbnVPtCrjzlWZGD_XXtfQoaLEe&sz=w600" alt="History Club 32">
       </div>
 
-      <div class="help-card" id="help-card">
-          <div style="flex:1;">
-              <p class="help-title">Butuh Bantuan?</p>
-              <p class="help-desc">Hubungi Ketua HC <a href="https://instagram.com/mickovoitto" target="_blank" class="help-link">@mickovoitto</a> jika mengalami kendala sistem.</p>
+      <h2 class="login-title">Atur Ulang Kata Sandi</h2>
+      <p class="login-subtitle" id="reset-subtitle">Memeriksa tautan atur ulang...</p>
+
+      <div class="token-info" id="reset-info-box">
+        <div class="token-grid">
+          <div class="token-label">Status</div>
+          <div class="token-value">
+            <span class="token-pill" id="reset-status-pill">
+              <i class="ri-loader-4-line"></i>
+              <span id="reset-status-text">Memvalidasi token</span>
+            </span>
           </div>
-          <a href="https://www.instagram.com/historyclub32jkt/" target="_blank" class="help-btn">
-              Instagram HC 32
-              <i class="ri-instagram-line"></i>
-          </a>
+
+          <div class="token-label">Email</div>
+          <div class="token-value muted" id="reset-email-text">-</div>
+
+          <div class="token-label">Username</div>
+          <div class="token-value muted" id="reset-user-text">-</div>
+
+          <div class="token-label">Sisa waktu</div>
+          <div class="token-value" id="reset-countdown-text">--:--</div>
+        </div>
       </div>
+
+      <form id="reset-form" onsubmit="event.preventDefault();">
+        <div class="form-group">
+          <label class="form-label">Kata Sandi Baru</label>
+          <div class="input-wrapper">
+            <i class="ri-lock-password-line input-icon"></i>
+            <input id="reset-pass-1" type="password" class="form-input" placeholder="Minimal 8 karakter" autocomplete="new-password">
+            <button type="button" class="toggle-eye toggle-reset" data-target="reset-pass-1" title="Lihat Kata Sandi">
+              <i class="ri-eye-off-line"></i>
+            </button>
+          </div>
+          <div class="pw-hint" id="pw-hint-1">
+            <b>Aturan:</b> minimal 8 karakter, ada huruf besar, huruf kecil, angka, dan simbol. Tidak boleh memuat username.
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Ulangi Kata Sandi Baru</label>
+          <div class="input-wrapper">
+            <i class="ri-lock-password-line input-icon"></i>
+            <input id="reset-pass-2" type="password" class="form-input" placeholder="Harus sama persis" autocomplete="new-password">
+            <button type="button" class="toggle-eye toggle-reset" data-target="reset-pass-2" title="Lihat Kata Sandi">
+              <i class="ri-eye-off-line"></i>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" id="btn-reset-submit" class="btn-login" disabled>Simpan Kata Sandi</button>
+
+        <p class="small-note">Jika tautan atur ulang sudah kedaluwarsa, minta tautan baru.</p>
+
+        <!-- pakai ./ supaya bisa tanpa index.html -->
+        <a class="link-back" href="./">
+          <i class="ri-arrow-left-line"></i> Kembali ke Login
+        </a>
+      </form>
+    </div>
+
+    <div class="help-card" id="help-card">
+      <div style="flex:1;">
+        <p class="help-title">Butuh Bantuan?</p>
+        <p class="help-desc">Hubungi Ketua HC <a href="https://instagram.com/mickovoitto" target="_blank" class="help-link">@mickovoitto</a> jika mengalami kendala sistem.</p>
+      </div>
+      <a href="https://www.instagram.com/historyclub32jkt/" target="_blank" class="help-btn">
+        Instagram HC 32
+        <i class="ri-instagram-line"></i>
+      </a>
+    </div>
 
   </div>
 
+  <!-- MODAL: MINTA TAUTAN ATUR ULANG -->
   <div class="modal-overlay" id="modal-otp-request">
-      <div class="modal-card">
-          <button onclick="closeOtpModal()" style="position:absolute; top:15px; right:15px; border:none; background:none; font-size:24px; cursor:pointer;">&times;</button>
-          <h3 style="margin-top:0; color:var(--hc-blue);">Atur Ulang Kata Sandi</h3>
-          <p style="font-size:13px; color:#64748b; margin-bottom:20px;">Masukkan ID Pengurus Anda (Username/NIS/Email). Kami akan mengirimkan tautan atur ulang ke email yang terdaftar.</p>
+    <div class="modal-card">
+      <button class="modal-close" type="button" onclick="closeOtpModal()" aria-label="Tutup">&times;</button>
 
-          <input type="text" id="otp-username-req" class="form-input" placeholder="Masukkan ID Pengurus" style="text-align:center; margin-bottom:15px;">
+      <h3 style="margin:0; color:var(--hc-blue);">Atur Ulang Kata Sandi</h3>
+      <p style="font-size:13px; color:#64748b; margin:10px 0 18px;">
+        Masukkan ID Pengurus (Username/NIS/Email). Kami akan mengirimkan tautan atur ulang ke email yang terdaftar.
+      </p>
 
-          <button onclick="requestReset()" class="btn-login" id="btn-req-otp">Kirim Tautan Atur Ulang</button>
+      <input type="text" id="otp-username-req" class="form-input" placeholder="Masukkan ID Pengurus" style="text-align:center; margin-bottom:15px;">
+
+      <button type="button" onclick="requestResetLink()" class="btn-login" id="btn-req-otp">Kirim Tautan</button>
+    </div>
+  </div>
+
+  <!-- MODAL: OTP LOGIN -->
+  <div class="modal-overlay" id="modal-otp-verify">
+    <div class="modal-card">
+      <h3 style="margin-top:0; color:var(--hc-blue);">Verifikasi Login</h3>
+      <p style="font-size:13px; color:#64748b;">Masukkan 6 digit kode yang dikirim ke <br><strong id="otp-email-display">email</strong></p>
+
+      <div class="otp-inputs" id="otp-container">
+        <input type="text" class="otp-input" maxlength="1" oninput="digitInput(this,1)">
+        <input type="text" class="otp-input" maxlength="1" oninput="digitInput(this,2)">
+        <input type="text" class="otp-input" maxlength="1" oninput="digitInput(this,3)">
+        <input type="text" class="otp-input" maxlength="1" oninput="digitInput(this,4)">
+        <input type="text" class="otp-input" maxlength="1" oninput="digitInput(this,5)">
+        <input type="text" class="otp-input" maxlength="1" oninput="digitInput(this,6)">
       </div>
-   </div>
 
-   <div class="modal-overlay" id="modal-otp-verify">
-       <div class="modal-card">
-           <h3 style="margin-top:0; color:var(--hc-blue);">Verifikasi Login</h3>
-           <p style="font-size:13px; color:#64748b;">Masukkan 6 digit kode yang dikirim ke <br><strong id="otp-email-display">email</strong></p>
-
-           <div class="otp-inputs" id="otp-container">
-               <input type="text" class="otp-input" maxlength="1" oninput="digitInput(this,1)">
-               <input type="text" class="otp-input" maxlength="1" oninput="digitInput(this,2)">
-               <input type="text" class="otp-input" maxlength="1" oninput="digitInput(this,3)">
-               <input type="text" class="otp-input" maxlength="1" oninput="digitInput(this,4)">
-               <input type="text" class="otp-input" maxlength="1" oninput="digitInput(this,5)">
-               <input type="text" class="otp-input" maxlength="1" oninput="digitInput(this,6)">
-           </div>
-
-           <button onclick="verifyOtp()" class="btn-login">Verifikasi & Masuk</button>
-       </div>
-   </div>
+      <button type="button" onclick="verifyOtp()" class="btn-login">Verifikasi & Masuk</button>
+    </div>
+  </div>
 
   <script>
-    // GANTI URL INI
+    // =========================
+    // CONFIG
+    // =========================
     const API_URL = (typeof GAS_URL !== 'undefined') ? GAS_URL : "URL_APPS_SCRIPT_ANDA_DISINI";
     const DASHBOARD_BASE = "https://historyclub32.github.io/pengurus/dashboard.html";
 
-    // ===============
-    // HELPER: POST JSON with TEXT/PLAIN Header (FIX CORS)
-    // ===============
-    async function postJson(payload) {
+    // =========================
+    // HELPER: POST JSON (text/plain)
+    // =========================
+    async function postJson(payload){
       const res = await fetch(API_URL, {
         method: "POST",
         headers: { "Content-Type": "text/plain" },
@@ -468,332 +558,395 @@
       return await res.json();
     }
 
-    // ===============
-    // MODE DETECTOR (Untuk Halaman Atur Ulang Kata Sandi via Email)
-    // ===============
+    // =========================
+    // MODE DETECTOR (tautan atur ulang via email)
+    // =========================
     const params = new URLSearchParams(window.location.search);
-    const isResetMode = params.get('reset') === '1';
-    const resetToken = (params.get('token') || '').trim();
+    const isResetMode = params.get('reset') === '1';         // query tetap "reset" (parameter URL), tapi teks UI jadi "atur ulang"
+    const resetToken  = (params.get('token') || '').trim();
 
     const cardLogin = document.getElementById('card-login');
     const cardReset = document.getElementById('card-reset');
 
     if (isResetMode) {
-      if (cardLogin) cardLogin.classList.add('hidden');
-      if (cardReset) cardReset.classList.remove('hidden');
+      cardLogin?.classList.add('hidden');
+      cardReset?.classList.remove('hidden');
     } else {
-      if (cardReset) cardReset.classList.add('hidden');
-      if (cardLogin) cardLogin.classList.remove('hidden');
+      cardReset?.classList.add('hidden');
+      cardLogin?.classList.remove('hidden');
     }
 
     // =========================
     // SAFE STATUS GUARD
     // =========================
-    function safeShowStatus(type, title, msg) {
+    function safeShowStatus(type, title, msg){
       if (typeof window.showHC32Status === 'function') window.showHC32Status(type, title, msg);
     }
-    function safeHideStatus() {
+    function safeHideStatus(){
       if (typeof window.hideHC32Status === 'function') window.hideHC32Status();
     }
 
-    // --- FITUR LIHAT PASSWORD (Login) ---
-    function setupToggle(toggleId, inputId) {
-      const toggle = document.getElementById(toggleId);
-      const input = document.getElementById(inputId);
-      if (toggle && input) {
-        toggle.addEventListener('click', function() {
-          const nextType = input.type === 'password' ? 'text' : 'password';
-          input.type = nextType;
-          this.classList.toggle('ri-eye-line');
-          this.classList.toggle('ri-eye-off-line');
-        });
-      }
-    }
-    setupToggle('toggle-password', 'login-password');
+    // =========================
+    // TOGGLE EYE (login)
+    // =========================
+    function bindEyeButton(buttonEl, inputEl){
+      if (!buttonEl || !inputEl) return;
+      buttonEl.addEventListener('click', () => {
+        const nextType = inputEl.type === 'password' ? 'text' : 'password';
+        inputEl.type = nextType;
 
-    // Toggle untuk field atur ulang kata sandi (berdasarkan data-target)
-    function setupResetToggles() {
-      document.querySelectorAll('.toggle-reset').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const id = btn.getAttribute('data-target');
-          const input = document.getElementById(id);
-          if (!input) return;
-
-          const nextType = input.type === 'password' ? 'text' : 'password';
-          input.type = nextType;
-
-          btn.classList.toggle('ri-eye-line');
-          btn.classList.toggle('ri-eye-off-line');
-        });
+        const icon = buttonEl.querySelector('i');
+        if (!icon) return;
+        icon.classList.toggle('ri-eye-off-line');
+        icon.classList.toggle('ri-eye-line');
       });
     }
-    setupResetToggles();
+    bindEyeButton(document.getElementById('toggle-password'), document.getElementById('login-password'));
 
-    // Variable global untuk menyimpan username asli dari backend (OTP flow)
+    // toggle eye untuk field atur ulang (data-target)
+    document.querySelectorAll('.toggle-reset').forEach(btn => {
+      const id = btn.getAttribute('data-target');
+      const inp = document.getElementById(id);
+      bindEyeButton(btn, inp);
+    });
+
+    // =========================
+    // GLOBALS (OTP)
+    // =========================
     let currentOtpUser = '';
 
     // =========================
-    // ATUR ULANG MODE FLOW + COUNTDOWN
+    // ATUR ULANG: UI refs
     // =========================
-    const resetStatusText = document.getElementById('reset-status-text');
-    const resetEmailText = document.getElementById('reset-email-text');
-    const resetUserText = document.getElementById('reset-user-text');
-    const resetCountdownText = document.getElementById('reset-countdown-text');
-    const resetSubtitle = document.getElementById('reset-subtitle');
-    const btnResetSubmit = document.getElementById('btn-reset-submit');
-    const resetForm = document.getElementById('reset-form');
+    const resetStatusText     = document.getElementById('reset-status-text');
+    const resetStatusPill     = document.getElementById('reset-status-pill');
+    const resetEmailText      = document.getElementById('reset-email-text');
+    const resetUserText       = document.getElementById('reset-user-text');
+    const resetSubtitle       = document.getElementById('reset-subtitle');
+    const resetCountdownText  = document.getElementById('reset-countdown-text');
+    const btnResetSubmit      = document.getElementById('btn-reset-submit');
+    const resetForm           = document.getElementById('reset-form');
+
+    const pass1El = document.getElementById('reset-pass-1');
+    const pass2El = document.getElementById('reset-pass-2');
 
     let resetTokenValidated = false;
     let resetUsernameConfirmed = '';
-    let resetExpiresAt = null;
+    let resetExpiresAt = null;        // Date
     let countdownTimer = null;
-    let countdownExpiredNotified = false;
 
-    function pad2_(n) { return String(n).padStart(2, '0'); }
-    function formatMs_(ms) {
-      const total = Math.max(0, Math.floor(ms / 1000));
-      const mm = Math.floor(total / 60);
-      const ss = total % 60;
-      return pad2_(mm) + ':' + pad2_(ss);
+    // =========================
+    // VALIDASI KOMBINASI KATA SANDI
+    // =========================
+    function validateNewPassword_(pw, username){
+      const s = String(pw || '');
+      const u = String(username || '').trim();
+
+      if (!s) return 'Kata sandi wajib diisi.';
+      if (s.length < 8) return 'Minimal 8 karakter.';
+      if (/\s/.test(s)) return 'Tidak boleh ada spasi.';
+
+      const hasLower = /[a-z]/.test(s);
+      const hasUpper = /[A-Z]/.test(s);
+      const hasDigit = /[0-9]/.test(s);
+      const hasSym   = /[^A-Za-z0-9]/.test(s);
+
+      if (!hasUpper) return 'Harus ada huruf besar (A-Z).';
+      if (!hasLower) return 'Harus ada huruf kecil (a-z).';
+      if (!hasDigit) return 'Harus ada angka (0-9).';
+      if (!hasSym)   return 'Harus ada simbol (contoh: !@#).';
+
+      // jangan memuat username (kalau username cukup panjang)
+      if (u && u.length >= 4){
+        const uLower = u.toLowerCase();
+        const sLower = s.toLowerCase();
+        if (sLower.includes(uLower)) return 'Tidak boleh memuat username.';
+      }
+
+      // blokir kata sandi yang sangat umum
+      const common = new Set([
+        'password','password123','12345678','123456789','qwerty','qwerty123',
+        'admin123','administrator','hc32','hc321234','iloveyou','bismillah'
+      ]);
+      if (common.has(s.toLowerCase())) return 'Kata sandi terlalu umum.';
+
+      return null; // OK
     }
 
-    function parseServerDate_(s) {
-      const str = (s || '').toString().trim();
-      if (!str) return null;
-      // support: "yyyy-MM-dd HH:mm:ss" -> "yyyy-MM-ddTHH:mm:ss"
-      const isoLike = str.includes(' ') ? str.replace(' ', 'T') : str;
-      const d = new Date(isoLike);
-      if (!isNaN(d.getTime())) return d;
-      return null;
+    // =========================
+    // LIVE VALIDATION (border merah + shake)
+    // =========================
+    let pass1Touched = false;
+    let pass2Touched = false;
+
+    function setFieldError_(el, on){
+      if (!el) return;
+      if (on) el.classList.add('input-error');
+      else el.classList.remove('input-error');
     }
 
-    function stopCountdown_() {
+    function getPwState_(){
+      const p1 = (pass1El?.value || '').trim();
+      const p2 = (pass2El?.value || '').trim();
+
+      const err1 = !p1 ? 'Kata sandi wajib diisi.' : validateNewPassword_(p1, resetUsernameConfirmed);
+      const err2 = !p2 ? 'Konfirmasi wajib diisi.' : (p1 !== p2 ? 'Konfirmasi harus sama persis.' : null);
+
+      const countdownOk = !resetExpiresAt || (resetExpiresAt.getTime() - Date.now() > 0);
+      const ok = resetTokenValidated && countdownOk && !err1 && !err2;
+
+      return { p1, p2, err1, err2, ok, countdownOk };
+    }
+
+    function updateSubmitState_(){
+      const st = getPwState_();
+      if (btnResetSubmit) btnResetSubmit.disabled = !st.ok;
+    }
+
+    function renderPwErrors_(){
+      const st = getPwState_();
+
+      // field 1
+      const show1 = pass1Touched && !!st.err1;
+      setFieldError_(pass1El, show1);
+
+      // field 2
+      const show2 = pass2Touched && !!st.err2;
+      setFieldError_(pass2El, show2);
+
+      updateSubmitState_();
+    }
+
+    pass1El?.addEventListener('input', () => { pass1Touched = true; renderPwErrors_(); });
+    pass1El?.addEventListener('blur',  () => { pass1Touched = true; renderPwErrors_(); });
+
+    pass2El?.addEventListener('input', () => { pass2Touched = true; renderPwErrors_(); });
+    pass2El?.addEventListener('blur',  () => { pass2Touched = true; renderPwErrors_(); });
+
+    // =========================
+    // COUNTDOWN 30 MENIT
+    // Catatan: paling akurat kalau backend mengirim expiresAt/remainingSec.
+    // Kalau tidak ada, countdown dihitung dari saat token dinyatakan valid di halaman ini.
+    // =========================
+    function formatMs_(ms){
+      const totalSec = Math.max(0, Math.floor(ms / 1000));
+      const m = Math.floor(totalSec / 60);
+      const s = totalSec % 60;
+      const mm = String(m).padStart(2,'0');
+      const ss = String(s).padStart(2,'0');
+      return `${mm}:${ss}`;
+    }
+
+    function stopCountdown_(){
       if (countdownTimer) clearInterval(countdownTimer);
       countdownTimer = null;
     }
 
-    function updateCountdownUI_() {
-      if (!resetExpiresAt) {
-        if (resetCountdownText) resetCountdownText.innerText = '-';
-        return;
-      }
+    function startCountdown_(){
+      stopCountdown_();
+      function tick(){
+        if (!resetExpiresAt){
+          resetCountdownText.textContent = '--:--';
+          return;
+        }
+        const left = resetExpiresAt.getTime() - Date.now();
+        resetCountdownText.textContent = formatMs_(left);
 
-      const msLeft = resetExpiresAt.getTime() - Date.now();
-      if (resetCountdownText) resetCountdownText.innerText = formatMs_(msLeft);
+        if (left <= 0){
+          stopCountdown_();
+          resetTokenValidated = false;
+          updateSubmitState_();
 
-      if (msLeft <= 0) {
-        stopCountdown_();
-        resetTokenValidated = false;
-        if (btnResetSubmit) btnResetSubmit.disabled = true;
-
-        if (resetSubtitle) resetSubtitle.innerText = 'Tautan atur ulang kedaluwarsa.';
-        if (resetStatusText) resetStatusText.innerText = 'Tidak Valid';
-
-        if (!countdownExpiredNotified) {
-          countdownExpiredNotified = true;
+          resetSubtitle && (resetSubtitle.innerText = 'Tautan atur ulang kedaluwarsa.');
+          if (resetStatusText) resetStatusText.innerText = 'Tidak Valid';
+          if (resetStatusPill){
+            resetStatusPill.classList.remove('pill-ok');
+            resetStatusPill.classList.add('pill-bad');
+            resetStatusPill.querySelector('i')?.classList.remove('ri-shield-check-line');
+            resetStatusPill.querySelector('i')?.classList.add('ri-error-warning-line');
+          }
           safeShowStatus('error', 'Kedaluwarsa', 'Tautan atur ulang sudah kedaluwarsa. Silakan minta tautan baru.');
         }
       }
-    }
-
-    function startCountdown_(expiresAt) {
-      resetExpiresAt = expiresAt;
-      countdownExpiredNotified = false;
-      stopCountdown_();
-      updateCountdownUI_();
-      countdownTimer = setInterval(updateCountdownUI_, 1000);
+      tick();
+      countdownTimer = setInterval(tick, 1000);
     }
 
     // =========================
-    // VALIDASI KOMBINASI KATA SANDI (Frontend)
-    // - min 8, max 64
-    // - tanpa spasi
-    // - minimal 3 dari 4 kategori: huruf kecil, huruf besar, angka, simbol
-    // - tidak boleh mengandung username
-    // - hindari kata umum (basic)
+    // VERIFY TOKEN (atur ulang)
     // =========================
-    function validateNewPassword_(pw, username) {
-      const p = (pw || '').toString();
-
-      if (p.length < 8) return 'Kata sandi minimal 8 karakter.';
-      if (p.length > 64) return 'Kata sandi maksimal 64 karakter.';
-      if (/\s/.test(p)) return 'Kata sandi tidak boleh mengandung spasi.';
-
-      const hasLower = /[a-z]/.test(p);
-      const hasUpper = /[A-Z]/.test(p);
-      const hasDigit = /[0-9]/.test(p);
-      const hasSymbol = /[^A-Za-z0-9]/.test(p);
-      const score = [hasLower, hasUpper, hasDigit, hasSymbol].filter(Boolean).length;
-
-      if (score < 3) {
-        return 'Gunakan kombinasi minimal 3 dari: huruf kecil, huruf besar, angka, dan simbol.';
-      }
-
-      const u = (username || '').toString().trim();
-      if (u && p.toLowerCase().includes(u.toLowerCase())) {
-        return 'Kata sandi tidak boleh mengandung username.';
-      }
-
-      const lower = p.toLowerCase();
-      const banned = ['password', 'qwerty', '12345678', 'admin', 'hc32'];
-      if (banned.some(w => lower.includes(w))) {
-        return 'Kata sandi terlalu mudah ditebak. Hindari kata umum.';
-      }
-
-      return null;
-    }
-
-    async function verifyResetTokenFront_() {
+    async function verifyResetTokenFront_(){
       if (!isResetMode) return;
 
-      if (!resetToken) {
-        if (resetSubtitle) resetSubtitle.innerText = 'Token tidak ditemukan pada URL.';
+      if (!resetToken){
+        resetSubtitle && (resetSubtitle.innerText = 'Token tidak ditemukan pada URL.');
+        if (resetStatusText) resetStatusText.innerText = 'Tidak Valid';
+        resetStatusPill?.classList.add('pill-bad');
         safeShowStatus('error', 'Token Tidak Ada', 'Tautan atur ulang tidak lengkap.');
         return;
       }
 
       safeShowStatus('loading', 'Memvalidasi...', 'Mohon tunggu sebentar.');
 
-      try {
-        const out = await postJson({
-          action: "verifyResetTokenAdmin",
-          token: resetToken
-        });
+      try{
+        const out = await postJson({ action: "verifyResetTokenAdmin", token: resetToken });
 
-        if (out && out.status === 'ok' && out.valid === true) {
+        if (out && out.status === 'ok' && out.valid === true){
           safeHideStatus();
+
           resetTokenValidated = true;
+          resetUsernameConfirmed = out.username || '';
+          // saran backend: kembalikan out.expiresAt (ISO string) ATAU out.remainingSec.
+          // kalau tidak ada, fallback: 30 menit dari sekarang.
+          if (out.expiresAt){
+            resetExpiresAt = new Date(out.expiresAt);
+          } else if (typeof out.remainingSec === 'number'){
+            resetExpiresAt = new Date(Date.now() + out.remainingSec * 1000);
+          } else {
+            resetExpiresAt = new Date(Date.now() + 30 * 60 * 1000);
+          }
 
-          resetUsernameConfirmed = (out.username || '').toString().trim();
-
-          if (resetSubtitle) resetSubtitle.innerText = 'Silakan buat kata sandi baru.';
+          resetSubtitle && (resetSubtitle.innerText = 'Silakan buat kata sandi baru.');
           if (resetStatusText) resetStatusText.innerText = 'Token Valid';
-          if (resetEmailText) resetEmailText.innerText = out.email || '(Terkonfirmasi)';
-          if (resetUserText) resetUserText.innerText = resetUsernameConfirmed || '(Terkonfirmasi)';
-          if (btnResetSubmit) btnResetSubmit.disabled = false;
 
-          // Countdown 30 menit:
-          // - Kalau backend suatu saat mengirim expiredAt/expiresAt, akan dipakai
-          // - Kalau tidak, fallback: 30 menit dari waktu validasi di sisi user
-          const serverExp = parseServerDate_(out.expiresAt || out.expiredAt || out.expired_at || out.expires_at);
-          const expAt = serverExp ? serverExp : new Date(Date.now() + 30 * 60 * 1000);
-          startCountdown_(expAt);
+          if (resetStatusPill){
+            resetStatusPill.classList.remove('pill-bad');
+            resetStatusPill.classList.add('pill-ok');
+            const icon = resetStatusPill.querySelector('i');
+            if (icon){
+              icon.className = 'ri-shield-check-line';
+            }
+          }
+
+          if (resetEmailText) resetEmailText.innerText = out.email || '(Terkonfirmasi)';
+          if (resetUserText) resetUserText.innerText = out.username || '(Terkonfirmasi)';
+
+          // start countdown + enable submit state (tergantung validasi password)
+          startCountdown_();
+          renderPwErrors_();
 
         } else {
           resetTokenValidated = false;
-          stopCountdown_();
+          resetUsernameConfirmed = '';
           resetExpiresAt = null;
-          updateCountdownUI_();
+          stopCountdown_();
 
           safeHideStatus();
-
-          if (resetSubtitle) resetSubtitle.innerText = 'Tautan atur ulang kedaluwarsa.';
+          resetSubtitle && (resetSubtitle.innerText = 'Tautan atur ulang kedaluwarsa.');
           if (resetStatusText) resetStatusText.innerText = 'Tidak Valid';
-          if (btnResetSubmit) btnResetSubmit.disabled = true;
 
+          if (resetStatusPill){
+            resetStatusPill.classList.remove('pill-ok');
+            resetStatusPill.classList.add('pill-bad');
+            const icon = resetStatusPill.querySelector('i');
+            if (icon){
+              icon.className = 'ri-error-warning-line';
+            }
+          }
+
+          resetCountdownText.textContent = '--:--';
+          updateSubmitState_();
           safeShowStatus('error', 'Gagal', (out && out.message) ? out.message : 'Token tidak valid.');
         }
 
-      } catch (e) {
+      } catch (e){
         resetTokenValidated = false;
-        stopCountdown_();
+        resetUsernameConfirmed = '';
         resetExpiresAt = null;
-        updateCountdownUI_();
+        stopCountdown_();
 
         safeHideStatus();
         safeShowStatus('error', 'Koneksi Gagal', 'Gagal memvalidasi token. Coba refresh halaman.');
       }
     }
 
-    async function submitResetPasswordFront_() {
+    // =========================
+    // SUBMIT ATUR ULANG
+    // =========================
+    async function submitResetPasswordFront_(){
       if (!isResetMode) return;
 
-      const p1 = (document.getElementById('reset-pass-1')?.value || '').trim();
-      const p2 = (document.getElementById('reset-pass-2')?.value || '').trim();
+      // paksa tampil error style kalau submit
+      pass1Touched = true;
+      pass2Touched = true;
+      renderPwErrors_();
 
-      if (!resetTokenValidated) {
+      const st = getPwState_();
+
+      if (!resetTokenValidated){
         safeShowStatus('error', 'Token Tidak Valid', 'Refresh halaman dan coba lagi.');
         return;
       }
 
-      // Pastikan countdown belum habis (kalau ada)
-      if (resetExpiresAt && (resetExpiresAt.getTime() - Date.now() <= 0)) {
+      if (!st.countdownOk){
         safeShowStatus('error', 'Kedaluwarsa', 'Tautan atur ulang sudah kedaluwarsa. Silakan minta tautan baru.');
         return;
       }
 
-      if (!p1 || !p2) {
-        safeShowStatus('error', 'Data Kosong', 'Isi kata sandi baru.');
-        return;
-      }
-      if (p1 !== p2) {
-        safeShowStatus('error', 'Tidak Cocok', 'Konfirmasi kata sandi harus sama.');
+      if (st.err1){
+        safeShowStatus('error', 'Kata Sandi Tidak Memenuhi Aturan', st.err1);
+        pass1El?.focus();
         return;
       }
 
-      const ruleErr = validateNewPassword_(p1, resetUsernameConfirmed);
-      if (ruleErr) {
-        safeShowStatus('error', 'Kata Sandi Tidak Memenuhi Aturan', ruleErr);
+      if (st.err2){
+        safeShowStatus('error', 'Konfirmasi Tidak Cocok', st.err2);
+        pass2El?.focus();
         return;
       }
 
       safeShowStatus('loading', 'Menyimpan...', 'Mengubah kata sandi Anda.');
 
-      try {
+      try{
         const out = await postJson({
           action: "resetPasswordAdmin",
           token: resetToken,
-          newPassword: p1
+          newPassword: st.p1
         });
 
-        if (out && out.status === 'ok') {
-          safeShowStatus('success', 'Berhasil!', 'Kata sandi diubah. Silakan login ulang...');
+        if (out && out.status === 'ok'){
+          safeShowStatus('success', 'Berhasil!', 'Kata sandi diubah. Silakan login kembali.');
+
+          stopCountdown_();
+
           setTimeout(() => {
-            const cleanUrl = new URL(window.location.href);
-            cleanUrl.searchParams.delete('reset');
-            cleanUrl.searchParams.delete('token');
-            window.location.href = cleanUrl.toString();
-          }, 2000);
+            // balik ke folder (tanpa index.html)
+            window.location.href = "./";
+          }, 1600);
         } else {
           safeShowStatus('error', 'Gagal', (out && out.message) ? out.message : 'Gagal mengatur ulang kata sandi.');
         }
-      } catch (e) {
+      } catch (e){
         safeShowStatus('error', 'Koneksi Gagal', e.message);
       }
     }
 
-    if (resetForm) {
-      resetForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        submitResetPasswordFront_();
-      });
-    }
+    resetForm?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      submitResetPasswordFront_();
+    });
 
     // =========================
     // LOGIN FLOW (PASSWORD -> OTP)
     // =========================
     const loginForm = document.getElementById("login-form");
-    if (loginForm) {
+    if (loginForm){
       loginForm.addEventListener("submit", async (e) => {
         e.preventDefault();
         const u = document.getElementById("login-username").value.trim();
         const p = document.getElementById("login-password").value.trim();
 
-        if (!u || !p) {
+        if (!u || !p){
           safeShowStatus('error', 'Data Belum Lengkap', 'Mohon isi ID dan Kata Sandi.');
           return;
         }
 
         safeShowStatus('loading', 'Memeriksa Akun...', 'Mohon tunggu sebentar.');
 
-        try {
-          const out = await postJson({
-            action: "loginAdmin",
-            username: u,
-            password: p
-          });
+        try{
+          const out = await postJson({ action: "loginAdmin", username: u, password: p });
 
-          if (out.status === "otp_required") {
+          if (out.status === "otp_required"){
             safeHideStatus();
             currentOtpUser = out.real_username || u;
             document.getElementById('otp-email-display').innerText = out.email || 'email terdaftar';
@@ -801,25 +954,22 @@
             document.getElementById('modal-otp-request').classList.remove('active');
             document.getElementById('modal-otp-verify').classList.add('active');
 
-            setTimeout(() => {
-              const firstInput = document.querySelector('.otp-input');
-              if (firstInput) firstInput.focus();
-            }, 300);
+            setTimeout(() => document.querySelector('.otp-input')?.focus(), 300);
 
-          } else if (out.status === "ok") {
+          } else if (out.status === "ok"){
             handleLoginSuccess(out);
           } else {
             safeShowStatus('error', 'Login Gagal', out.message);
           }
 
-        } catch (err) {
+        } catch (err){
           console.error(err);
           safeShowStatus('error', 'Kesalahan Koneksi', 'Gagal menghubungi server.');
         }
       });
     }
 
-    function handleLoginSuccess(out) {
+    function handleLoginSuccess(out){
       safeShowStatus('success', 'Login Berhasil!', 'Mengarahkan ke Dashboard...');
       const url = new URL(DASHBOARD_BASE);
       url.searchParams.set("token", out.token);
@@ -837,29 +987,29 @@
     }
 
     // =========================
-    // MODAL & FUNGSI (Atur Ulang & OTP)
+    // MODAL: ATUR ULANG (minta tautan)
     // =========================
-    window.openResetModal = function() {
+    window.openAturUlangModal = function(){
       document.getElementById('modal-otp-request').classList.add('active');
-      const mainUser = document.getElementById('login-username').value;
+      const mainUser = document.getElementById('login-username')?.value;
       if (mainUser) document.getElementById('otp-username-req').value = mainUser;
     }
 
-    window.closeOtpModal = function() {
+    window.closeOtpModal = function(){
       document.getElementById('modal-otp-request').classList.remove('active');
     }
 
-    window.digitInput = function(el, idx) {
-      el.value = el.value.replace(/[^0-9]/g, '');
-      if (el.value.length >= 1) {
+    window.digitInput = function(el, idx){
+      el.value = el.value.replace(/[^0-9]/g,'');
+      if (el.value.length >= 1){
         const next = el.nextElementSibling;
         if (next) next.focus();
       }
     }
 
-    window.requestReset = async function() {
+    window.requestResetLink = async function(){
       const user = document.getElementById('otp-username-req').value.trim();
-      if (!user) {
+      if (!user){
         safeShowStatus('error', 'Data Kosong', 'Masukkan ID Pengurus/Email/NIS.');
         return;
       }
@@ -869,16 +1019,16 @@
       btn.innerText = "Mengirim...";
       btn.disabled = true;
 
-      try {
+      try{
         const out = await postJson({ action: "requestOtpAdmin", username: user });
 
-        if (out && out.status === 'ok') {
+        if (out && out.status === 'ok'){
           window.closeOtpModal();
           safeShowStatus('success', 'Email Terkirim', 'Silakan cek email Anda untuk tautan atur ulang kata sandi.');
         } else {
           safeShowStatus('error', 'Gagal', (out && out.message) ? out.message : 'Terjadi kesalahan.');
         }
-      } catch (e) {
+      } catch (e){
         safeShowStatus('error', 'Error', e.message);
       }
 
@@ -886,43 +1036,42 @@
       btn.disabled = false;
     }
 
-    window.verifyOtp = async function() {
+    // =========================
+    // OTP VERIFY
+    // =========================
+    window.verifyOtp = async function(){
       let code = '';
       document.querySelectorAll('.otp-input').forEach(i => code += i.value);
 
-      if (code.length < 6) {
+      if (code.length < 6){
         safeShowStatus('error', 'Kode Tidak Lengkap', 'Masukkan 6 digit kode OTP.');
         return;
       }
 
       safeShowStatus('loading', 'Verifikasi...', 'Memeriksa kode OTP.');
 
-      try {
-        const out = await postJson({
-          action: "verifyOtpAdmin",
-          username: currentOtpUser,
-          otp: code
-        });
+      try{
+        const out = await postJson({ action: "verifyOtpAdmin", username: currentOtpUser, otp: code });
 
-        if (out && out.status === "ok") {
+        if (out && out.status === "ok"){
           handleLoginSuccess(out);
         } else {
           safeShowStatus('error', 'Verifikasi Gagal', (out && out.message) ? out.message : 'Kode OTP Salah.');
           document.querySelectorAll('.otp-input').forEach(i => i.value = '');
           document.querySelector('.otp-input')?.focus();
         }
-      } catch (e) {
+      } catch (e){
         safeShowStatus('error', 'Error', e.message);
       }
     }
 
     // =========================
-    // Inisialisasi Navigasi + Jalankan verifikasi atur ulang setelah komponen siap
+    // INIT
     // =========================
     document.addEventListener('DOMContentLoaded', () => {
       initHC32Navigation('login');
 
-      if (isResetMode) {
+      if (isResetMode){
         verifyResetTokenFront_();
       }
     });
