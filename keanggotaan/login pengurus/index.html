@@ -597,6 +597,47 @@
     }
 
     // =========================
+    // ENTER KEY SHORTCUTS (tambahan)
+    // - Enter -> Masuk Sekarang
+    // - Enter -> Kirim Tautan (modal lupa)
+    // - Enter -> Simpan Kata Sandi (atur ulang)
+    // =========================
+    (function bindEnterShortcuts_(){
+      // 1) Login: Enter submit form
+      const lf = document.getElementById('login-form');
+      lf?.addEventListener('keydown', (e) => {
+        if (e.key !== 'Enter') return;
+        e.preventDefault();
+        if (typeof lf.requestSubmit === 'function') lf.requestSubmit();
+        else lf.dispatchEvent(new Event('submit', { cancelable:true }));
+      });
+
+      // 2) Modal lupa: Enter klik Kirim Tautan (dari input atau area modal)
+      const modalReq = document.getElementById('modal-otp-request');
+      const btnReq = document.getElementById('btn-req-otp');
+      modalReq?.addEventListener('keydown', (e) => {
+        if (e.key !== 'Enter') return;
+        e.preventDefault();
+        if (btnReq && btnReq.disabled) return;
+        if (typeof window.requestResetLink === 'function') window.requestResetLink();
+      });
+
+      // 3) Reset: Enter submit form (kecuali fokus di link)
+      const rf = document.getElementById('reset-form');
+      rf?.addEventListener('keydown', (e) => {
+        if (e.key !== 'Enter') return;
+
+        const ae = document.activeElement;
+        const tag = ae && ae.tagName ? ae.tagName.toLowerCase() : '';
+        if (tag === 'a') return;
+
+        e.preventDefault();
+        if (typeof rf.requestSubmit === 'function') rf.requestSubmit();
+        else rf.dispatchEvent(new Event('submit', { cancelable:true }));
+      });
+    })();
+
+    // =========================
     // TOGGLE EYE (login)
     // =========================
     function bindEyeButton(buttonEl, inputEl){
