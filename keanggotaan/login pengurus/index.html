@@ -380,6 +380,11 @@
       transition:.15s;
     }
     .modal-close:hover{ box-shadow:0 6px 16px rgba(0,0,0,.08); color:var(--hc-blue); }
+
+    /* OTP countdown (tambahan) */
+    #otp-countdown.expired{
+      color: var(--hc-red);
+    }
   </style>
 </head>
 
@@ -525,6 +530,11 @@
       <h3 style="margin-top:0; color:var(--hc-blue);">Verifikasi Login</h3>
       <p style="font-size:13px; color:#64748b;">Masukkan 6 digit kode yang dikirim ke <br><strong id="otp-email-display">email</strong></p>
 
+      <!-- countdown (tambahan) -->
+      <p style="font-size:12px; color:#64748b; margin:8px 0 0;">
+        Sisa waktu: <strong id="otp-countdown">--:--</strong>
+      </p>
+
       <div class="otp-inputs" id="otp-container">
         <input type="text" class="otp-input" maxlength="1" oninput="digitInput(this,1)">
         <input type="text" class="otp-input" maxlength="1" oninput="digitInput(this,2)">
@@ -534,7 +544,7 @@
         <input type="text" class="otp-input" maxlength="1" oninput="digitInput(this,6)">
       </div>
 
-      <button type="button" onclick="verifyOtp()" class="btn-login">Verifikasi & Masuk</button>
+      <button type="button" id="btn-otp-verify" onclick="verifyOtp()" class="btn-login">Verifikasi & Masuk</button>
     </div>
   </div>
 
@@ -614,6 +624,200 @@
     // GLOBALS (OTP)
     // =========================
     let currentOtpUser = '';
+
+    // countdown OTP (tambahan)
+    let otpCountdownTimer = null;
+    let otpOffsetMs = 0;
+    let otpExpiresAtMs = 0;
+
+    // auto-submit (tambahan)
+    let otpAutoSubmitTimer = null;
+    let otpSubmitting = false;
+
+    // =========================
+    // OTP HELPERS (tambahan)
+    // =========================
+    function getOtpInputs_(){
+      return Array.from(document.querySelectorAll('#otp-container .otp-input'));
+    }
+
+    function clearOtpInputs_(){
+      const inputs = getOtpInputs_();
+      inputs.forEach(i => i.value = '');
+    }
+
+    function setOtpInputsFromDigits_(digits, startIndex){
+      const inputs = getOtpInputs_();
+      const clean = String(digits || '').replace(/\D/g,'');
+      if (!clean) return;
+
+      let idx = Math.max(0, Math.min(inputs.length - 1, startIndex || 0));
+      for (let k = 0; k < clean.length && idx < inputs.length; k++, idx++){
+        inputs[idx].value = clean[k];
+      }
+
+      const nextEmpty = inputs.find(i => !i.value);
+      (nextEmpty || inputs[inputs.length - 1])?.focus();
+    }
+
+    function otpGetCode_(){
+      return getOtpInputs_().map(i => i.value || '').join('');
+    }
+
+    function stopOtpCountdown_(){
+      if (otpCountdownTimer) clearInterval(otpCountdownTimer);
+      otpCountdownTimer = null;
+    }
+
+    function startOtpCountdown_(serverNowMs, expiresAtMs){
+      const el = document.getElementById('otp-countdown');
+      const btn = document.getElementById('btn-otp-verify');
+      if (!el) return;
+
+      const sNow = Number(serverNowMs);
+      const exp = Number(expiresAtMs);
+
+      // kalau backend tidak mengirim, jangan jalanin countdown (tetap tampil --:--)
+      if (!isFinite(sNow) || !isFinite(exp) || exp <= 0){
+        el.textContent = '--:--';
+        el.classList.remove('expired');
+        return;
+      }
+
+      otpOffsetMs = sNow - Date.now();
+      otpExpiresAtMs = exp;
+
+      const fmt = (sec) => {
+        sec = Math.max(0, Math.floor(sec));
+        const m = Math.floor(sec / 60);
+        const s = sec % 60;
+        return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+      };
+
+      const tick = () => {
+        const nowServerApprox = Date.now() + otpOffsetMs;
+        const leftSec = Math.max(0, Math.floor((otpExpiresAtMs - nowServerApprox) / 1000));
+
+        el.textContent = fmt(leftSec);
+
+        if (leftSec <= 0){
+          el.classList.add('expired');
+          if (btn) btn.disabled = true;
+          stopOtpCountdown_();
+          safeShowStatus('error', 'OTP Kedaluwarsa', 'Kode OTP sudah kedaluwarsa. Silakan login ulang untuk meminta OTP baru.');
+          return;
+        } else {
+          el.classList.remove('expired');
+          // tombol juga dikontrol oleh validasi 6 digit, jadi jangan paksa enable di sini
+        }
+      };
+
+      stopOtpCountdown_();
+      tick();
+      otpCountdownTimer = setInterval(tick, 1000);
+    }
+
+    function isOtpExpired_(){
+      if (!otpExpiresAtMs) return false;
+      const nowServerApprox = Date.now() + otpOffsetMs;
+      return otpExpiresAtMs - nowServerApprox <= 0;
+    }
+
+    function scheduleOtpAutoSubmit_(){
+      const modal = document.getElementById('modal-otp-verify');
+      if (!modal || !modal.classList.contains('active')) return;
+
+      if (otpAutoSubmitTimer) clearTimeout(otpAutoSubmitTimer);
+      otpAutoSubmitTimer = setTimeout(() => {
+        const btn = document.getElementById('btn-otp-verify');
+        const code = otpGetCode_();
+        if (otpSubmitting) return;
+        if (isOtpExpired_()) return;
+        if (!btn || btn.disabled) return;
+        if (code.length === 6){
+          verifyOtp();
+        }
+      }, 200);
+    }
+
+    function initOtpEnhancements_(){
+      const inputs = getOtpInputs_();
+      const btn = document.getElementById('btn-otp-verify');
+
+      // ENTER = klik verifikasi
+      document.getElementById('modal-otp-verify')?.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter'){
+          e.preventDefault();
+          verifyOtp();
+        }
+      });
+
+      const refreshBtnState = () => {
+        const code = otpGetCode_();
+        const disabledByDigits = (code.length < 6);
+        const disabledByExpiry = isOtpExpired_();
+
+        if (btn) btn.disabled = disabledByDigits || disabledByExpiry;
+
+        // auto-submit saat sudah 6 digit
+        if (!disabledByDigits && !disabledByExpiry){
+          scheduleOtpAutoSubmit_();
+        }
+      };
+
+      inputs.forEach((inp, index) => {
+        // BACKSPACE lintas kotak
+        inp.addEventListener('keydown', (e) => {
+          if (e.key === 'Backspace'){
+            if (inp.value){
+              inp.value = '';
+              e.preventDefault();
+              refreshBtnState();
+              return;
+            }
+            const prev = inputs[index - 1];
+            if (prev){
+              prev.value = '';
+              prev.focus();
+              e.preventDefault();
+              refreshBtnState();
+            }
+          }
+
+          // Arrow nav (opsional)
+          if (e.key === 'ArrowLeft' && inputs[index - 1]){
+            inputs[index - 1].focus();
+            e.preventDefault();
+          }
+          if (e.key === 'ArrowRight' && inputs[index + 1]){
+            inputs[index + 1].focus();
+            e.preventDefault();
+          }
+        });
+
+        // PASTE: tempel 6 digit langsung isi semua kotak
+        inp.addEventListener('paste', (e) => {
+          const text = (e.clipboardData || window.clipboardData).getData('text') || '';
+          const digits = text.replace(/\D/g,'');
+          if (!digits) return;
+
+          e.preventDefault();
+
+          if (digits.length >= 6){
+            clearOtpInputs_();
+            setOtpInputsFromDigits_(digits.slice(0,6), 0);
+          } else {
+            setOtpInputsFromDigits_(digits, index);
+          }
+
+          refreshBtnState();
+        });
+
+        inp.addEventListener('input', refreshBtnState);
+      });
+
+      refreshBtnState();
+    }
 
     // =========================
     // ATUR ULANG: UI refs
@@ -954,7 +1158,15 @@
             document.getElementById('modal-otp-request').classList.remove('active');
             document.getElementById('modal-otp-verify').classList.add('active');
 
-            setTimeout(() => document.querySelector('.otp-input')?.focus(), 300);
+            // reset input + countdown akurat dari backend
+            otpSubmitting = false;
+            clearOtpInputs_();
+            startOtpCountdown_(out.serverNowMs, out.expiresAtMs);
+
+            setTimeout(() => {
+              initOtpEnhancements_();
+              document.querySelector('.otp-input')?.focus();
+            }, 50);
 
           } else if (out.status === "ok"){
             handleLoginSuccess(out);
@@ -999,12 +1211,28 @@
       document.getElementById('modal-otp-request').classList.remove('active');
     }
 
+    // =========================
+    // OTP INPUT (revisi: support paste/autofill)
+    // =========================
     window.digitInput = function(el, idx){
-      el.value = el.value.replace(/[^0-9]/g,'');
-      if (el.value.length >= 1){
-        const next = el.nextElementSibling;
-        if (next) next.focus();
+      const inputs = getOtpInputs_();
+      const i = (idx || 1) - 1;
+
+      const digits = String(el.value || '').replace(/\D/g,'');
+
+      if (!digits){
+        el.value = '';
+        return;
       }
+
+      if (digits.length > 1){
+        el.value = '';
+        setOtpInputsFromDigits_(digits, i);
+        return;
+      }
+
+      el.value = digits[0];
+      if (inputs[i + 1]) inputs[i + 1].focus();
     }
 
     window.requestResetLink = async function(){
@@ -1040,13 +1268,24 @@
     // OTP VERIFY
     // =========================
     window.verifyOtp = async function(){
-      let code = '';
-      document.querySelectorAll('.otp-input').forEach(i => code += i.value);
+      const btn = document.getElementById('btn-otp-verify');
+      if (otpSubmitting) return;
+
+      let code = otpGetCode_();
 
       if (code.length < 6){
         safeShowStatus('error', 'Kode Tidak Lengkap', 'Masukkan 6 digit kode OTP.');
         return;
       }
+
+      if (isOtpExpired_()){
+        safeShowStatus('error', 'OTP Kedaluwarsa', 'Kode OTP sudah kedaluwarsa. Silakan login ulang untuk meminta OTP baru.');
+        if (btn) btn.disabled = true;
+        return;
+      }
+
+      otpSubmitting = true;
+      if (btn) btn.disabled = true;
 
       safeShowStatus('loading', 'Verifikasi...', 'Memeriksa kode OTP.');
 
@@ -1056,12 +1295,18 @@
         if (out && out.status === "ok"){
           handleLoginSuccess(out);
         } else {
+          otpSubmitting = false;
           safeShowStatus('error', 'Verifikasi Gagal', (out && out.message) ? out.message : 'Kode OTP Salah.');
-          document.querySelectorAll('.otp-input').forEach(i => i.value = '');
+          clearOtpInputs_();
           document.querySelector('.otp-input')?.focus();
+
+          // re-enable tombol (kalau belum kedaluwarsa)
+          if (btn) btn.disabled = isOtpExpired_();
         }
       } catch (e){
+        otpSubmitting = false;
         safeShowStatus('error', 'Error', e.message);
+        if (btn) btn.disabled = isOtpExpired_();
       }
     }
 
@@ -1070,6 +1315,8 @@
     // =========================
     document.addEventListener('DOMContentLoaded', () => {
       initHC32Navigation('login');
+
+      initOtpEnhancements_();
 
       if (isResetMode){
         verifyResetTokenFront_();
