@@ -36,11 +36,10 @@
       color:#0f172a;
     }
 
-    /* Layout Wrapper sesuai components.js */
     .main-wrapper {
       padding: 40px 20px;
       min-height: 100vh;
-      margin-top: 60px; /* Jarak untuk header fixed */
+      margin-top: 60px;
     }
 
     .container {
@@ -48,23 +47,39 @@
       margin: 0 auto;
     }
 
-    /* Search Card */
-    .card {
+    /* Search Card Update (Following image_544da1.png style) */
+    .search-card {
       background: var(--card);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
-      padding: 30px;
+      padding: 40px 30px;
       border: 1px solid var(--line);
       margin-bottom: 24px;
+      position: relative;
+      overflow: hidden;
+      text-align: center;
     }
 
-    .welcome-banner {
-      background: linear-gradient(135deg, var(--hc-blue) 0%, var(--hc-toska) 100%);
-      color: #fff;
-      padding: 24px;
-      border-radius: 12px;
-      margin-bottom: 28px;
-      text-align: center;
+    /* Top blue accent line */
+    .search-card::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 6px;
+      background: linear-gradient(90deg, var(--hc-blue), var(--hc-toska));
+    }
+
+    .search-card h2 {
+      font-size: 28px;
+      font-weight: 800;
+      margin: 0;
+      color: var(--hc-dark);
+    }
+
+    .search-card p {
+      font-size: 14px;
+      color: var(--muted);
+      margin: 10px 0 30px;
     }
 
     .search-row {
@@ -75,28 +90,37 @@
     }
 
     input {
-      width: 100%; padding: 12px 16px; border: 1px solid #cbd5e1;
-      border-radius: 10px; font-size: 15px; outline: none;
+      width: 100%; padding: 14px 18px; border: 1px solid #cbd5e1;
+      border-radius: 12px; font-size: 15px; outline: none;
       font-family: 'Poppins', sans-serif; transition: 0.2s;
+      background: #f8fafc;
     }
-    input:focus { border-color: var(--hc-blue); box-shadow: 0 0 0 3px rgba(26, 71, 135, 0.1); }
+    input:focus { border-color: var(--hc-blue); background: #fff; box-shadow: 0 0 0 3px rgba(26, 71, 135, 0.1); }
 
     .btn-search {
       width: 100%; background: linear-gradient(135deg, var(--hc-blue), var(--hc-toska));
-      color: #fff; border: none; padding: 16px; border-radius: 10px;
-      font-weight: 600; font-size: 16px; cursor: pointer;
+      color: #fff; border: none; padding: 16px; border-radius: 12px;
+      font-weight: 700; font-size: 16px; cursor: pointer;
       box-shadow: 0 4px 15px rgba(15, 138, 148, 0.3); transition: 0.2s;
       display: flex; align-items: center; justify-content: center; gap: 10px;
     }
-    .btn-search:hover { transform: translateY(-2px); }
+    .btn-search:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(15, 138, 148, 0.4); }
 
-    /* Result Panel */
+    /* Detail Panel (Keep same as instructed) */
     #result-panel {
       display: none;
       animation: slideUp 0.4s ease;
     }
 
     @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+    .card-detail {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 30px;
+      border: 1px solid var(--line);
+    }
 
     .panel-head {
       padding-bottom: 15px; border-bottom: 1px solid var(--line);
@@ -117,7 +141,6 @@
       border-left: 4px solid var(--hc-toska); margin: 20px 0; font-size: 13px;
     }
 
-    /* Timeline */
     .timeline { margin-top: 30px; }
     .t-row { display: grid; grid-template-columns: 100px 30px 1fr; gap: 5px; padding-bottom: 25px; }
     .t-date { font-size: 10px; color: var(--muted); font-weight: 800; text-align: right; padding-top: 4px; }
@@ -132,7 +155,6 @@
     @media (max-width: 600px) {
       .search-row { grid-template-columns: 1fr; }
       .t-row { grid-template-columns: 80px 25px 1fr; }
-      .main-wrapper { padding: 20px 15px; }
     }
   </style>
 </head>
@@ -141,11 +163,9 @@
   <div class="main-wrapper">
     <div class="container">
 
-      <div class="card">
-        <div class="welcome-banner">
-          <h2 style="margin:0; font-size: 22px;">Lacak Permintaan</h2>
-          <p style="margin:5px 0 0; opacity: 0.9; font-size: 13px;">Gunakan kode tracking untuk melihat status terbaru.</p>
-        </div>
+      <div class="search-card">
+        <h2>Lacak Status</h2>
+        <p>Masukan kode tracking untuk melihat progres permintaan Anda.</p>
 
         <div class="search-row">
           <input id="inp-code" placeholder="Kode (Contoh: PA000123)" autocomplete="off" />
@@ -156,39 +176,33 @@
         </button>
       </div>
 
-      <div id="result-panel" class="card">
-        <div class="panel-head">
-          <div id="badge-container"></div>
-          <span id="txt-status-label" style="font-size: 12px; font-weight: 700;"></span>
+      <div id="result-panel">
+        <div class="card-detail">
+            <div class="panel-head">
+                <div id="badge-container"></div>
+                <span id="txt-status-label" style="font-size: 12px; font-weight: 700;"></span>
+            </div>
+            
+            <div id="detail-content">
+                </div>
         </div>
-        
-        <div id="detail-content">
-          </div>
       </div>
 
     </div>
   </div>
 
   <script>
-    // Integrasi navigasi komponen HC 32
     document.addEventListener('DOMContentLoaded', () => {
-      if (typeof initHC32Navigation === 'function') {
-        initHC32Navigation('tracking');
-      }
+      if (typeof initHC32Navigation === 'function') initHC32Navigation('tracking');
       prefillFromQuery_();
     });
 
     async function apiCall(action, payload){
       if (typeof hc32_post === 'function') return await hc32_post(action, payload);
-      // Fallback if not available
-      const res = await fetch(GAS_URL, { 
-        method: "POST", 
-        body: JSON.stringify({ action, ...payload }) 
-      });
-      return await res.json();
+      return { status: 'error', message: 'API function not found' };
     }
 
-    // Input Formatting
+    // Formatter
     document.getElementById('inp-code').addEventListener('input', (e) => {
       e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0, 8);
     });
@@ -201,23 +215,23 @@
       const secret = document.getElementById('inp-secret').value.trim();
 
       if (!code || !secret) {
-        if(window.showHC32Status) window.showHC32Status('error', 'Input Kosong', 'Harap isi kode dan verifikasi.');
+        if(window.showHC32Status) window.showHC32Status('error', 'Lengkapi Data', 'Harap isi kode tracking dan verifikasi.');
         return;
       }
 
-      // Gunakan Spinner dari component.js
-      if (window.showHC32Spinner) window.showHC32Spinner('Mengambil data status...');
+      // 1. SHOW HC LOADING SPINNER (from component.js)
+      if (window.showHC32Spinner) window.showHC32Spinner('Sedang memuat status...');
 
       try {
         const out = await apiCall('trackRequest', { trackingCode: code, secret });
 
+        // 2. HIDE SPINNER
         if (window.hideHC32Spinner) window.hideHC32Spinner();
 
         if (out && out.status === 'ok' && out.request) {
           renderRequestDetail(out);
           document.getElementById('result-panel').style.display = 'block';
           
-          // Scroll halus ke hasil
           setTimeout(() => {
             window.scrollTo({ top: document.getElementById('result-panel').offsetTop - 80, behavior: 'smooth' });
           }, 100);
@@ -226,7 +240,7 @@
         }
       } catch (e) {
         if (window.hideHC32Spinner) window.hideHC32Spinner();
-        if (window.showHC32Status) window.showHC32Status('error', 'Koneksi Gagal', 'Terjadi kesalahan pada server.');
+        if (window.showHC32Status) window.showHC32Status('error', 'Error Koneksi', 'Gagal terhubung ke server.');
       }
     }
 
@@ -234,16 +248,13 @@
       const req = out.request;
       const prefix = (req.code || '').substring(0, 2).toUpperCase();
       
-      // Dynamic Labels
       let typeLabel = "Permintaan Umum";
       if(prefix === "PA") typeLabel = "Pendaftaran Anggota";
       else if(prefix === "PD") typeLabel = "Perbaikan Data";
-      else if(prefix === "LS") typeLabel = "Tindak Lanjut Support";
+      else if(prefix === "LS") typeLabel = "Layanan Support";
       else if(prefix === "AK") typeLabel = "Akses Akun";
 
-      // Top Status Color
-      const statusColor = (req.status || '').toLowerCase().includes('selesai') ? 'var(--hc-toska)' : 'var(--hc-blue)';
-      document.getElementById('txt-status-label').style.color = statusColor;
+      document.getElementById('txt-status-label').style.color = (req.status || '').toLowerCase().includes('selesai') ? 'var(--hc-toska)' : 'var(--hc-blue)';
       document.getElementById('txt-status-label').innerText = req.status;
 
       document.getElementById('badge-container').innerHTML = `<div class="badge toska"><i class="ri-price-tag-3-line"></i> ${typeLabel}</div>`;
@@ -251,11 +262,11 @@
       const content = document.getElementById('detail-content');
       content.innerHTML = `
         <h2 class="req-owner">${req.ownerName || 'Pemohon'}</h2>
-        <div class="req-meta">KODE: ${req.code} • TERAKHIR DIPERBARUI: ${formatDate_(req.updatedAt)}</div>
+        <div class="req-meta">KODE: ${req.code} • UPDATE: ${formatDate_(req.updatedAt)}</div>
         
         <div class="note-box">
-          <div style="font-weight:800; margin-bottom:4px; color:var(--hc-blue); font-size:11px; letter-spacing:1px;">CATATAN ADMIN:</div>
-          ${req.publicNote || 'Belum ada pesan publik tambahan.'}
+          <div style="font-weight:800; margin-bottom:4px; color:var(--hc-blue); font-size:11px; letter-spacing:1px;">PESAN PUBLIK:</div>
+          ${req.publicNote || 'Belum ada catatan tambahan dari pengurus.'}
         </div>
 
         <div class="timeline">
@@ -267,18 +278,13 @@
                 <div class="t-line"></div>
               </div>
               <div class="t-main">
-                <div class="t-title">${mapEventType_(ev)}</div>
-                <div class="t-sub">${ev.note || 'Data sedang diproses oleh sistem.'}</div>
+                <div class="t-title">${ev.type === 'created' ? 'Permintaan Terkirim' : (ev.toStatus || 'Pembaruan Status')}</div>
+                <div class="t-sub">${ev.note || 'Data sedang ditinjau.'}</div>
               </div>
             </div>
           `).join('')}
         </div>
       `;
-    }
-
-    function mapEventType_(ev) {
-      if (ev.type === 'created') return 'Permintaan Diterima';
-      return ev.toStatus || 'Pembaruan Status';
     }
 
     function formatDate_(s) {
@@ -295,16 +301,11 @@
 
     function prefillFromQuery_(){
       const qs = new URLSearchParams(location.search);
-      const code = qs.get('code');
-      if (code) {
-        document.getElementById('inp-code').value = code.toUpperCase();
-        // Optional: Jika ingin langsung auto-search saat ada kode di URL, 
-        // tapi user tetap harus input 4 digit HP demi keamanan.
-      }
+      if (qs.get('code')) document.getElementById('inp-code').value = qs.get('code').toUpperCase();
     }
 
     function openSettings() {
-      if (window.showHC32Status) window.showHC32Status('info', 'Pengaturan', 'Fitur konfigurasi akan segera hadir.');
+      if (window.showHC32Status) window.showHC32Status('info', 'Pengaturan', 'Fitur pengaturan akan segera hadir.');
     }
   </script>
 </body>
