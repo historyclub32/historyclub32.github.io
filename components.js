@@ -398,7 +398,7 @@ function initHC32Navigation(activePageId) {
           </div>
       </div>
       <div class="footer-bottom">
-          <p style="margin: 0;">© 2025 History Club SMAN 32 Jakarta.</p>
+          <p style="margin: 0;">© 2026 History Club SMAN 32 Jakarta.</p>
           <p style="margin: 4px 0 0 0; opacity: 0.8;">
               Dibuat dan dikembangkan dengan penuh bangga oleh 
               <a href="https://www.instagram.com/mickovoitto" target="_blank" style="color: #ecec17; text-decoration: none; font-weight: 500;">@mickovoitto</a>
