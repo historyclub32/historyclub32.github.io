@@ -10,7 +10,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/3.5.0/remixicon.css" rel="stylesheet">
 
-  <!-- kalau kamu sudah punya config.js/components.js boleh dipakai -->
   <script src="../../config.js"></script>
   <script src="../../components.js"></script>
 
@@ -21,13 +20,11 @@
       --hc-dark:#2e2e2e;
       --hc-bg:#e7e9ea;
       --hc-red:#d30e14;
-
       --card:#ffffff;
       --muted:#64748b;
       --line:#e2e8f0;
       --shadow:0 10px 35px rgba(2, 6, 23, .08);
       --radius:18px;
-
       --accent: var(--hc-blue);
       --accent2: var(--hc-toska);
       --accentSoft: rgba(26,71,135,.10);
@@ -43,7 +40,6 @@
       color:#0f172a;
     }
 
-    /* layout container */
     .page{
       min-height:100vh;
       display:flex;
@@ -62,7 +58,6 @@
       padding:18px;
     }
 
-    /* top bar */
     .topbar{
       display:flex;
       align-items:center;
@@ -93,7 +88,6 @@
       letter-spacing:.2px;
     }
 
-    /* main grid */
     .grid{
       display:grid;
       grid-template-columns: 380px 1fr;
@@ -103,7 +97,6 @@
       .grid{ grid-template-columns: 1fr; }
     }
 
-    /* cards */
     .panel{
       background: var(--card);
       border:1px solid var(--line);
@@ -126,7 +119,6 @@
       font-weight:800;
     }
 
-    /* search box */
     .search{
       padding:14px;
       border-bottom:1px solid var(--line);
@@ -180,10 +172,7 @@
       line-height:1.5;
     }
 
-    /* list sections */
-    .section{
-      padding:12px 14px 0;
-    }
+    .section{ padding:12px 14px 0; }
     .section-title{
       margin:0 0 10px;
       font-size:12px;
@@ -260,7 +249,6 @@
     .badge.warn{ border-color: rgba(180,83,9,.25); background: rgba(180,83,9,.08); color:#854d0e; }
     .badge.red{ border-color: rgba(211,14,20,.25); background: rgba(211,14,20,.08); color:#b91c1c; }
 
-    /* mini progress line (like attachment) */
     .mini-track{
       margin-top:10px;
       display:flex;
@@ -296,10 +284,7 @@
       flex:0 0 auto;
     }
 
-    /* detail panel */
-    .detail{
-      padding:14px;
-    }
+    .detail{ padding:14px; }
     .detail-head{
       display:flex;
       align-items:flex-start;
@@ -367,7 +352,6 @@
     .k{ color:#334155; font-weight:900; }
     .v{ color:#0f172a; font-weight:700; }
 
-    /* big progress line + nodes */
     .big-track{
       border:1px solid var(--line);
       border-radius:16px;
@@ -416,7 +400,6 @@
       flex:0 0 auto;
     }
 
-    /* timeline */
     .timeline{
       border:1px solid var(--line);
       border-radius:16px;
@@ -459,17 +442,12 @@
       z-index:1;
     }
     .t-row:last-child .t-dot::after{ display:none; }
-
     .t-dot.on::before{ background: var(--accent2); }
     .t-dot.ok::before{ background: var(--ok); }
     .t-dot.warn::before{ background: var(--warn); }
     .t-dot.red::before{ background: var(--hc-red); }
 
-    .t-main{
-      display:flex;
-      flex-direction:column;
-      gap:2px;
-    }
+    .t-main{ display:flex; flex-direction:column; gap:2px; }
     .t-title{
       font-size:12px;
       font-weight:900;
@@ -510,12 +488,11 @@
       </div>
 
       <div class="grid">
-        <!-- LEFT: list -->
         <div class="panel">
           <div class="search">
             <div class="search-row">
-              <input id="inp-code" class="inp" placeholder="Kode Tracking (contoh: HC32-XXXXXX)" autocomplete="off" />
-              <input id="inp-secret" class="inp" placeholder="Verifikasi (NIS / last4 HP / DOB)" autocomplete="off" />
+              <input id="inp-code" class="inp" placeholder="Kode Tracking (contoh: PA000123)" autocomplete="off" />
+              <input id="inp-secret" class="inp" placeholder="Verifikasi (4 digit terakhir No HP)" autocomplete="off" />
             </div>
             <div style="display:grid;grid-template-columns:1fr;gap:10px;margin-top:10px;">
               <button id="btn-check" class="btn" type="button" onclick="lookup()">
@@ -542,7 +519,6 @@
           </div>
         </div>
 
-        <!-- RIGHT: detail -->
         <div class="panel">
           <div class="panel-head">
             <h3>Detail</h3>
@@ -561,9 +537,6 @@
   </div>
 
   <script>
-    // =========================
-    // CONFIG
-    // =========================
     const API_URL = (typeof GAS_URL !== 'undefined') ? GAS_URL : "URL_APPS_SCRIPT_ANDA_DISINI";
 
     async function postJson(payload){
@@ -576,6 +549,12 @@
       return await res.json();
     }
 
+    // B1) API CALL HELPER
+    async function apiCall(action, payload){
+      if (typeof hc32_post === 'function') return await hc32_post(action, payload);
+      return await postJson({ action, ...payload });
+    }
+
     function safeShowStatus(type, title, msg){
       if (typeof window.showHC32Status === 'function') window.showHC32Status(type, title, msg);
     }
@@ -583,43 +562,33 @@
       if (typeof window.hideHC32Status === 'function') window.hideHC32Status();
     }
 
-    // =========================
-    // STATE
-    // Backend idealnya return:
-    // {
-    //   status:'ok',
-    //   items:[{
-    //     id:'HC32-AB12CD',
-    //     type:'Pendaftaran' | 'Perbaikan Data' | 'Tiket Live Chat' | 'Pembuatan Akun' | ...
-    //     title:'Pendaftaran Anggota Baru' (atau judul singkat),
-    //     createdAt:'2026-01-18 10:15',
-    //     updatedAt:'2026-01-18 10:30',
-    //     statusLabel:'Menunggu Verifikasi' | 'Perlu Perbaikan' | 'Disetujui' | 'Selesai',
-    //     statusTone:'blue'|'toska'|'warn'|'red',
-    //     isClosed:false/true,
-    //     progress: { currentIndex:2, total:4 }, // untuk progress bar ringkas
-    //     route:{ from:'Masuk', to:'Selesai' },   // opsional
-    //     stages:[ 'Diterima','Dicek','Diproses','Selesai' ], // opsional
-    //     events:[ {at:'2026-01-18 10:15', title:'Diterima', sub:'Data berhasil masuk sistem'}, ... ]
-    //   }]
-    // }
-    // =========================
     let ALL_ITEMS = [];
     let ACTIVE_ID = null;
 
-    // =========================
-    // HELPERS
-    // =========================
-    function fmtMiniDate(str){
-      if (!str) return '-';
-      return str;
+    // B2) INPUT NORMALIZER & PREFILL
+    function prefillFromQuery_(){
+      const qs = new URLSearchParams(location.search);
+      const code = (qs.get('code') || qs.get('trackingCode') || '').trim();
+      if (code) document.getElementById('inp-code').value = code.toUpperCase();
     }
+
+    function bindInputRules_(){
+      const codeEl = document.getElementById('inp-code');
+      const secEl  = document.getElementById('inp-secret');
+      codeEl.addEventListener('input', () => {
+        codeEl.value = codeEl.value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0, 8);
+      });
+      secEl.addEventListener('input', () => {
+        secEl.value = secEl.value.replace(/\D/g,'').slice(0, 4);
+      });
+    }
+
+    function fmtMiniDate(str){ return str || '-'; }
 
     function pct_(cur, total){
       cur = Number(cur); total = Number(total);
       if (!isFinite(cur) || !isFinite(total) || total <= 0) return 0;
-      const p = Math.max(0, Math.min(1, cur / total));
-      return Math.round(p * 100);
+      return Math.round(Math.max(0, Math.min(1, cur / total)) * 100);
     }
 
     function toneBadgeClass(tone){
@@ -644,28 +613,153 @@
       setTimeout(() => safeHideStatus(), 800);
     }
 
-    // =========================
-    // RENDER LIST
-    // =========================
+    // B3) MAPPERS
+    function typeLabelByPrefix_(prefix){
+      prefix = String(prefix || '').toUpperCase();
+      if (prefix === 'PA') return 'Pendaftaran Anggota';
+      if (prefix === 'PD') return 'Perbaikan Data';
+      if (prefix === 'LS') return 'Live Chat Support';
+      if (prefix === 'AK') return 'Pembuatan Akun';
+      return 'Request';
+    }
+
+    function stagesByPrefix_(prefix){
+      prefix = String(prefix || '').toUpperCase();
+      if (prefix === 'PA') return ['Diterima','Verifikasi','Keputusan','Selesai'];
+      if (prefix === 'PD') return ['Diterima','Dicek','Perbaikan','Selesai'];
+      if (prefix === 'LS') return ['Dibuat','Diproses','Tindak Lanjut','Selesai'];
+      if (prefix === 'AK') return ['Diterima','Validasi','Aktivasi','Selesai'];
+      return ['Diterima','Dicek','Diproses','Selesai'];
+    }
+
+    function stageIndexByStatus_(status, stages){
+      const s = String(status || '').toLowerCase();
+      const last = stages.length - 1;
+      if (s.includes('selesai')) return last;
+      if (s.includes('ditolak') || s.includes('disetujui') || s.includes('perlu') || s.includes('revisi') || s.includes('perbaikan')) return Math.min(2, last);
+      if (s.includes('menunggu') || s.includes('pending') || s.includes('verifikasi')) return Math.min(1, last);
+      return 0;
+    }
+
+    function toneFromStatus_(label){
+      const s = String(label || '').toLowerCase();
+      if (s.includes('perlu') || s.includes('revisi') || s.includes('perbaikan')) return 'warn';
+      if (s.includes('ditolak')) return 'red';
+      if (s.includes('disetujui') || s.includes('selesai')) return 'toska';
+      return 'blue';
+    }
+
+    function formatDTShort_(s){
+      const m = String(s || '').match(/^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})$/);
+      if (!m) return (s || '-');
+      const d = new Date(Number(m[1]), Number(m[2])-1, Number(m[3]), Number(m[4]), Number(m[5]), Number(m[6]));
+      const date = new Intl.DateTimeFormat('id-ID', { day:'2-digit', month:'short', year:'2-digit' }).format(d);
+      const time = new Intl.DateTimeFormat('id-ID', { hour:'2-digit', minute:'2-digit' }).format(d);
+      return `${date} • ${time}`;
+    }
+
+    function formatDTLine_(s){
+      const m = String(s || '').match(/^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})$/);
+      if (!m) return (s || '-');
+      const d = new Date(Number(m[1]), Number(m[2])-1, Number(m[3]), Number(m[4]), Number(m[5]), Number(m[6]));
+      const date = new Intl.DateTimeFormat('id-ID', { day:'2-digit', month:'short', year:'2-digit' }).format(d);
+      const time = new Intl.DateTimeFormat('id-ID', { hour:'2-digit', minute:'2-digit' }).format(d);
+      return `${date}<br><span style="opacity:.7;">${time}</span>`;
+    }
+
+    function eventToneDot_(statusTone){
+      if (statusTone === 'red') return 'red';
+      if (statusTone === 'warn') return 'warn';
+      if (statusTone === 'toska') return 'ok';
+      return 'on';
+    }
+
+    function normalizeItem_(x){
+      x = x || {};
+      const prog = x.progress || {};
+      if (!prog || typeof prog !== 'object') x.progress = { currentIndex:0, total:4 };
+      if (typeof x.progress.currentIndex !== 'number') x.progress.currentIndex = 0;
+      if (!Array.isArray(x.events)) x.events = [];
+      return x;
+    }
+
+    function mapTrackOutToItem_(out){
+      const r = out.request || {};
+      const prefix = String(r.code || '').slice(0, 2).toUpperCase();
+      const stages = stagesByPrefix_(prefix);
+      const statusTone = toneFromStatus_(r.status);
+
+      const item = {
+        id: r.code || '-',
+        type: typeLabelByPrefix_(prefix),
+        title: r.title || typeLabelByPrefix_(prefix),
+        createdAt: formatDTShort_(r.createdAt),
+        updatedAt: formatDTShort_(r.updatedAt),
+        statusLabel: r.status || '-',
+        statusTone: statusTone,
+        isClosed: /selesai|ditolak/i.test(String(r.status || '')),
+        progress: { currentIndex: stageIndexByStatus_(r.status, stages), total: stages.length },
+        stages: stages,
+        note: r.publicNote || '—',
+        events: Array.isArray(out.events) ? out.events.map(ev => {
+          const toTone = toneFromStatus_(ev.toStatus || '');
+          let title = ev.type === 'created' ? 'Diterima' : (ev.type === 'status_change' ? (ev.toStatus ? `Status: ${ev.toStatus}` : 'Perubahan Status') : 'Catatan');
+          const sub = ev.note || (ev.fromStatus && ev.toStatus ? `${ev.fromStatus} → ${ev.toStatus}` : '');
+          return { at: formatDTLine_(ev.at), title, sub, tone: eventToneDot_(toTone) };
+        }) : []
+      };
+      return normalizeItem_(item);
+    }
+
+    function upsertItem_(item){
+      const idx = ALL_ITEMS.findIndex(x => x.id === item.id);
+      if (idx >= 0) ALL_ITEMS[idx] = item;
+      else ALL_ITEMS.unshift(item);
+      ACTIVE_ID = item.id;
+    }
+
+    // B4) UPDATED LOOKUP
+    async function lookup(){
+      const code = (document.getElementById('inp-code').value || '').trim().toUpperCase();
+      const secret = (document.getElementById('inp-secret').value || '').trim();
+
+      if (!code || !secret){
+        safeShowStatus('error', 'Belum Lengkap', 'Masukkan kode tracking dan 4 digit terakhir No HP.');
+        return;
+      }
+
+      const btn = document.getElementById('btn-check');
+      btn.disabled = true;
+      safeShowStatus('loading', 'Memuat...', 'Mengambil data status dari server.');
+
+      try{
+        const out = await apiCall('trackRequest', { trackingCode: code, secret });
+
+        if (out && out.status === 'ok' && out.request){
+          safeHideStatus();
+          const item = mapTrackOutToItem_(out);
+          upsertItem_(item);
+          renderLists();
+          renderDetail(ALL_ITEMS.find(x => x.id === ACTIVE_ID));
+        } else {
+          safeShowStatus('error', 'Tidak Ditemukan', (out && out.message) ? out.message : 'Kode/verifikasi tidak cocok.');
+        }
+      } catch (e){
+        safeShowStatus('error', 'Koneksi Gagal', e.message);
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
     function ticketCardHTML(item){
       const id = item.id || '-';
       const title = item.title || item.type || 'Request';
       const type = item.type || 'Request';
       const statusLabel = item.statusLabel || 'Diproses';
       const tone = toneBadgeClass(item.statusTone);
-
-      const created = fmtMiniDate(item.createdAt);
-      const updated = fmtMiniDate(item.updatedAt);
-
-      const total = (item.progress && item.progress.total) ? item.progress.total : 4;
-      const curIdx = (item.progress && typeof item.progress.currentIndex === 'number') ? item.progress.currentIndex : 0;
-      const fill = pct_(curIdx, total - 1); // biar 0..100 saat index naik
-
-      // mini dots (4)
-      const dots = [];
-      for (let i=0;i<4;i++){
-        dots.push(`<span class="dot ${i <= curIdx ? 'on' : ''}"></span>`);
-      }
+      const curIdx = item.progress.currentIndex;
+      const fill = pct_(curIdx, item.progress.total - 1);
+      const dots = Array.from({length:4}, (_, i) => `<span class="dot ${i <= curIdx ? 'on' : ''}"></span>`).join('');
 
       return `
         <div class="ticket ${item.id === ACTIVE_ID ? 'active' : ''}" onclick="selectTicket('${encodeURIComponent(id)}')">
@@ -677,50 +771,28 @@
                 <span class="badge ${tone}"><i class="ri-file-list-3-line"></i> ${escapeHtml(type)}</span>
                 <span class="badge ${tone}"><i class="ri-information-line"></i> ${escapeHtml(statusLabel)}</span>
               </div>
-              <div class="meta" style="margin-top:8px;opacity:.9;">
-                <span><i class="ri-time-line"></i> ${escapeHtml(created)}</span>
-                <span>•</span>
-                <span><i class="ri-refresh-line"></i> ${escapeHtml(updated)}</span>
-              </div>
             </div>
-            <div style="display:flex;align-items:center;gap:8px;">
-              <button class="icon-btn" type="button" title="Salin" aria-label="Salin" onclick="event.stopPropagation(); copyText('${escapeAttr(id)}')">
-                <i class="ri-file-copy-line"></i>
-              </button>
-            </div>
+            <button class="icon-btn" type="button" onclick="event.stopPropagation(); copyText('${escapeAttr(id)}')">
+              <i class="ri-file-copy-line"></i>
+            </button>
           </div>
-
           <div class="mini-track">
-            ${dots.join('')}
+            ${dots}
             <div class="track-line"><div class="track-fill" style="width:${fill}%;"></div></div>
-            <div class="mid-icon" aria-hidden="true"><i class="ri-truck-line"></i></div>
+            <div class="mid-icon"><i class="ri-truck-line"></i></div>
           </div>
-        </div>
-      `;
+        </div>`;
     }
 
     function renderLists(){
       const current = ALL_ITEMS.filter(x => !x.isClosed);
       const prev = ALL_ITEMS.filter(x => x.isClosed);
-
       document.getElementById('count-current').textContent = `(${current.length})`;
       document.getElementById('count-prev').textContent = `(${prev.length})`;
-
-      const lc = document.getElementById('list-current');
-      const lp = document.getElementById('list-prev');
-
-      lc.innerHTML = current.length
-        ? current.map(ticketCardHTML).join('')
-        : `<div class="empty">Tidak ada request aktif.</div>`;
-
-      lp.innerHTML = prev.length
-        ? prev.map(ticketCardHTML).join('')
-        : `<div class="empty" style="opacity:.75;">Belum ada riwayat.</div>`;
+      document.getElementById('list-current').innerHTML = current.length ? current.map(ticketCardHTML).join('') : `<div class="empty">Tidak ada request aktif.</div>`;
+      document.getElementById('list-prev').innerHTML = prev.length ? prev.map(ticketCardHTML).join('') : `<div class="empty" style="opacity:.75;">Belum ada riwayat.</div>`;
     }
 
-    // =========================
-    // RENDER DETAIL
-    // =========================
     function renderDetail(item){
       const d = document.getElementById('detail');
       if (!item){
@@ -728,281 +800,91 @@
         document.getElementById('detail-badge').style.display = 'none';
         return;
       }
-
-      const id = item.id || '-';
-      const title = item.title || item.type || 'Request';
-      const type = item.type || 'Request';
-      const statusLabel = item.statusLabel || '-';
       const tone = toneBadgeClass(item.statusTone);
-
-      const created = item.createdAt || '-';
-      const updated = item.updatedAt || '-';
-
-      // big progress
-      const stages = Array.isArray(item.stages) && item.stages.length ? item.stages : ['Diterima','Dicek','Diproses','Selesai'];
-      const total = stages.length;
-      const curIdx = (item.progress && typeof item.progress.currentIndex === 'number') ? item.progress.currentIndex : 0;
-      const fill = pct_(curIdx, total - 1);
-
-      // badge on header
+      const curIdx = item.progress.currentIndex;
+      const fill = pct_(curIdx, item.progress.total - 1);
+      
       const badge = document.getElementById('detail-badge');
       badge.className = `badge ${tone}`;
       badge.style.display = 'inline-flex';
-      badge.innerHTML = `<i class="ri-information-line"></i> ${escapeHtml(statusLabel)}`;
-
-      const from = (item.route && item.route.from) ? item.route.from : stages[0];
-      const to   = (item.route && item.route.to) ? item.route.to : stages[stages.length - 1];
-
-      const nodes = stages.map((_, i) => `<span class="big-node ${i <= curIdx ? 'on' : ''}"></span>`).join('');
-
-      const events = Array.isArray(item.events) ? item.events : [];
-      const timelineHTML = events.length
-        ? events.map(ev => {
-            const dotClass = toneDotClass(ev.tone || 'on');
-            return `
-              <div class="t-row">
-                <div class="t-date">${escapeHtml(ev.at || '-')}</div>
-                <div class="t-dot ${dotClass}"></div>
-                <div class="t-main">
-                  <div class="t-title">${escapeHtml(ev.title || '-')}</div>
-                  <div class="t-sub">${escapeHtml(ev.sub || '')}</div>
-                </div>
-              </div>
-            `;
-          }).join('')
-        : `<div class="empty">Timeline belum tersedia.</div>`;
+      badge.innerHTML = `<i class="ri-information-line"></i> ${escapeHtml(item.statusLabel)}`;
 
       d.innerHTML = `
         <div class="detail-head">
           <div class="detail-left">
-            <div class="detail-code">${escapeHtml(id)}</div>
-            <h2 class="detail-title">${escapeHtml(title)}</h2>
+            <div class="detail-code">${escapeHtml(item.id)}</div>
+            <h2 class="detail-title">${escapeHtml(item.title)}</h2>
             <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">
-              <span class="badge ${tone}"><i class="ri-file-list-3-line"></i> ${escapeHtml(type)}</span>
-              <span class="badge"><i class="ri-time-line"></i> Dibuat: ${escapeHtml(created)}</span>
-              <span class="badge"><i class="ri-refresh-line"></i> Update: ${escapeHtml(updated)}</span>
+              <span class="badge ${tone}">${escapeHtml(item.type)}</span>
+              <span class="badge">Dibuat: ${escapeHtml(item.createdAt)}</span>
+              <span class="badge">Update: ${escapeHtml(item.updatedAt)}</span>
             </div>
           </div>
           <div class="detail-actions">
-            <button class="mini-btn" type="button" onclick="copyText('${escapeAttr(id)}')">
-              <i class="ri-file-copy-line"></i> Salin Kode
-            </button>
-            <button class="mini-btn" type="button" onclick="refreshActive()">
-              <i class="ri-refresh-line"></i> Refresh
-            </button>
+            <button class="mini-btn" onclick="copyText('${escapeAttr(item.id)}')"><i class="ri-file-copy-line"></i> Salin</button>
+            <button class="mini-btn" onclick="lookup()"><i class="ri-refresh-line"></i> Refresh</button>
           </div>
         </div>
-
         <div class="detail-summary">
           <div class="sum-grid">
-            <div class="k">Status</div>
-            <div class="v">${escapeHtml(statusLabel)}</div>
-            <div class="k">Catatan</div>
-            <div class="v">${escapeHtml(item.note || '—')}</div>
+            <div class="k">Status</div><div class="v">${escapeHtml(item.statusLabel)}</div>
+            <div class="k">Catatan</div><div class="v">${escapeHtml(item.note)}</div>
           </div>
         </div>
-
         <div class="big-track">
-          <div class="big-row">
-            <div class="left">${escapeHtml(from)}</div>
-            <div class="right">${escapeHtml(to)}</div>
-          </div>
           <div class="big-line">
-            ${nodes}
+            ${item.stages.map((_, i) => `<span class="big-node ${i <= curIdx ? 'on' : ''}"></span>`).join('')}
             <div class="big-bar"><div class="big-fill" style="width:${fill}%;"></div></div>
             <div class="big-mid"><i class="ri-flag-2-line"></i></div>
           </div>
           <div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap;">
-            ${stages.map((s, i) => `
-              <span class="badge ${i <= curIdx ? tone : ''}" style="border-style:dashed;">
-                <i class="ri-checkbox-blank-circle-line"></i> ${escapeHtml(s)}
-              </span>
-            `).join('')}
+            ${item.stages.map((s, i) => `<span class="badge ${i <= curIdx ? tone : ''}">${escapeHtml(s)}</span>`).join('')}
           </div>
         </div>
-
-        <div class="timeline">
-          ${timelineHTML}
-        </div>
-      `;
+        <div class="timeline">${item.events.map(ev => `
+          <div class="t-row">
+            <div class="t-date">${ev.at}</div>
+            <div class="t-dot ${ev.tone}"></div>
+            <div class="t-main">
+              <div class="t-title">${escapeHtml(ev.title)}</div>
+              <div class="t-sub">${escapeHtml(ev.sub)}</div>
+            </div>
+          </div>`).join('') || '<div class="empty">Timeline belum tersedia.</div>'}
+        </div>`;
     }
 
     function selectTicket(encodedId){
-      const id = decodeURIComponent(encodedId || '');
-      ACTIVE_ID = id;
+      ACTIVE_ID = decodeURIComponent(encodedId);
       renderLists();
-      const item = ALL_ITEMS.find(x => x.id === id);
-      renderDetail(item);
+      renderDetail(ALL_ITEMS.find(x => x.id === ACTIVE_ID));
     }
 
-    // =========================
-    // LOOKUP
-    // =========================
-    async function lookup(){
-      const code = (document.getElementById('inp-code').value || '').trim();
-      const secret = (document.getElementById('inp-secret').value || '').trim();
-
-      if (!code || !secret){
-        safeShowStatus('error', 'Belum Lengkap', 'Masukkan kode tracking dan verifikasi kedua.');
-        return;
-      }
-
-      const btn = document.getElementById('btn-check');
-      btn.disabled = true;
-
-      safeShowStatus('loading', 'Memuat...', 'Mengambil data status dari server.');
-
-      try{
-        // GANTI action sesuai backend kamu
-        const out = await postJson({ action: 'trackLookup', code, secret });
-
-        if (out && out.status === 'ok' && Array.isArray(out.items)){
-          safeHideStatus();
-
-          ALL_ITEMS = out.items.map(normalizeItem_);
-          ACTIVE_ID = (ALL_ITEMS[0] && ALL_ITEMS[0].id) ? ALL_ITEMS[0].id : null;
-
-          renderLists();
-          renderDetail(ALL_ITEMS.find(x => x.id === ACTIVE_ID));
-
-          if (!ALL_ITEMS.length){
-            safeShowStatus('error', 'Tidak Ditemukan', 'Data tidak ditemukan atau verifikasi tidak cocok.');
-          }
-
-        } else {
-          safeShowStatus('error', 'Gagal', (out && out.message) ? out.message : 'Tidak bisa mengambil status.');
-        }
-
-      } catch (e){
-        safeShowStatus('error', 'Koneksi Gagal', e.message);
-      }
-
-      btn.disabled = false;
-    }
-
-    // refresh detail aktif (kalau backend kamu support)
-    async function refreshActive(){
-      const item = ALL_ITEMS.find(x => x.id === ACTIVE_ID);
-      if (!item) return;
-      // cara paling simpel: panggil lookup ulang dengan input yang sama
-      lookup();
-    }
-
-    // normalisasi supaya aman kalau backend belum lengkap
-    function normalizeItem_(x){
-      x = x || {};
-      const prog = x.progress || {};
-      if (!prog || typeof prog !== 'object') x.progress = { currentIndex:0, total:4 };
-      if (typeof x.progress.currentIndex !== 'number') x.progress.currentIndex = 0;
-
-      if (!Array.isArray(x.stages) || !x.stages.length){
-        x.stages = defaultStagesByType_(x.type);
-      }
-      if (!Array.isArray(x.events)) x.events = [];
-      if (!x.statusTone) x.statusTone = defaultToneByStatus_(x.statusLabel);
-      return x;
-    }
-
-    function defaultStagesByType_(type){
-      const t = String(type || '').toLowerCase();
-      if (t.includes('pendaftaran')) return ['Diterima','Verifikasi','Keputusan','Selesai'];
-      if (t.includes('perbaikan')) return ['Diterima','Dicek','Perbaikan','Selesai'];
-      if (t.includes('live chat') || t.includes('support')) return ['Dibuat','Diproses','Tindak Lanjut','Selesai'];
-      if (t.includes('akun')) return ['Diterima','Validasi','Aktivasi','Selesai'];
-      return ['Diterima','Dicek','Diproses','Selesai'];
-    }
-
-    function defaultToneByStatus_(label){
-      const s = String(label || '').toLowerCase();
-      if (s.includes('perlu') || s.includes('revisi')) return 'warn';
-      if (s.includes('ditolak')) return 'red';
-      if (s.includes('disetujui') || s.includes('selesai')) return 'toska';
-      return 'blue';
-    }
-
-    // =========================
-    // ENTER KEY BEHAVIOR
-    // (kode + secret -> Enter = Cek Status)
-    // =========================
     function bindEnterToLookup_(){
-      const wrap = document.querySelector('.search');
-      if (!wrap) return;
-      wrap.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter'){
-          e.preventDefault();
-          lookup();
-        }
+      document.querySelector('.search').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') lookup();
       });
     }
 
-    // basic escape
     function escapeHtml(s){
       return String(s ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
     }
     function escapeAttr(s){ return escapeHtml(s).replace(/"/g,'&quot;'); }
 
-    // settings placeholder
     function openSettings(){
-      safeShowStatus('info', 'Info', 'Pengaturan bisa kamu isi nanti (mis. bantuan, kebijakan privasi, dsb).');
+      safeShowStatus('info', 'Info', 'Pengaturan akan tersedia segera.');
       setTimeout(() => safeHideStatus(), 1200);
-    }
-
-    // =========================
-    // DEMO DATA (hapus kalau sudah backend ready)
-    // =========================
-    function loadDemo_(){
-      ALL_ITEMS = [
-        {
-          id:'HC32-AB12CD',
-          type:'Pendaftaran Anggota',
-          title:'Pendaftaran Anggota Baru',
-          createdAt:'18 Jan, 26 • 10:15',
-          updatedAt:'18 Jan, 26 • 10:30',
-          statusLabel:'Menunggu Verifikasi',
-          statusTone:'blue',
-          isClosed:false,
-          progress:{ currentIndex:1, total:4 },
-          route:{ from:'Diterima', to:'Selesai' },
-          stages:['Diterima','Verifikasi','Keputusan','Selesai'],
-          note:'Admin sedang memeriksa data.',
-          events:[
-            { at:'18 Jan, 26<br><span style="opacity:.7;">10:15</span>', title:'Diterima', sub:'Form berhasil dikirim.', tone:'on' },
-            { at:'18 Jan, 26<br><span style="opacity:.7;">10:30</span>', title:'Mulai Verifikasi', sub:'Data sedang ditinjau pengurus.', tone:'on' }
-          ]
-        },
-        {
-          id:'HC32-ZX90QP',
-          type:'Tiket Live Chat Support',
-          title:'Tindak Lanjut Live Chat',
-          createdAt:'15 Jan, 26 • 19:02',
-          updatedAt:'16 Jan, 26 • 09:10',
-          statusLabel:'Selesai',
-          statusTone:'toska',
-          isClosed:true,
-          progress:{ currentIndex:3, total:4 },
-          stages:['Dibuat','Diproses','Tindak Lanjut','Selesai'],
-          note:'Tiket sudah ditutup.',
-          events:[
-            { at:'15 Jan, 26<br><span style="opacity:.7;">19:02</span>', title:'Tiket Dibuat', sub:'Laporan masuk dari Live Chat.', tone:'on' },
-            { at:'16 Jan, 26<br><span style="opacity:.7;">08:20</span>', title:'Diproses', sub:'Admin menghubungi pendaftar.', tone:'on' },
-            { at:'16 Jan, 26<br><span style="opacity:.7;">09:10</span>', title:'Selesai', sub:'Masalah terselesaikan.', tone:'ok' }
-          ]
-        }
-      ];
-      ACTIVE_ID = ALL_ITEMS[0].id;
-      renderLists();
-      renderDetail(ALL_ITEMS[0]);
     }
 
     // INIT
     document.addEventListener('DOMContentLoaded', () => {
       if (typeof initHC32Navigation === 'function') initHC32Navigation('tracking');
       bindEnterToLookup_();
-
-      // Demo (hapus kalau sudah backend)
-      loadDemo_();
+      prefillFromQuery_();
+      bindInputRules_();
+      
+      // B5) DEMO DATA DISABLED
+      // loadDemo_(); 
     });
   </script>
 </body>
 </html>
-
