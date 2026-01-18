@@ -14,30 +14,28 @@
   <script src="../../components.js"></script>
 
   <style>
-    :root{
-      --hc-blue:#1a4787;
-      --hc-toska:#0f8a94;
-      --hc-dark:#2e2e2e;
-      --hc-bg:#e7e9ea;
-      --hc-red:#d30e14;
-      --card:#ffffff;
-      --muted:#64748b;
-      --line:#e2e8f0;
-      --shadow:0 10px 35px rgba(2, 6, 23, .08);
-      --radius:18px;
-      --accent: var(--hc-blue);
-      --accent2: var(--hc-toska);
+    :root {
+      --hc-blue: #1a4787;
+      --hc-toska: #0f8a94;
+      --hc-dark: #2e2e2e;
+      --hc-bg: #e7e9ea;
+      --card: #ffffff;
+      --muted: #64748b;
+      --line: #e2e8f0;
+      --shadow: 0 10px 35px rgba(2, 6, 23, .08);
+      --radius: 18px;
     }
 
-    body{
-      margin:0;
-      font-family:'Poppins', sans-serif;
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
       background: var(--hc-bg);
-      color:#0f172a;
+      color: #0f172a;
     }
 
     .main-wrapper {
-      padding: 40px 20px;
+      padding: 40px 15px;
       min-height: 100vh;
       margin-top: 60px;
     }
@@ -47,12 +45,12 @@
       margin: 0 auto;
     }
 
-    /* Search Card Update (Following image_544da1.png style) */
+    /* SEARCH CARD FIX */
     .search-card {
       background: var(--card);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
-      padding: 40px 30px;
+      padding: 35px 25px; /* Padding disesuaikan */
       border: 1px solid var(--line);
       margin-bottom: 24px;
       position: relative;
@@ -60,7 +58,6 @@
       text-align: center;
     }
 
-    /* Top blue accent line */
     .search-card::before {
       content: "";
       position: absolute;
@@ -70,43 +67,71 @@
     }
 
     .search-card h2 {
-      font-size: 28px;
+      font-size: 26px;
       font-weight: 800;
       margin: 0;
       color: var(--hc-dark);
     }
 
     .search-card p {
-      font-size: 14px;
+      font-size: 13.5px;
       color: var(--muted);
-      margin: 10px 0 30px;
+      margin: 8px 0 25px;
     }
 
+    /* Perbaikan Kolom Input agar tidak nabrak */
     .search-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
+      display: flex;
       gap: 12px;
-      margin-bottom: 16px;
+      margin-bottom: 15px;
+      width: 100%;
+    }
+
+    .inp-group {
+      flex: 1;
+      min-width: 0; /* Mencegah flex item meluap */
     }
 
     input {
-      width: 100%; padding: 14px 18px; border: 1px solid #cbd5e1;
-      border-radius: 12px; font-size: 15px; outline: none;
-      font-family: 'Poppins', sans-serif; transition: 0.2s;
+      width: 100%;
+      height: 50px;
+      padding: 0 16px;
+      border: 1px solid #cbd5e1;
+      border-radius: 12px;
+      font-size: 14px;
+      outline: none;
+      font-family: 'Poppins', sans-serif;
+      transition: 0.2s;
       background: #f8fafc;
     }
-    input:focus { border-color: var(--hc-blue); background: #fff; box-shadow: 0 0 0 3px rgba(26, 71, 135, 0.1); }
+
+    input:focus {
+      border-color: var(--hc-blue);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(26, 71, 135, 0.1);
+    }
 
     .btn-search {
-      width: 100%; background: linear-gradient(135deg, var(--hc-blue), var(--hc-toska));
-      color: #fff; border: none; padding: 16px; border-radius: 12px;
-      font-weight: 700; font-size: 16px; cursor: pointer;
-      box-shadow: 0 4px 15px rgba(15, 138, 148, 0.3); transition: 0.2s;
-      display: flex; align-items: center; justify-content: center; gap: 10px;
+      width: 100%;
+      height: 50px;
+      background: linear-gradient(135deg, var(--hc-blue), var(--hc-toska));
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 15px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(15, 138, 148, 0.25);
+      transition: 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
     }
-    .btn-search:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(15, 138, 148, 0.4); }
 
-    /* Detail Panel (Keep same as instructed) */
+    .btn-search:hover { transform: translateY(-1px); box-shadow: 0 6px 15px rgba(15, 138, 148, 0.35); }
+
+    /* DETAIL PANEL (Card Bawah) */
     #result-panel {
       display: none;
       animation: slideUp 0.4s ease;
@@ -118,43 +143,59 @@
       background: var(--card);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
-      padding: 30px;
+      padding: 25px;
       border: 1px solid var(--line);
     }
 
     .panel-head {
-      padding-bottom: 15px; border-bottom: 1px solid var(--line);
-      margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;
+      padding-bottom: 15px;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
     .badge {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 6px 14px; border-radius: 99px; font-size: 12px; font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 99px;
+      font-size: 11px;
+      font-weight: 700;
+      background: rgba(15, 138, 148, 0.1);
+      color: var(--hc-toska);
     }
-    .badge.toska { background: rgba(15, 138, 148, 0.1); color: var(--hc-toska); }
 
-    .req-owner { font-size: 24px; font-weight: 800; margin: 0; color: var(--hc-dark); }
-    .req-meta { font-size: 11px; color: var(--muted); margin-top: 5px; font-weight: 600; letter-spacing: 0.5px; }
+    .req-owner { font-size: 22px; font-weight: 800; margin: 0; color: var(--hc-dark); }
+    .req-meta { font-size: 10.5px; color: var(--muted); margin-top: 4px; font-weight: 600; letter-spacing: 0.3px; }
 
     .note-box {
-      background: #f8fafc; padding: 16px; border-radius: 12px;
-      border-left: 4px solid var(--hc-toska); margin: 20px 0; font-size: 13px;
+      background: #f8fafc;
+      padding: 15px;
+      border-radius: 12px;
+      border-left: 4px solid var(--hc-toska);
+      margin: 20px 0;
+      font-size: 13px;
     }
 
-    .timeline { margin-top: 30px; }
-    .t-row { display: grid; grid-template-columns: 100px 30px 1fr; gap: 5px; padding-bottom: 25px; }
-    .t-date { font-size: 10px; color: var(--muted); font-weight: 800; text-align: right; padding-top: 4px; }
+    .timeline { margin-top: 25px; }
+    .t-row { display: grid; grid-template-columns: 85px 30px 1fr; gap: 5px; padding-bottom: 20px; }
+    .t-date { font-size: 10px; color: var(--muted); font-weight: 700; text-align: right; padding-top: 4px; }
     .t-dot-col { display: flex; flex-direction: column; align-items: center; position: relative; }
-    .t-dot { width: 12px; height: 12px; border-radius: 50%; background: #cbd5e1; z-index: 2; margin-top: 5px; border: 2px solid #fff; }
-    .t-dot.on { background: var(--hc-toska); box-shadow: 0 0 0 4px rgba(15, 138, 148, 0.1); }
+    .t-dot { width: 10px; height: 10px; border-radius: 50%; background: #cbd5e1; z-index: 2; margin-top: 6px; border: 2px solid #fff; }
+    .t-dot.on { background: var(--hc-toska); box-shadow: 0 0 0 3px rgba(15, 138, 148, 0.15); }
     .t-line { position: absolute; top: 15px; bottom: -15px; width: 2px; background: #e2e8f0; z-index: 1; }
     .t-row:last-child .t-line { display: none; }
-    .t-title { font-size: 14px; font-weight: 700; color: var(--hc-dark); }
-    .t-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .t-title { font-size: 13px; font-weight: 700; color: var(--hc-dark); }
+    .t-sub { font-size: 11.5px; color: var(--muted); margin-top: 2px; }
 
-    @media (max-width: 600px) {
-      .search-row { grid-template-columns: 1fr; }
-      .t-row { grid-template-columns: 80px 25px 1fr; }
+    /* Responsif Mobile */
+    @media (max-width: 500px) {
+      .search-row { flex-direction: column; gap: 10px; }
+      .search-card { padding: 30px 15px; }
+      .t-row { grid-template-columns: 70px 25px 1fr; }
     }
   </style>
 </head>
@@ -168,8 +209,12 @@
         <p>Masukan kode tracking untuk melihat progres permintaan Anda.</p>
 
         <div class="search-row">
-          <input id="inp-code" placeholder="Kode (Contoh: PA000123)" autocomplete="off" />
-          <input id="inp-secret" placeholder="4 Digit Terakhir No HP" autocomplete="off" />
+          <div class="inp-group">
+            <input id="inp-code" placeholder="Kode (Contoh: PA000123)" autocomplete="off" />
+          </div>
+          <div class="inp-group">
+            <input id="inp-secret" placeholder="4 Digit Terakhir No HP" autocomplete="off" maxlength="4" />
+          </div>
         </div>
         <button class="btn-search" onclick="lookup()">
           <i class="ri-search-2-line"></i> Periksa Status
@@ -192,25 +237,21 @@
   </div>
 
   <script>
+    // Inisialisasi Sidebar & Header
     document.addEventListener('DOMContentLoaded', () => {
       if (typeof initHC32Navigation === 'function') initHC32Navigation('tracking');
-      prefillFromQuery_();
+      prefillFromQuery();
     });
 
-    async function apiCall(action, payload){
-      if (typeof hc32_post === 'function') return await hc32_post(action, payload);
-      return { status: 'error', message: 'API function not found' };
-    }
-
-    // Formatter
+    // Validasi Input (Uppercase & Number only)
     document.getElementById('inp-code').addEventListener('input', (e) => {
-      e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0, 8);
+      e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0, 10);
     });
     document.getElementById('inp-secret').addEventListener('input', (e) => {
       e.target.value = e.target.value.replace(/\D/g,'').slice(0, 4);
     });
 
-    async function lookup(){
+    async function lookup() {
       const code = document.getElementById('inp-code').value.trim();
       const secret = document.getElementById('inp-secret').value.trim();
 
@@ -219,32 +260,32 @@
         return;
       }
 
-      // 1. SHOW HC LOADING SPINNER (from component.js)
+      // Animasi Loading HC (dari component.js)
       if (window.showHC32Spinner) window.showHC32Spinner('Sedang memuat status...');
 
       try {
-        const out = await apiCall('trackRequest', { trackingCode: code, secret });
+        // Asumsi hc32_post sudah ada di component.js/config.js
+        const out = await hc32_post('trackRequest', { trackingCode: code, secret });
 
-        // 2. HIDE SPINNER
         if (window.hideHC32Spinner) window.hideHC32Spinner();
 
         if (out && out.status === 'ok' && out.request) {
-          renderRequestDetail(out);
+          renderDetail(out);
           document.getElementById('result-panel').style.display = 'block';
           
           setTimeout(() => {
             window.scrollTo({ top: document.getElementById('result-panel').offsetTop - 80, behavior: 'smooth' });
-          }, 100);
+          }, 150);
         } else {
           if (window.showHC32Status) window.showHC32Status('error', 'Gagal', out.message || 'Data tidak ditemukan.');
         }
       } catch (e) {
         if (window.hideHC32Spinner) window.hideHC32Spinner();
-        if (window.showHC32Status) window.showHC32Status('error', 'Error Koneksi', 'Gagal terhubung ke server.');
+        if (window.showHC32Status) window.showHC32Status('error', 'Server Error', 'Terjadi masalah pada koneksi server.');
       }
     }
 
-    function renderRequestDetail(out) {
+    function renderDetail(out) {
       const req = out.request;
       const prefix = (req.code || '').substring(0, 2).toUpperCase();
       
@@ -256,30 +297,29 @@
 
       document.getElementById('txt-status-label').style.color = (req.status || '').toLowerCase().includes('selesai') ? 'var(--hc-toska)' : 'var(--hc-blue)';
       document.getElementById('txt-status-label').innerText = req.status;
-
-      document.getElementById('badge-container').innerHTML = `<div class="badge toska"><i class="ri-price-tag-3-line"></i> ${typeLabel}</div>`;
+      document.getElementById('badge-container').innerHTML = `<div class="badge"><i class="ri-price-tag-3-line"></i> ${typeLabel}</div>`;
 
       const content = document.getElementById('detail-content');
       content.innerHTML = `
         <h2 class="req-owner">${req.ownerName || 'Pemohon'}</h2>
-        <div class="req-meta">KODE: ${req.code} • UPDATE: ${formatDate_(req.updatedAt)}</div>
+        <div class="req-meta">KODE: ${req.code} • DIPERBARUI: ${formatDT(req.updatedAt)}</div>
         
         <div class="note-box">
-          <div style="font-weight:800; margin-bottom:4px; color:var(--hc-blue); font-size:11px; letter-spacing:1px;">PESAN PUBLIK:</div>
-          ${req.publicNote || 'Belum ada catatan tambahan dari pengurus.'}
+          <div style="font-weight:800; margin-bottom:4px; color:var(--hc-blue); font-size:11px; letter-spacing:1px;">CATATAN:</div>
+          ${req.publicNote || 'Sedang dalam peninjauan oleh admin.'}
         </div>
 
         <div class="timeline">
           ${out.events.reverse().map((ev, i) => `
             <div class="t-row">
-              <div class="t-date">${formatDTLine_(ev.at)}</div>
+              <div class="t-date">${formatDTLine(ev.at)}</div>
               <div class="t-dot-col">
                 <div class="t-dot ${i === 0 ? 'on' : ''}"></div>
                 <div class="t-line"></div>
               </div>
               <div class="t-main">
-                <div class="t-title">${ev.type === 'created' ? 'Permintaan Terkirim' : (ev.toStatus || 'Pembaruan Status')}</div>
-                <div class="t-sub">${ev.note || 'Data sedang ditinjau.'}</div>
+                <div class="t-title">${ev.type === 'created' ? 'Permintaan Terkirim' : (ev.toStatus || 'Update Status')}</div>
+                <div class="t-sub">${ev.note || 'Diproses oleh sistem.'}</div>
               </div>
             </div>
           `).join('')}
@@ -287,25 +327,25 @@
       `;
     }
 
-    function formatDate_(s) {
+    function formatDT(s) {
       if(!s) return '-';
       const d = new Date(s);
       return d.toLocaleDateString('id-ID', {day:'2-digit', month:'short', year:'numeric'}) + ' ' + d.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'});
     }
 
-    function formatDTLine_(s) {
+    function formatDTLine(s) {
       if(!s) return '-';
       const d = new Date(s);
-      return `<strong>${d.toLocaleDateString('id-ID', {day:'2-digit', month:'short'})}</strong><br><span style="opacity:0.7">${d.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'})}</span>`;
+      return `<strong>${d.toLocaleDateString('id-ID', {day:'2-digit', month:'short'})}</strong><br><span style="opacity:0.6">${d.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'})}</span>`;
     }
 
-    function prefillFromQuery_(){
+    function prefillFromQuery(){
       const qs = new URLSearchParams(location.search);
       if (qs.get('code')) document.getElementById('inp-code').value = qs.get('code').toUpperCase();
     }
 
     function openSettings() {
-      if (window.showHC32Status) window.showHC32Status('info', 'Pengaturan', 'Fitur pengaturan akan segera hadir.');
+      if (window.showHC32Status) window.showHC32Status('info', 'Lacak Status', 'Gunakan halaman ini untuk memantau progres pengajuan Anda.');
     }
   </script>
 </body>
