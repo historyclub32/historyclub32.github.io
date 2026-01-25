@@ -341,7 +341,6 @@
       masterStages.forEach((stage, index) => {
         const ev = eventMap[stage.key] || null;
         
-        // Logika khusus untuk tahap Keputusan (Ditolak/Disetujui)
         let displayLabel = stage.label;
         let displayDesc = stage.desc;
         let dotClass = ev ? 'on' : '';
@@ -360,9 +359,9 @@
             dotClass = 'err';
             displayDesc = `<span style="color:var(--hc-red); font-weight:600;">Alasan:</span> ${rejectedEv.note || 'Data tidak sesuai ketentuan.'}`;
             
-            // Tambahkan tombol perbaikan jika PA
+            // Tambahkan tombol perbaikan jika PA (FOLDER DIPERBARUI)
             if(prefix === 'PA') {
-              displayDesc += `<br><a href="../pendaftaran/perbaikan.html?code=${req.code}" class="btn-fix"><i class="ri-edit-2-line"></i> Perbaiki Data Sekarang</a>`;
+              displayDesc += `<br><a href="../../pendaftaran/perbaikan/?code=${req.code}" class="btn-fix" id="btn-fix-${req.code}"><i class="ri-edit-2-line"></i> Perbaiki Data Sekarang</a>`;
             }
             timelineHTML += renderRow(rejectedEv.at, 'err', displayLabel, displayDesc, false);
           } else {
@@ -380,6 +379,17 @@
         <div class="note-box"><strong>Status Terkini:</strong> ${req.status}</div>
         <div class="timeline">${timelineHTML}</div>
       `;
+
+      // --- LOGIKA TAMBAHAN: Matikan tombol jika status sudah bukan Ditolak ---
+      if (req.status !== 'Ditolak') {
+        const btn = document.getElementById(`btn-fix-${req.code}`);
+        if (btn) {
+            btn.style.pointerEvents = 'none';
+            btn.style.opacity = '0.5';
+            btn.style.background = 'var(--hc-toska)'; // Ubah warna jadi hijau toska agar senada dengan sukses
+            btn.innerHTML = '<i class="ri-check-line"></i> Perbaikan Terkirim / Diproses';
+        }
+      }
     }
 
     function renderRow(date, dotClass, title, sub, isFuture) {
