@@ -185,11 +185,16 @@
 
     .t-date { font-size: 10px; color: var(--muted); font-weight: 700; text-align: right; padding-top: 4px; }
     .t-dot-col { display: flex; flex-direction: column; align-items: center; position: relative; }
+    
+    /* Dot Styles */
     .t-dot { width: 12px; height: 12px; border-radius: 50%; background: #cbd5e1; z-index: 2; margin-top: 6px; border: 2px solid #fff; }
     .t-dot.on { background: var(--hc-toska); box-shadow: 0 0 0 3px rgba(15, 138, 148, 0.15); }
     .t-dot.err { background: var(--hc-red); box-shadow: 0 0 0 3px rgba(211, 14, 20, 0.15); }
     
+    /* Line Styles */
     .t-line { position: absolute; top: 18px; bottom: -25px; width: 2px; background: #e2e8f0; z-index: 1; }
+    .t-line.active { background: var(--hc-toska); opacity: 0.6; }
+
     .t-row:last-child .t-line { display: none; }
     
     .t-main { padding-left: 5px; }
@@ -310,8 +315,8 @@
       let typeLabel = "Permintaan Umum";
       let sendDesc = "Permintaan telah kami terima dan masuk ke sistem.";
       
-      if(prefix === "PA") { typeLabel = "Pendaftaran Anggota"; sendDesc = "Formulir pendaftaran telah diterima dan menunggu antrean verifikasi."; }
-      else if(prefix === "PD") { typeLabel = "Perbaikan Data"; sendDesc = "Permintaan perbaikan data telah kami terima."; }
+      if(prefix === "PA") { typeLabel = "Pendaftaran Anggota"; sendDesc = "Formulir pendaftaran telah diterima."; }
+      else if(prefix === "PD") { typeLabel = "Perbaikan Data"; sendDesc = "Permintaan perbaikan data telah diterima."; }
       else if(prefix === "LS") { typeLabel = "Layanan Support"; sendDesc = "Tiket dukungan telah dibuat."; }
 
       document.getElementById('txt-status-label').style.color = (req.status || '').toLowerCase().includes('selesai') ? 'var(--hc-toska)' : 'var(--hc-blue)';
@@ -337,6 +342,9 @@
         let displayDesc = ev.note || statusDescriptions[displayLabel] || statusDescriptions[ev.toStatus] || 'Status diperbarui.';
         let dotClass = 'on';
         let isLastEvent = (index === sortedEvents.length - 1);
+        
+        // Logika Garis Kontras: Aktif jika ada event setelahnya
+        let lineActive = !isLastEvent; 
 
         if (ev.toStatus === 'Ditolak') {
           dotClass = 'err';
@@ -350,12 +358,13 @@
           displayDesc = rejectInfo;
         }
 
-        timelineHTML += renderRow(ev.at, dotClass, displayLabel, displayDesc, false);
+        timelineHTML += renderRow(ev.at, dotClass, displayLabel, displayDesc, false, lineActive);
       });
 
+      // Tahap Bayangan Masa Depan
       if (!req.status.includes('Selesai') && !req.status.includes('Ditolak')) {
           if (req.status === 'Dalam Proses Verifikasi') {
-              timelineHTML += renderRow('', '', 'Keputusan Pengurus', 'Menunggu hasil verifikasi data pendaftaran.', true);
+              timelineHTML += renderRow('', '', 'Keputusan Pengurus', 'Menunggu hasil verifikasi data pendaftaran.', true, false);
           }
       }
 
@@ -367,13 +376,13 @@
       `;
     }
 
-    function renderRow(date, dotClass, title, sub, isFuture) {
+    function renderRow(date, dotClass, title, sub, isFuture, lineActive) {
       return `
         <div class="t-row ${isFuture ? 'future' : ''}">
           <div class="t-date">${date ? formatDTLine(date) : '--:--'}</div>
           <div class="t-dot-col">
             <div class="t-dot ${dotClass}"></div>
-            <div class="t-line"></div>
+            <div class="t-line ${lineActive ? 'active' : ''}"></div>
           </div>
           <div class="t-main">
             <div class="t-title">${title}</div>
