@@ -205,10 +205,12 @@
       background: var(--hc-red);
       color: #fff;
       text-decoration: none;
+      border: none;
       border-radius: 8px;
       font-size: 11px;
       font-weight: 700;
       transition: 0.2s;
+      cursor: pointer;
     }
     .btn-fix:hover { opacity: 0.9; transform: scale(1.02); }
 
@@ -302,13 +304,15 @@
 
     function renderDetail(out) {
       const req = out.request;
-      const events = out.events || [];
+      const events = out.events || []; 
       const prefix = (req.code || '').substring(0, 2).toUpperCase();
       
       let typeLabel = "Permintaan Umum";
-      if(prefix === "PA") typeLabel = "Pendaftaran Anggota";
-      else if(prefix === "PD") typeLabel = "Perbaikan Data";
-      else if(prefix === "LS") typeLabel = "Layanan Support";
+      let sendDesc = "Permintaan telah kami terima dan masuk ke sistem.";
+      
+      if(prefix === "PA") { typeLabel = "Pendaftaran Anggota"; sendDesc = "Formulir pendaftaran telah diterima dan menunggu antrean verifikasi."; }
+      else if(prefix === "PD") { typeLabel = "Perbaikan Data"; sendDesc = "Permintaan perbaikan data telah kami terima."; }
+      else if(prefix === "LS") { typeLabel = "Layanan Support"; sendDesc = "Tiket dukungan telah dibuat."; }
 
       document.getElementById('txt-status-label').style.color = (req.status || '').toLowerCase().includes('selesai') ? 'var(--hc-toska)' : 'var(--hc-blue)';
       document.getElementById('txt-status-label').innerText = req.status;
@@ -317,43 +321,41 @@
       const content = document.getElementById('detail-content');
       let timelineHTML = '';
 
-      // Balik urutan agar kronologis (lama ke baru)
-      const sortedEvents = [...events].sort((a, b) => new Date(a.at) - new Date(b.at));
+      const statusDescriptions = {
+        'created': sendDesc,
+        'Menunggu Verifikasi': 'Permintaan telah masuk antrean pemeriksaan pengurus.',
+        'Dalam Proses Verifikasi': 'Data sedang divalidasi oleh tim admin/pengurus.',
+        'Disetujui': 'Data Anda telah disetujui oleh pengurus.',
+        'Selesai': 'Proses telah selesai sepenuhnya.',
+        'Ditolak': 'Data tidak sesuai ketentuan.'
+      };
+
+      const sortedEvents = [...events]; 
 
       sortedEvents.forEach((ev, index) => {
-        let displayLabel = "";
-        let displayDesc = ev.note || "";
-        let dotClass = "on";
-        let isLast = (index === sortedEvents.length - 1);
+        let displayLabel = ev.type === 'created' ? 'Permintaan Terkirim' : (ev.toStatus || 'Update Status');
+        let displayDesc = ev.note || statusDescriptions[displayLabel] || statusDescriptions[ev.toStatus] || 'Status diperbarui.';
+        let dotClass = 'on';
+        let isLastEvent = (index === sortedEvents.length - 1);
 
-        if (ev.type === 'created') {
-            displayLabel = "Permintaan Terkirim";
-            if (!displayDesc) displayDesc = "Permintaan telah kami terima dan masuk ke sistem.";
-        } else {
-            displayLabel = ev.toStatus;
-            
-            if (ev.toStatus === 'Ditolak') {
-                dotClass = "err";
-                displayDesc = `<span style="color:var(--hc-red); font-weight:600;">Alasan:</span> ${ev.note || 'Data tidak sesuai ketentuan.'}`;
-                
-                if (prefix === 'PA' && req.status === 'Ditolak' && isLast) {
-                  displayDesc += `<br><a href="../../keanggotaan/pendaftaran/perbaikan/?code=${req.code}" class="btn-fix" id="btn-fix-${req.code}"><i class="ri-edit-2-line"></i> Perbaiki Data Sekarang</a>`;
-                }
-            }
+        if (ev.toStatus === 'Ditolak') {
+          dotClass = 'err';
+          let rejectInfo = `<span style="color:var(--hc-red); font-weight:600;">Alasan:</span> ${ev.note || 'Data tidak sesuai ketentuan.'}`;
+          
+          if (isLastEvent && prefix === 'PA') {
+            rejectInfo += `<br><a href="../../keanggotaan/pendaftaran/perbaikan/?code=${req.code}" class="btn-fix" id="btn-fix-${req.code}"><i class="ri-edit-2-line"></i> Perbaiki Data Sekarang</a>`;
+          } else if (prefix === 'PA') {
+            rejectInfo += `<br><button class="btn-fix" style="pointer-events:none; opacity:0.5; background:var(--hc-toska); border:none; color:white;"><i class="ri-check-line"></i> Perbaikan Terkirim / Diproses</button>`;
+          }
+          displayDesc = rejectInfo;
         }
 
         timelineHTML += renderRow(ev.at, dotClass, displayLabel, displayDesc, false);
       });
 
-      if (req.status !== 'Selesai' && req.status !== 'Ditolak') {
-          let nextStep = "";
-          if (req.status === 'Permintaan Terkirim') nextStep = "Menunggu Verifikasi";
-          else if (req.status === 'Menunggu Verifikasi') nextStep = "Dalam Proses Verifikasi";
-          else if (req.status === 'Dalam Proses Verifikasi') nextStep = "Keputusan (Disetujui/Ditolak)";
-          else if (req.status === 'Disetujui') nextStep = "Selesai";
-
-          if (nextStep) {
-              timelineHTML += renderRow('', '', nextStep, "Menunggu tindakan selanjutnya dari pengurus.", true);
+      if (!req.status.includes('Selesai') && !req.status.includes('Ditolak')) {
+          if (req.status === 'Dalam Proses Verifikasi') {
+              timelineHTML += renderRow('', '', 'Keputusan Pengurus', 'Menunggu hasil verifikasi data pendaftaran.', true);
           }
       }
 
@@ -363,16 +365,6 @@
         <div class="note-box"><strong>Status Terkini:</strong> ${req.status}</div>
         <div class="timeline">${timelineHTML}</div>
       `;
-
-      if (req.status !== 'Ditolak') {
-        const btn = document.getElementById(`btn-fix-${req.code}`);
-        if (btn) {
-            btn.style.pointerEvents = 'none';
-            btn.style.opacity = '0.5';
-            btn.style.background = 'var(--hc-toska)';
-            btn.innerHTML = '<i class="ri-check-line"></i> Perbaikan Terkirim';
-        }
-      }
     }
 
     function renderRow(date, dotClass, title, sub, isFuture) {
