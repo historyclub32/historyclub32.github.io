@@ -18,7 +18,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 
   <style>
-    /* Sinkronisasi Desain dengan pendaftaran/index.html */
     :root {
         --hc-blue: #1a4787; --hc-toska: #0f8a94; --hc-dark: #2e2e2e;
         --hc-green: #15a256; --hc-red: #d30e14; --hc-yellow: #ecec17;
@@ -45,22 +44,31 @@
       font-size: 15px; outline: none; background: #fff; box-sizing: border-box; transition: 0.2s; font-family: 'Poppins', sans-serif;
     }
     input:focus, select:focus, textarea:focus { border-color: var(--hc-blue); box-shadow: 0 0 0 3px rgba(26, 71, 135, 0.15); }
-    input:disabled { background-color: #f1f5f9; color: #64748b; cursor: not-allowed; border-style: dashed; }
     
-    /* Field Preview Label */
-    .prev-label { font-size: 11px; color: #64748b; margin-bottom: 4px; font-style: italic; display: flex; align-items: center; gap: 4px; }
+    /* Logika Validasi Identik Pendaftaran */
+    .input-error { border-color: var(--hc-red) !important; box-shadow: 0 0 0 3px rgba(211, 14, 20, 0.1) !important; animation: shakeInput 0.3s; }
+    @keyframes shakeInput { 0%{transform:translateX(0)} 25%{transform:translateX(-2px)} 75%{transform:translateX(2px)} }
 
-    .photo-area { border: 2px dashed var(--hc-toska); border-radius: 16px; padding: 24px; text-align: center; background: #f0f9fa; position: relative; }
-    #foto-preview-container { width: 150px; height: 150px; margin: 0 auto 16px; border-radius: 50%; overflow: hidden; border: 4px solid #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.1); background: #e2e8f0; display: none; }
+    .phone-group { display: flex; gap: 8px; }
+    .phone-group select { width: 110px; flex-shrink: 0; font-size: 13px; }
+
+    /* Preview Data Sebelumnya */
+    .prev-container { background: #f1f5f9; border: 1px dashed #cbd5e1; border-radius: 10px; padding: 12px; margin-bottom: 12px; }
+    .prev-label { font-size: 11px; color: #64748b; margin-bottom: 6px; font-weight: 600; text-transform: uppercase; display: flex; align-items: center; gap: 5px; }
+    .prev-val { font-size: 14px; color: #334155; font-weight: 500; }
+    .prev-media { max-width: 100%; height: 80px; border-radius: 6px; border: 1px solid #e2e8f0; object-fit: contain; background: white; margin-top: 5px; }
+
+    .photo-area { border: 2px dashed var(--hc-toska); border-radius: 16px; padding: 24px; text-align: center; background: #f0f9fa; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+    #foto-preview-container { width: 150px; height: 150px; border-radius: 50%; overflow: hidden; border: 4px solid #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.1); background: #e2e8f0; display: none; }
     #foto-preview-img { width: 100%; height: 100%; object-fit: cover; }
     
-    .btn-main-camera { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: white; border: 1px solid var(--hc-blue); color: var(--hc-blue); padding: 12px 24px; border-radius: 50px; font-weight: 600; font-size: 14px; cursor: pointer; transition: all 0.2s; }
-    .btn-delete-photo { background: #fee2e2; color: #ef4444; border: none; margin-top: 10px; padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; display: none; }
+    .btn-main-camera { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: white; border: 1px solid var(--hc-blue); color: var(--hc-blue); padding: 12px 24px; border-radius: 50px; font-weight: 600; font-size: 14px; cursor: pointer; }
+    .btn-delete-photo { background: #fee2e2; color: #ef4444; border: none; padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; display: none; }
 
     .sig-wrapper { height: 180px; border: 1px solid #cbd5e1; border-radius: 10px; position: relative; background: #fff; overflow: hidden; }
     canvas#sig-canvas { width: 100%; height: 100%; display: block; touch-action: none; }
-    .sig-tools { position: absolute; top: 10px; right: 10px; z-index: 10; display: flex; gap: 8px; }
-    .sig-btn { padding: 8px 16px; font-size: 12px; border: none; border-radius: 50px; cursor: pointer; display: flex; align-items: center; gap: 6px; font-weight: 600; transition: 0.2s; }
+    .sig-tools { position: absolute; top: 10px; right: 10px; display: flex; gap: 8px; z-index: 10; }
+    .sig-btn { padding: 8px 16px; font-size: 12px; border-radius: 50px; cursor: pointer; font-weight: 600; border: none; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
     .sig-btn-undo { background: #e0f2fe; color: #0284c7; border: 1px solid #bae6fd; }
     .sig-btn-clear { background: #fee2e2; color: #ef4444; border: 1px solid #fecaca; }
 
@@ -68,10 +76,10 @@
       width: 100%; padding: 16px; background: linear-gradient(135deg, var(--hc-blue), var(--hc-toska)); 
       color: #fff; border: none; border-radius: 12px; font-weight: 700; font-size: 16px; cursor: pointer; margin-top: 20px; box-shadow: 0 4px 15px rgba(15, 138, 148, 0.3);
     }
-    .btn-submit:disabled { background: #cbd5e1; color: #64748b; cursor: not-allowed; transform: none; box-shadow: none; }
+    .btn-submit:disabled { background: #cbd5e1; color: #64748b; cursor: not-allowed; box-shadow: none; }
 
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 2500; display: none; align-items: center; justify-content: center; }
-    .cam-box-modern { width: 100%; max-width: 500px; height: 100%; max-height: 100vh; background: #000; display: flex; flex-direction: column; position: relative; overflow: hidden; }
+    .cam-box-modern { width: 100%; max-width: 500px; height: 100%; max-height: 100vh; background: #000; position: relative; display: flex; flex-direction: column; }
     #cam-video { width: 100%; height: 100%; object-fit: cover; }
     .cam-controls { height: 140px; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: space-between; padding: 0 40px; position: absolute; bottom: 0; left: 0; right: 0; backdrop-filter: blur(10px); border-top-left-radius: 20px; border-top-right-radius: 20px; }
     .btn-shutter-cam { width: 70px; height: 70px; border-radius: 50%; background: white; border: 4px solid rgba(255,255,255,0.3); cursor: pointer; }
@@ -85,7 +93,10 @@
       <div class="card">
         <div class="welcome-banner">
           <h2>Perbaikan Data</h2>
-          <p id="txt-code">Memuat data permintaan...</p>
+          <p id="txt-code">Lacak Request...</p>
+          <div id="meta-info" style="margin-top:10px; font-size:12px; border-top: 1px solid rgba(255,255,255,0.2); padding-top:10px; display:none;">
+            <span id="txt-owner-name"></span> &bull; <span id="txt-updated-at"></span>
+          </div>
         </div>
 
         <div id="instruction" class="instruction-box" style="display:none;">
@@ -177,7 +188,13 @@
           DETAILED_DATA = res.request.detailedData;
           document.getElementById('txt-reason').innerText = res.request.publicNote;
           document.getElementById('instruction').style.display = 'block';
-          generateFields(res.request.publicNote, res.request.type); 
+          
+          // Nama & Waktu Ditolak
+          document.getElementById('txt-owner-name').innerText = "Pemohon: " + res.request.ownerName;
+          document.getElementById('txt-updated-at').innerText = "Ditolak Pada: " + res.request.updatedAt;
+          document.getElementById('meta-info').style.display = 'block';
+
+          generateFields(res.request.publicNote); 
           document.getElementById('loading-init').style.display = 'none';
           document.getElementById('form-perbaikan').style.display = 'block';
         } else { throw new Error(res.message); }
@@ -186,20 +203,18 @@
       }
     }
 
-    function generateFields(note, type) {
+    function generateFields(note) {
       const container = document.getElementById('dynamic-fields');
-      const idLabel = (DETAILED_DATA?.tipe === 'siswa-aktif') ? "Nomor Identitas (NIS)" : 
-                      (DETAILED_DATA?.tipe === 'guru') ? "Nomor Identitas (NIP)" : 
-                      (DETAILED_DATA?.tipe === 'alumni') ? "Nomor Identitas (No Anggota Perpus 32)" : "Nomor Identitas (NIP/NISN/No Anggota)";
-
+      const tipe = DETAILED_DATA?.tipe || '';
+      
       const fieldsMap = [
-        { key: "nis", label: "Nomor Identitas", type: "tel", id_hint: idLabel },
+        { key: "nis", label: "Nomor Identitas", type: "identitas" },
         { key: "nama", label: "Nama Lengkap", type: "text" },
-        { key: "kelas", label: "Kelas", type: "text" },
-        { key: "angkatan", label: "Angkatan", type: "text" },
-        { key: "tahunLulus", label: "Tahun Lulus", type: "number" },
+        { key: "kelas", label: "Kelas", type: "kelas" },
+        { key: "angkatan", label: "Angkatan", type: "angkatan" },
+        { key: "tahunLulus", label: "Tahun Lulus", type: "number", min: 4, max: 4 },
         { key: "jabatan", label: "Jabatan", type: "text" },
-        { key: "nohp", label: "No HP", type: "tel" },
+        { key: "nohp", label: "No HP", type: "phone" },
         { key: "tanggalLahir", label: "Tanggal Lahir", type: "date" },
         { key: "email", label: "Email", type: "email" },
         { key: "foto", label: "Foto Profil", type: "file" },
@@ -210,17 +225,30 @@
         if (note.includes(field.label) || (field.key === 'nis' && note.includes("Nomor Identitas"))) {
           const div = document.createElement('div');
           div.className = 'row';
-          const labelText = field.id_hint || field.label;
           const oldVal = DETAILED_DATA ? (DETAILED_DATA[field.key] || '-') : '-';
 
-          // Template Data Sebelumnya
-          let prevHTML = `<div class="prev-label"><i class="ri-history-line"></i> Data Sebelumnya:</div>
-                          <input type="text" value="${oldVal}" disabled style="margin-bottom:10px;">`;
+          // Label Field
+          let labelText = field.label;
+          if(field.key === 'nis') {
+             labelText = (tipe==='siswa-aktif') ? "Nomor Identitas (NIS)" : 
+                         (tipe==='guru') ? "Nomor Identitas (NIP)" : 
+                         (tipe==='alumni') ? "Nomor Identitas (No Anggota Perpus 32)" : "Nomor Identitas";
+          }
+          
+          let html = `<label>${labelText} <span class="req-star">*</span></label>`;
+          
+          // Template Data Sebelumnya (Preview Media jika ada)
+          html += `<div class="prev-container"><div class="prev-label"><i class="ri-history-line"></i> Data Sebelumnya:</div>`;
+          if(field.type === 'file' || field.type === 'signature') {
+              html += `<img src="${oldVal}" class="prev-media" onerror="this.src='https://placehold.co/100x100?text=No+Media'">`;
+          } else {
+              html += `<div class="prev-val">${oldVal}</div>`;
+          }
+          html += `</div>`;
 
+          // Input Area
           if (field.type === 'file') {
-            div.innerHTML = `
-              <label>${labelText} <span class="req-star">*</span></label>
-              ${prevHTML}
+            html += `
               <div class="photo-area">
                 <div id="foto-preview-container"><img id="foto-preview-img" src=""></div>
                 <button type="button" class="btn-main-camera" id="btn-start-cam"><i class="ri-camera-fill"></i> Aktifkan Kamera Baru</button>
@@ -228,40 +256,119 @@
                 <input type="hidden" id="fd-foto-base64" class="req-field">
               </div>`;
           } else if (field.type === 'signature') {
-            div.innerHTML = `
-              <label>${labelText} <span class="req-star">*</span></label>
-              ${prevHTML}
+            html += `
               <div class="sig-wrapper">
                 <canvas id="sig-canvas"></canvas>
                 <div class="sig-tools">
-                  <button type="button" class="sig-btn sig-btn-undo" id="sig-undo"><i class="ri-arrow-go-back-line"></i> Undo</button>
-                  <button type="button" class="sig-btn sig-btn-clear" id="sig-clear"><i class="ri-delete-bin-line"></i> Ulangi</button>
+                  <button type="button" class="sig-btn sig-btn-undo" id="sig-undo">Undo</button>
+                  <button type="button" class="sig-btn sig-btn-clear" id="sig-clear">Ulangi</button>
                 </div>
                 <input type="hidden" id="fd-sig-base64" class="req-field">
               </div>`;
+          } else if (field.type === 'kelas') {
+            html += `<select id="inp-kelas" class="req-field"><option value="">Pilih Kelas...</option></select>`;
+          } else if (field.type === 'phone') {
+            html += `
+              <div class="phone-group">
+                <select id="inp-phone-code">
+                  <option value="+62">🇮🇩 +62</option><option value="+60">🇲🇾 +60</option><option value="+65">🇸🇬 +65</option>
+                </select>
+                <input type="tel" id="inp-nohp" class="req-field" placeholder="812xxx">
+              </div>`;
+          } else if (field.type === 'identitas') {
+             html += `<input type="tel" id="inp-nis" class="req-field" placeholder="Masukkan Nomor Identitas Baru...">`;
+          } else if (field.type === 'angkatan') {
+             html += `<input type="number" id="inp-angkatan" class="req-field" placeholder="Contoh: 2025">`;
           } else {
-            div.innerHTML = `
-              <label>${labelText} <span class="req-star">*</span></label>
-              ${prevHTML}
-              <input type="${field.type}" id="inp-${field.key}" class="req-field" placeholder="Masukkan perbaikan ${field.label}..." required>`;
+            html += `<input type="${field.type}" id="inp-${field.key}" class="req-field" placeholder="Masukkan perbaikan ${field.label}..." required>`;
           }
+          
+          div.innerHTML = html;
           container.appendChild(div);
 
+          if (field.type === 'kelas') populateKelas();
           if (field.type === 'file') initPhotoLogic();
           if (field.type === 'signature') initSigLogic();
         }
       });
 
+      attachValidationListeners();
+    }
+
+    function populateKelas() {
+      const sel = document.getElementById('inp-kelas');
+      if(!sel) return;
+      const tkt = ['X', 'XI', 'XII'];
+      tkt.forEach(t => { for(let i=1; i<=8; i++) sel.add(new Option(`${t}-${i}`, `${t}-${i}`)); });
+    }
+
+    function attachValidationListeners() {
+      const tipe = DETAILED_DATA?.tipe || '';
+      
+      // Validasi Identitas
+      const nisInp = document.getElementById('inp-nis');
+      if(nisInp) {
+        nisInp.oninput = function() {
+          this.value = this.value.replace(/\D/g, '');
+          let min = 0, max = 20;
+          if(tipe === 'siswa-aktif') { min = 7; max = 7; }
+          else if(tipe === 'guru') { min = 18; max = 18; }
+          else if(tipe === 'alumni') { min = 6; max = 7; }
+          else { // Lainnya
+             // Logika identitas lainnya di pendaftaran
+             if(this.value.length >= 18) { min = 18; max = 18; }
+             else if(this.value.length >= 10) { min = 10; max = 10; }
+             else { min = 6; max = 7; }
+          }
+          this.maxLength = max;
+          const isValid = this.value.length >= min;
+          this.classList.toggle('input-error', !isValid && this.value !== "");
+          checkFormValidity();
+        };
+      }
+
+      // Validasi Angkatan
+      const angkInp = document.getElementById('inp-angkatan');
+      if(angkInp) {
+        angkInp.oninput = function() {
+          this.value = this.value.slice(0, 4);
+          this.classList.toggle('input-error', this.value.length > 0 && this.value.length < 4);
+          checkFormValidity();
+        };
+      }
+
+      // Validasi No HP
+      const hpInp = document.getElementById('inp-nohp');
+      if(hpInp) {
+        hpInp.oninput = function() {
+          this.value = this.value.replace(/\D/g, '');
+          this.classList.toggle('input-error', this.value.length > 0 && this.value.length < 9);
+          checkFormValidity();
+        };
+      }
+
+      // Validasi Email
+      const mailInp = document.getElementById('inp-email');
+      if(mailInp) {
+        mailInp.oninput = function() {
+          const reg = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          this.classList.toggle('input-error', this.value !== "" && !reg.test(this.value));
+          checkFormValidity();
+        };
+      }
+
       document.querySelectorAll('.req-field').forEach(el => {
         el.addEventListener('input', checkFormValidity);
+        el.addEventListener('change', checkFormValidity);
       });
     }
 
     function checkFormValidity() {
       const fields = document.querySelectorAll('.req-field');
+      const errors = document.querySelectorAll('.input-error');
       let allFilled = true;
-      fields.forEach(f => { if(!f.value) allFilled = false; });
-      document.getElementById('btn-send').disabled = !allFilled;
+      fields.forEach(f => { if(!f.value || f.value.trim() === "") allFilled = false; });
+      document.getElementById('btn-send').disabled = !allFilled || errors.length > 0;
     }
 
     // --- PHOTO LOGIC ---
@@ -287,42 +394,37 @@
       try {
         if(stream) stopCam();
         stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: currentFacingMode } });
-        const video = document.getElementById('cam-video');
-        video.srcObject = stream;
-        video.style.transform = (currentFacingMode === 'user') ? 'scaleX(-1)' : 'none';
+        const v = document.getElementById('cam-video');
+        v.srcObject = stream;
+        v.style.transform = (currentFacingMode === 'user') ? 'scaleX(-1)' : 'none';
         document.getElementById('cam-popup').style.display = 'flex';
       } catch(e) { window.showHC32Status('error', 'Kamera', 'Gagal akses.'); }
     }
-
     function stopCam() { if(stream) stream.getTracks().forEach(t => t.stop()); stream = null; document.getElementById('cam-popup').style.display = 'none'; }
     function switchCam() { currentFacingMode = (currentFacingMode === 'user') ? 'environment' : 'user'; startCam(); }
-
     function capturePhoto() {
-      const video = document.getElementById('cam-video');
+      const v = document.getElementById('cam-video');
       const canvas = document.createElement('canvas');
-      canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+      canvas.width = v.videoWidth; canvas.height = v.videoHeight;
       const ctx = canvas.getContext('2d');
       if(currentFacingMode === 'user') { ctx.translate(canvas.width, 0); ctx.scale(-1, 1); }
-      ctx.drawImage(video, 0, 0);
+      ctx.drawImage(v, 0, 0);
       stopCam();
       openCropper(canvas.toDataURL('image/jpeg'));
     }
-
     function openCropper(src) {
       document.getElementById('cropper-img').src = src;
       document.getElementById('crop-modal').style.display = 'flex';
       if(cropper) cropper.destroy();
       cropper = new Cropper(document.getElementById('cropper-img'), { aspectRatio: 1, viewMode: 1 });
     }
-
     function closeCropper() { document.getElementById('crop-modal').style.display = 'none'; if(cropper) cropper.destroy(); }
-
     document.getElementById('btn-save-crop').onclick = () => {
-      const base64 = cropper.getCroppedCanvas({ width: 600, height: 600 }).toDataURL('image/jpeg', 0.8);
-      document.getElementById('fd-foto-base64').value = base64;
-      document.getElementById('foto-preview-img').src = base64;
+      const b64 = cropper.getCroppedCanvas({ width: 600, height: 600 }).toDataURL('image/jpeg', 0.8);
+      document.getElementById('fd-foto-base64').value = b64;
+      document.getElementById('foto-preview-img').src = b64;
       document.getElementById('foto-preview-container').style.display = 'block';
-      document.getElementById('btn-del-photo').style.display = 'block';
+      document.getElementById('btn-del-photo').style.display = 'inline-flex';
       closeCropper();
       checkFormValidity();
     };
@@ -333,18 +435,26 @@
       sigPad = new SignaturePad(canvas);
       const resize = () => {
         const ratio = Math.max(window.devicePixelRatio || 1, 1);
-        canvas.width = canvas.offsetWidth * ratio; canvas.height = canvas.offsetHeight * ratio;
+        canvas.width = canvas.offsetWidth * ratio;
+        canvas.height = canvas.offsetHeight * ratio;
         canvas.getContext("2d").scale(ratio, ratio);
         sigPad.clear();
       };
-      window.onresize = resize; resize();
+      window.onresize = resize;
+      // Perbaikan desktop: panggil resize setelah element terlihat
+      setTimeout(resize, 200);
 
       document.getElementById('sig-clear').onclick = () => { sigPad.clear(); document.getElementById('fd-sig-base64').value=""; checkFormValidity(); };
-      document.getElementById('sig-undo').onclick = () => { const d = sigPad.toData(); if(d){ d.pop(); sigPad.fromData(d); document.getElementById('fd-sig-base64').value = sigPad.isEmpty() ? "" : sigPad.toDataURL(); checkFormValidity(); } };
+      document.getElementById('sig-undo').onclick = () => { 
+        const d = sigPad.toData(); 
+        if(d){ d.pop(); sigPad.fromData(d); 
+        document.getElementById('fd-sig-base64').value = sigPad.isEmpty() ? "" : sigPad.toDataURL(); 
+        checkFormValidity(); } 
+      };
       
-      const updateSigVal = () => { document.getElementById('fd-sig-base64').value = sigPad.toDataURL(); checkFormValidity(); };
-      canvas.addEventListener('touchend', updateSigVal);
-      canvas.addEventListener('mouseup', updateSigVal);
+      const update = () => { document.getElementById('fd-sig-base64').value = sigPad.toDataURL(); checkFormValidity(); };
+      canvas.addEventListener('touchend', update);
+      canvas.addEventListener('mouseup', update);
     }
 
     // --- SUBMIT ---
@@ -355,7 +465,9 @@
       const updatedData = {};
       document.querySelectorAll('.req-field').forEach(inp => {
         const key = inp.id.replace('inp-', '').replace('fd-', '').replace('-base64', '');
-        updatedData[key] = inp.value;
+        let val = inp.value;
+        if(inp.id === 'inp-nohp') val = document.getElementById('inp-phone-code').value + val;
+        updatedData[key] = val;
       });
 
       try {
@@ -364,14 +476,11 @@
             updatedData: updatedData,
             note: document.getElementById('user-note').value
         });
-
         if (res.status === 'ok') {
           window.showHC32Status('success', 'Berhasil', 'Data perbaikan telah dikirim.');
           setTimeout(() => { window.location.href = "../../../bantuan/track/?code=" + TRACKING_CODE; }, 2500);
         } else { throw new Error(res.message); }
-      } catch (err) {
-        window.showHC32Status('error', 'Gagal', err.message);
-      }
+      } catch (err) { window.showHC32Status('error', 'Gagal', err.message); }
     };
   </script>
 </body>
