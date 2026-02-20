@@ -61,8 +61,10 @@
       border: 1px solid var(--border-color);
     }
 
+    /* Header Kalender disesuaikan agar rapi saat search-box masuk */
     .calendar-header {
       display: flex;
+      flex-wrap: wrap;
       justify-content: space-between;
       align-items: center;
       padding: 20px;
@@ -84,6 +86,28 @@
       cursor: pointer;
       color: var(--hc-blue);
       font-weight: bold;
+    }
+
+    /* Tambahan CSS: Fitur Search Box */
+    .search-box {
+      flex: 1 1 100%;
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+    .search-box input {
+      flex: 1;
+      padding: 8px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      font-family: inherit;
+    }
+    .search-box select {
+      padding: 8px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      background: white;
+      font-family: inherit;
     }
 
     .calendar-grid-header {
@@ -109,7 +133,7 @@
     }
 
     .calendar-cell {
-      min-height: 80px; /* Membuat bentuk kotak */
+      min-height: 80px; 
       border-right: 1px solid var(--border-color);
       border-bottom: 1px solid var(--border-color);
       padding: 8px;
@@ -153,34 +177,30 @@
       z-index: 5;
     }
 
-    /* Agenda Indicator in Cell */
-    .agenda-indicator {
-      margin-top: auto;
-      width: 100%;
-      font-size: 10px;
-      padding: 2px 4px;
-      border-radius: 4px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      font-weight: 500;
+    /* Tambahan CSS: Logo dan Indikator Grid Kalender */
+    .cell-main-logo {
+      font-size: 28px;
+      margin: auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
-
-    .cell-icon {
-      font-size: 18px;
-      margin-top: 4px;
-      align-self: center;
+    .more-indicator {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      background: var(--hc-blue);
+      color: white;
+      font-size: 10px;
+      font-weight: bold;
+      padding: 2px 5px;
+      border-radius: 4px;
     }
 
     /* Status Warna Kotak */
     .status-selesai { background-color: rgba(211, 14, 20, 0.05); }
-    .status-selesai .agenda-indicator { background: var(--hc-red); color: #fff; }
-
     .status-terdekat { background-color: rgba(21, 162, 86, 0.05); }
-    .status-terdekat .agenda-indicator { background: var(--hc-green); color: #fff; }
-
     .status-akan-datang { background-color: rgba(26, 71, 135, 0.05); }
-    .status-akan-datang .agenda-indicator { background: var(--hc-blue); color: #fff; }
 
     /* Info Libur Text */
     .holiday-info {
@@ -193,22 +213,41 @@
     /* Media Queries for Mobile */
     @media (max-width: 600px) {
       .calendar-cell { min-height: 60px; padding: 4px; }
-      .agenda-indicator { font-size: 8px; }
-      .cell-icon { font-size: 14px; }
+      .cell-main-logo { font-size: 20px; }
+      .search-box { flex-direction: column; }
     }
 
-    /* List Agenda & Legend (Tetap seperti sebelumnya namun diperhalus) */
+    /* List Agenda & Legend */
     #agenda-list-date { margin: 20px 0 10px 0; font-size: 16px; color: var(--hc-dark); }
     #agenda-list { display: grid; gap: 12px; }
-    .agenda-item {
+    
+    /* Tambahan CSS: Detail Card Agenda */
+    .detail-card {
       background: white; border-radius: 10px; padding: 15px;
-      display: flex; gap: 15px; border: 1px solid var(--border-color);
-      align-items: center;
+      border: 1px solid var(--border-color);
+      width: 100%; box-sizing: border-box;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.03);
     }
-    .agenda-item-photo { width: 50px; height: 50px; border-radius: 8px; flex-shrink: 0; object-fit: cover; }
-    .agenda-item-details { flex: 1; }
-    .agenda-item-details .judul { font-weight: 600; font-size: 15px; }
-    .agenda-item-details .meta { font-size: 12px; color: #64748b; display: flex; gap: 10px; margin-top: 4px; }
+    .detail-header {
+      display: flex; align-items: center; gap: 12px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 12px; margin-bottom: 12px;
+    }
+    .detail-logo-large { font-size: 32px; }
+    .detail-header h3 { margin: 0; font-size: 16px; color: var(--hc-dark); font-weight: 600; }
+    .detail-body { display: flex; gap: 15px; align-items: flex-start; }
+    .detail-img { width: 90px; height: 90px; border-radius: 8px; object-fit: cover; background: #e2e8f0; flex-shrink: 0; }
+    .detail-info { flex: 1; }
+    .detail-info p { margin: 0 0 6px 0; font-size: 13px; color: var(--hc-text); }
+    .detail-desc { margin-top: 10px; font-size: 13px; color: #64748b; line-height: 1.5; }
+    
+    @media (max-width: 600px) {
+      .detail-body { flex-direction: column; }
+      .detail-img { width: 100%; height: 160px; }
+    }
+
+    /* Original Agenda Item (disembunyikan / diganti dengan detail-card) */
+    .agenda-item { display: none; } 
   </style>
 </head>
 <body>
@@ -223,7 +262,7 @@
         <button id="btn-prev"><i class="ri-arrow-left-s-line"></i></button>
         <button id="btn-next"><i class="ri-arrow-right-s-line"></i></button>
       </div>
-    </div>
+      </div>
     <div class="calendar-grid-header">
       <div>Min</div><div>Sen</div><div>Sel</div><div>Rab</div><div>Kam</div><div>Jum</div><div>Sab</div>
     </div>
@@ -241,8 +280,8 @@
   (function() {
     const API_URL = (typeof GAS_URL !== 'undefined') ? GAS_URL : "https://script.google.com/macros/s/AKfycbz22NwYQ-WJwmdieMgzQxw1I2lXKTghebFO-oSY-wE_av-3oEYIi9TfSCqJCpy3iZKt/exec";
 
-    // Data Hari Libur Sederhana (Bisa dikembangkan via API atau config)
-    const holidays = {
+    // Data Hari Libur Sederhana
+    let holidays = {
       "2026-01-01": "Tahun Baru Masehi",
       "2026-02-17": "Isra Mi'raj",
       "2026-03-31": "Idul Fitri"
@@ -257,6 +296,7 @@
 
     // Mapping Ikon berdasarkan Judul
     function getIconForAgenda(judul) {
+      if(!judul) return "📍";
       const j = judul.toLowerCase();
       if (j.includes("museum") || j.includes("eksplor")) return "🏛️";
       if (j.includes("rapat") || j.includes("pertemuan") || j.includes("evaluasi")) return "👥";
@@ -265,8 +305,53 @@
       return "📍";
     }
 
+    // --- REVISI 1: Fitur Pencarian & Filter ---
+    function renderControls() {
+      const header = document.querySelector('.calendar-header');
+      header.innerHTML += `
+        <div class="search-box">
+          <input type="text" id="search-name" placeholder="Cari nama agenda...">
+          <select id="filter-kategori">
+            <option value="">Semua Jenis</option>
+            <option value="museum">Museum</option>
+            <option value="rapat">Rapat</option>
+            <option value="diskusi">Diskusi</option>
+          </select>
+        </div>
+      `;
+    }
+
+    // Fungsi bantu mendapatkan data yang sudah difilter
+    function getFilteredData() {
+        const searchText = document.getElementById('search-name') ? document.getElementById('search-name').value.toLowerCase() : "";
+        const filterCat = document.getElementById('filter-kategori') ? document.getElementById('filter-kategori').value.toLowerCase() : "";
+        
+        return allAgendaData.filter(item => {
+            const matchSearch = item.judul.toLowerCase().includes(searchText);
+            const matchCat = filterCat === "" || item.judul.toLowerCase().includes(filterCat); // fallback menggunakan judul karena struktur asli belum mendefinisikan field kategori murni
+            return matchSearch && matchCat;
+        });
+    }
+
+    // --- REVISI 2: Integrasi Modal HC & Tarik API (Init) ---
+    async function fetchHolidays() {
+      // Stub: Di sini Anda bisa menaruh request API pihak ketiga.
+      // holidays = {...holidays, ...dataDariAPI};
+      return Promise.resolve();
+    }
+
+    async function initHalaman() {
+      if (typeof window.showHC32Status === 'function') {
+        window.showHC32Status('loading', 'Sinkronisasi Kalender...', 'Mengambil agenda dan hari libur.');
+      }
+      
+      await loadAllAgenda();
+      await fetchHolidays(); 
+      
+      if (typeof window.hideHC32Status === 'function') window.hideHC32Status();
+    }
+
     async function loadAllAgenda() {
-      if (typeof window.showHC32Status === 'function') window.showHC32Status('loading', 'Sinkronisasi Agenda...');
       try {
         const [nextRes, riwayatRes] = await Promise.all([
           fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "getKegiatanPublik", mode: "next" }) }),
@@ -283,12 +368,13 @@
         if (future.length > 0) nextAgendaDate = future[0].parsedDate;
 
         renderCalendar();
-        if (typeof window.hideHC32Status === 'function') window.hideHC32Status();
+        renderAgendaList(selectedDate);
       } catch (e) {
         console.error(e);
       }
     }
 
+    // --- REVISI 3: Render Cell dengan LOGO (Bukan Judul) ---
     function renderCalendar() {
       const body = document.getElementById("calendar-body");
       body.innerHTML = "";
@@ -300,6 +386,8 @@
 
       const firstDay = new Date(y, m, 1).getDay();
       const daysInMonth = new Date(y, m + 1, 0).getDate();
+      
+      const filteredAgenda = getFilteredData();
 
       for (let i = 0; i < firstDay; i++) {
         const empty = document.createElement("div");
@@ -322,22 +410,28 @@
         let cellHTML = `<span class="date-num">${d}</span>`;
         if (holidayName) cellHTML += `<span class="holiday-info">${holidayName}</span>`;
 
-        // Cari Agenda di hari ini
-        const agendas = allAgendaData.filter(item => 
+        // Cari Agenda di hari ini dari data yang sudah difilter
+        const agendas = filteredAgenda.filter(item => 
           item.parsedDate.getFullYear() === y && 
           item.parsedDate.getMonth() === m && 
           item.parsedDate.getDate() === d
         );
 
         if (agendas.length > 0) {
-          const mainAgenda = agendas[0];
+          const item = agendas[0]; 
           const diff = new Date(y, m, d).getTime() - cleanToday.getTime();
           const statusClass = diff < 0 ? 'status-selesai' : 
                              (nextAgendaDate && currDate.getTime() === nextAgendaDate.getTime() ? 'status-terdekat' : 'status-akan-datang');
           
           cell.classList.add(statusClass);
-          cellHTML += `<div class="cell-icon">${getIconForAgenda(mainAgenda.judul)}</div>`;
-          cellHTML += `<div class="agenda-indicator">${mainAgenda.judul}</div>`;
+          
+          // Sesuai permintaan: Masukkan LOGO ke dalam grid kotak
+          cellHTML += `<div class="cell-main-logo">${item.logo || getIconForAgenda(item.judul)}</div>`;
+          
+          // Tooltip sederhana atau dot penanda jika ada > 1 agenda
+          if(agendas.length > 1) {
+              cellHTML += `<div class="more-indicator">+${agendas.length - 1}</div>`;
+          }
         }
 
         if (currDate.getTime() === cleanToday.getTime()) cell.classList.add("today");
@@ -347,17 +441,47 @@
         cell.onclick = () => {
           selectedDate = currDate;
           renderCalendar();
-          renderAgendaList(currDate, agendas);
+          renderAgendaList(currDate);
         };
         body.appendChild(cell);
       }
     }
 
-    function renderAgendaList(date, agendas) {
+    // --- REVISI 4: Detail Agenda (Berdampingan Foto & Logo) ---
+    function renderAgendaDetail(item) {
+        // Fallback placeholder gambar jika item.foto kosong
+        const fallbackImg = `<div class="detail-img" style="display:flex;align-items:center;justify-content:center;font-size:30px;color:#cbd5e1;"><i class="ri-image-2-line"></i></div>`;
+        const imgEl = item.foto ? `<img src="${item.foto}" class="detail-img" alt="Foto Agenda">` : fallbackImg;
+        
+        return `
+            <div class="detail-card">
+                <div class="detail-header">
+                    <span class="detail-logo-large">${item.logo || getIconForAgenda(item.judul)}</span>
+                    <h3>${item.judul}</h3>
+                </div>
+                <div class="detail-body">
+                    ${imgEl}
+                    <div class="detail-info">
+                        <p><strong><i class="ri-map-pin-line"></i> Tempat:</strong> ${item.tempat || 'TBA'}</p>
+                        <p><strong><i class="ri-time-line"></i> Waktu:</strong> ${item.waktu || 'TBA'}</p>
+                        <p class="detail-desc">${item.deskripsi || '<i>Belum ada deskripsi untuk agenda ini.</i>'}</p>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    function renderAgendaList(date) {
       const list = document.getElementById("agenda-list");
       const placeholder = document.getElementById("agenda-list-placeholder");
       document.getElementById("agenda-list-date").textContent = date.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long' });
       
+      const agendas = getFilteredData().filter(item => 
+          item.parsedDate.getFullYear() === date.getFullYear() && 
+          item.parsedDate.getMonth() === date.getMonth() && 
+          item.parsedDate.getDate() === date.getDate()
+      );
+
       list.innerHTML = "";
       if (agendas.length === 0) {
         placeholder.style.display = "block";
@@ -368,25 +492,32 @@
 
       agendas.forEach(item => {
         const div = document.createElement("div");
-        div.className = "agenda-item";
-        div.innerHTML = `
-          <div style="font-size: 24px;">${getIconForAgenda(item.judul)}</div>
-          <div class="agenda-item-details">
-            <div class="judul">${item.judul}</div>
-            <div class="meta">
-              <span><i class="ri-time-line"></i> ${item.waktu || 'Waktu TBA'}</span>
-              <span><i class="ri-map-pin-line"></i> ${item.tempat || 'Lokasi TBA'}</span>
-            </div>
-          </div>
-        `;
+        div.innerHTML = renderAgendaDetail(item);
         list.appendChild(div);
       });
     }
 
+    // --- BOOTSTRAP & EVENT LISTENERS ---
+    renderControls(); 
+
+    // Event listeners untuk navigasi yang sudah ada di HTML
     document.getElementById("btn-prev").onclick = () => { displayDate.setMonth(displayDate.getMonth() - 1); renderCalendar(); };
     document.getElementById("btn-next").onclick = () => { displayDate.setMonth(displayDate.getMonth() + 1); renderCalendar(); };
 
-    loadAllAgenda();
+    // Event listeners untuk Filter Pencarian
+    document.getElementById("search-name").addEventListener("input", () => {
+        renderCalendar();
+        renderAgendaList(selectedDate);
+    });
+    
+    document.getElementById("filter-kategori").addEventListener("change", () => {
+        renderCalendar();
+        renderAgendaList(selectedDate);
+    });
+
+    // Mulai Eksekusi Awal
+    initHalaman();
+
   })();
 </script>
 </body>
