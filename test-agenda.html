@@ -20,9 +20,14 @@
       --hc-dark: #2e2e2e;
       --hc-green: #15a256;
       --hc-red: #d30e14;
-      --hc-bg: #f8fafc;
+      --hc-bg: #eef2f5;
       --hc-text: #464646;
-      --border-color: #e2e8f0;
+      --border-color: #cbd5e1;
+
+      /* Warna Kontras Pekat untuk Grid */
+      --bg-selesai: rgba(211, 14, 20, 0.15);
+      --bg-terdekat: rgba(21, 162, 86, 0.18);
+      --bg-akan-datang: rgba(26, 71, 135, 0.15);
     }
 
     body {
@@ -36,13 +41,13 @@
       width: 100%;
       max-width: 900px;
       margin: 0 auto;
-      padding: 20px;
+      padding: 80px 20px 40px 20px; /* Padding top untuk navbar */
       flex: 1;
     }
 
     #agenda-hc32 h2 {
       text-align: center;
-      margin: 24px 0 8px 0;
+      margin-bottom: 24px;
       color: var(--hc-dark);
       font-weight: 700;
     }
@@ -50,20 +55,21 @@
     /* Search Bar */
     .search-container {
       background: white;
-      padding: 15px;
+      padding: 12px;
       border-radius: 12px;
       border: 1px solid var(--border-color);
       margin-bottom: 20px;
       display: flex;
       gap: 10px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
     }
     .search-container input, .search-container select {
       padding: 10px;
-      border: 1px solid var(--border-color);
+      border: 1px solid #e2e8f0;
       border-radius: 8px;
       font-family: inherit;
       font-size: 14px;
+      outline: none;
     }
     .search-container input { flex: 2; }
     .search-container select { flex: 1; }
@@ -71,8 +77,8 @@
     /* Kalender Grid */
     #agenda-calendar {
       background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
       overflow: hidden;
       margin-bottom: 24px;
       border: 1px solid var(--border-color);
@@ -84,15 +90,17 @@
       align-items: center;
       padding: 20px;
       background: #fff;
-      border-bottom: 1px solid var(--border-color);
+      border-bottom: 2px solid #f1f5f9;
     }
 
-    .calendar-header h3 { font-size: 1.1rem; margin: 0; color: var(--hc-blue); }
+    .calendar-header h3 { font-size: 1.2rem; margin: 0; color: var(--hc-blue); font-weight: 700; }
 
     .calendar-nav button {
-      background: #f1f5f9; border: none; border-radius: 6px;
-      padding: 8px 12px; cursor: pointer; color: var(--hc-blue);
+      background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 8px;
+      padding: 8px 14px; cursor: pointer; color: var(--hc-blue);
+      transition: all 0.2s;
     }
+    .calendar-nav button:hover { background: var(--hc-blue); color: white; }
 
     .calendar-grid-header {
       display: grid; grid-template-columns: repeat(7, 1fr);
@@ -100,79 +108,102 @@
     }
 
     .calendar-grid-header div {
-      padding: 12px 0; font-size: 11px; font-weight: 700;
+      padding: 14px 0; font-size: 12px; font-weight: 700;
       text-align: center; color: #64748b; text-transform: uppercase;
     }
 
     .calendar-grid-body { display: grid; grid-template-columns: repeat(7, 1fr); }
 
     .calendar-cell {
-      min-height: 85px;
-      border-right: 1px solid var(--border-color);
-      border-bottom: 1px solid var(--border-color);
-      padding: 6px;
+      min-height: 90px;
+      border-right: 1px solid #f1f5f9;
+      border-bottom: 1px solid #f1f5f9;
+      padding: 8px;
       position: relative;
       cursor: pointer;
       display: flex; flex-direction: column;
+      transition: transform 0.2s;
     }
 
     .calendar-cell:nth-child(7n) { border-right: none; }
-    .calendar-cell:hover:not(.empty) { background-color: #f1f5f9; }
+    .calendar-cell:hover:not(.empty) { background-color: #f8fafc; z-index: 2; transform: scale(1.02); }
 
-    .calendar-cell .date-num { font-size: 13px; font-weight: 600; color: var(--hc-text); }
+    .calendar-cell .date-num { font-size: 14px; font-weight: 700; color: var(--hc-text); }
     .calendar-cell.is-holiday .date-num { color: var(--hc-red); }
-    .calendar-cell.today { background-color: rgba(15, 138, 148, 0.05); }
-    .calendar-cell.selected { background-color: #eff6ff; outline: 2px solid var(--hc-blue); z-index: 5; }
+    
+    /* Underline Toska untuk Hari Ini */
+    .calendar-cell.today .date-num { 
+      color: var(--hc-toska); 
+      display: inline-block;
+      border-bottom: 3px solid var(--hc-toska);
+      padding-bottom: 1px;
+    }
+
+    .calendar-cell.selected { background-color: #fff !important; outline: 3px solid var(--hc-blue); z-index: 5; box-shadow: 0 0 15px rgba(26, 71, 135, 0.2); }
 
     /* Icon in Grid */
-    .cell-icon-container {
-      margin: auto;
-      width: 100%;
-      display: flex; justify-content: center; align-items: center;
-    }
-    .grid-custom-logo {
-      width: 32px; height: 32px; object-fit: contain;
-    }
-    .grid-emoji-logo { font-size: 24px; }
+    .cell-icon-container { margin: auto; width: 100%; display: flex; justify-content: center; align-items: center; }
+    .grid-custom-logo { width: 34px; height: 34px; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); }
+    .grid-emoji-logo { font-size: 26px; }
 
-    /* Status Bar/Background */
-    .status-selesai { background-color: rgba(211, 14, 20, 0.05); }
-    .status-terdekat { background-color: rgba(21, 162, 86, 0.05); }
-    .status-akan-datang { background-color: rgba(26, 71, 135, 0.05); }
+    /* Status Warna Kotak (Pekat) */
+    .status-selesai { background-color: var(--bg-selesai); }
+    .status-terdekat { background-color: var(--bg-terdekat); }
+    .status-akan-datang { background-color: var(--bg-akan-datang); }
 
-    /* Holiday Info */
-    .holiday-info { font-size: 8px; color: var(--hc-red); margin-top: 2px; line-height: 1; }
-
-    /* Detail Card */
+    /* Detail Card (Background sama dengan Grid) */
     .detail-card {
-      background: white; border-radius: 12px; padding: 18px;
-      border: 1px solid var(--border-color); margin-bottom: 15px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      border-radius: 16px; padding: 20px;
+      border: 1px solid var(--border-color); margin-bottom: 20px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      animation: fadeIn 0.4s ease;
     }
+    
+    /* Background Dinamis Card Detail */
+    .detail-card.bg-selesai { background-color: var(--bg-selesai); border-color: rgba(211, 14, 20, 0.3); }
+    .detail-card.bg-terdekat { background-color: var(--bg-terdekat); border-color: rgba(21, 162, 86, 0.3); }
+    .detail-card.bg-akan-datang { background-color: var(--bg-akan-datang); border-color: rgba(26, 71, 135, 0.3); }
+
     .detail-header {
-      display: flex; align-items: center; gap: 12px;
-      border-bottom: 1px solid var(--border-color);
-      padding-bottom: 12px; margin-bottom: 12px;
+      display: flex; align-items: center; gap: 15px;
+      border-bottom: 1px solid rgba(0,0,0,0.1);
+      padding-bottom: 15px; margin-bottom: 15px;
     }
-    .detail-logo-img { width: 40px; height: 40px; object-fit: contain; }
-    .detail-header h3 { margin: 0; font-size: 16px; color: var(--hc-blue); }
+    .detail-logo-img { width: 45px; height: 45px; object-fit: contain; }
+    .detail-header h3 { margin: 0; font-size: 18px; color: var(--hc-blue); font-weight: 700; }
     
     .detail-content { display: flex; gap: 20px; }
     .detail-img { 
-      width: 120px; height: 120px; border-radius: 8px; 
-      object-fit: cover; background: #f1f5f9; flex-shrink: 0;
+      width: 150px; height: 150px; border-radius: 12px; 
+      object-fit: cover; background: white; flex-shrink: 0;
+      border: 3px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
     .detail-info { flex: 1; }
-    .detail-info p { margin: 0 0 8px 0; font-size: 13px; display: flex; align-items: center; gap: 8px; }
-    .detail-info i { color: var(--hc-blue); font-size: 16px; }
-    .detail-desc { margin-top: 10px; font-size: 13px; color: #64748b; line-height: 1.6; border-top: 1px dashed #e2e8f0; padding-top: 10px; }
+    .detail-info p { margin: 0 0 10px 0; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 10px; }
+    .detail-info i { color: var(--hc-blue); font-size: 18px; width: 20px; }
+    .detail-desc { margin-top: 12px; font-size: 13.5px; color: #4b5563; line-height: 1.6; background: rgba(255,255,255,0.5); padding: 10px; border-radius: 8px; }
 
+    /* Legenda Keterangan Warna (Sesuai Lampiran) */
+    .legend-container {
+      background: white; border-radius: 12px; padding: 15px;
+      border: 1px solid var(--border-color); margin-top: 20px;
+    }
+    .legend-title { font-size: 14px; font-weight: 700; margin-bottom: 12px; color: var(--hc-dark); }
+    .legend-list { display: flex; flex-wrap: wrap; gap: 15px; }
+    .legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; color: #64748b; }
+    .legend-box { width: 20px; height: 20px; border-radius: 4px; border: 1px solid rgba(0,0,0,0.1); }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Responsive Mobile */
     @media (max-width: 650px) {
+      #agenda-hc32 { padding-top: 70px; }
       .search-container { flex-direction: column; }
-      .calendar-cell { min-height: 65px; }
-      .grid-custom-logo { width: 24px; height: 24px; }
+      .calendar-cell { min-height: 70px; padding: 5px; }
+      .grid-custom-logo { width: 26px; height: 26px; }
       .detail-content { flex-direction: column; }
-      .detail-img { width: 100%; height: 150px; }
+      .detail-img { width: 100%; height: 180px; }
+      .legend-list { flex-direction: column; gap: 8px; }
     }
   </style>
 </head>
@@ -182,12 +213,13 @@
   <h2>Agenda History Club 32</h2>
 
   <div class="search-container">
-    <input type="text" id="search-input" placeholder="Cari nama atau deskripsi kegiatan...">
+    <input type="text" id="search-input" placeholder="Cari nama kegiatan...">
     <select id="filter-kategori">
       <option value="">Semua Kategori</option>
       <option value="Pertemuan Reguler">Pertemuan Reguler</option>
       <option value="Kunjungan Museum">Kunjungan Museum</option>
       <option value="Rapat Pengurus">Rapat Pengurus</option>
+      <option value="Lomba">Lomba</option>
     </select>
   </div>
   
@@ -195,8 +227,8 @@
     <div class="calendar-header">
       <h3 id="calendar-month-year"></h3>
       <div class="calendar-nav">
-        <button id="btn-prev"><i class="ri-arrow-left-s-line"></i></button>
-        <button id="btn-next"><i class="ri-arrow-right-s-line"></i></button>
+        <button id="btn-prev" title="Bulan Sebelumnya"><i class="ri-arrow-left-s-line"></i></button>
+        <button id="btn-next" title="Bulan Berikutnya"><i class="ri-arrow-right-s-line"></i></button>
       </div>
     </div>
     <div class="calendar-grid-header">
@@ -205,12 +237,35 @@
     <div class="calendar-grid-body" id="calendar-body"></div>
   </div>
 
-  <h4 id="agenda-list-date"></h4>
+  <div class="legend-container">
+    <div class="legend-title">Keterangan Warna</div>
+    <div class="legend-list">
+      <div class="legend-item">
+        <div class="legend-box" style="background: var(--bg-terdekat);"></div>
+        Agenda Terdekat
+      </div>
+      <div class="legend-item">
+        <div class="legend-box" style="background: var(--bg-akan-datang);"></div>
+        Agenda Yang Akan Datang
+      </div>
+      <div class="legend-item">
+        <div class="legend-box" style="background: var(--bg-selesai);"></div>
+        Agenda Yang Sudah Selesai
+      </div>
+    </div>
+  </div>
+
+  <h4 id="agenda-list-date" style="margin-top: 30px; color: var(--hc-blue);"></h4>
   <div id="agenda-list"></div>
-  <div id="agenda-list-placeholder">Pilih tanggal pada kalender untuk melihat rincian</div>
+  <div id="agenda-list-placeholder" style="text-align: center; padding: 40px; color: #94a3b8; font-style: italic;">Pilih tanggal pada kalender untuk melihat rincian kegiatan</div>
 </div>
 
 <script>
+  // Inisialisasi Navigasi (Header, Sidebar, Footer)
+  document.addEventListener('DOMContentLoaded', () => {
+    if(typeof initHC32Navigation === 'function') initHC32Navigation('agenda');
+  });
+
   (function() {
     const API_URL = (typeof GAS_URL !== 'undefined') ? GAS_URL : "https://script.google.com/macros/s/AKfycbz22NwYQ-WJwmdieMgzQxw1I2lXKTghebFO-oSY-wE_av-3oEYIi9TfSCqJCpy3iZKt/exec";
 
@@ -222,7 +277,7 @@
     const cleanToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
     let nextAgendaDate = null;
 
-    // --- 1. Ambil Data Hari Libur Otomatis ---
+    // 1. Ambil Data Hari Libur Nasional (API)
     async function fetchHolidays(year) {
       try {
         const res = await fetch(`https://api-harilibur.vercel.app/api?year=${year}`);
@@ -231,10 +286,10 @@
       } catch (e) { console.error("Gagal load hari libur:", e); }
     }
 
-    // --- 2. Load Data Agenda ---
+    // 2. Load Data Agenda dari GAS
     async function loadAllData() {
       if (typeof window.showHC32Status === 'function') {
-        window.showHC32Status('loading', 'Sinkronisasi...', 'Mengambil agenda dan hari libur.');
+        window.showHC32Status('loading', 'Sinkronisasi...', 'Sinkronisasi agenda dan kalender pendidikan.');
       }
 
       try {
@@ -256,7 +311,10 @@
         if (future.length > 0) nextAgendaDate = future[0].parsedDate;
 
         renderCalendar();
-        renderAgendaList(selectedDate);
+        // Jangan render list otomatis di awal kecuali ada agenda hari ini
+        const hasToday = allAgendaData.some(a => isSameDay(a.parsedDate, today));
+        if(hasToday) renderAgendaList(today);
+
       } catch (e) {
         console.error(e);
       } finally {
@@ -264,7 +322,10 @@
       }
     }
 
-    // --- 3. Filter Logic ---
+    function isSameDay(d1, d2) {
+      return d1.getFullYear() === d2.getFullYear() && d1.getMonth() === d2.getMonth() && d1.getDate() === d2.getDate();
+    }
+
     function getFilteredAgendas() {
       const query = document.getElementById('search-input').value.toLowerCase();
       const cat = document.getElementById('filter-kategori').value;
@@ -276,7 +337,6 @@
       });
     }
 
-    // --- 4. UI Rendering ---
     function renderCalendar() {
       const body = document.getElementById("calendar-body");
       body.innerHTML = "";
@@ -309,19 +369,18 @@
         let cellHTML = `<span class="date-num">${d}</span>`;
         if (holidayName) cellHTML += `<span class="holiday-info">${holidayName}</span>`;
 
-        // Agenda logic
-        const dayAgendas = filtered.filter(a => 
-          a.parsedDate.getFullYear() === y && a.parsedDate.getMonth() === m && a.parsedDate.getDate() === d
-        );
+        const dayAgendas = filtered.filter(a => isSameDay(a.parsedDate, currDate));
 
         if (dayAgendas.length > 0) {
           const main = dayAgendas[0];
           const diff = currDate.getTime() - cleanToday.getTime();
-          const status = diff < 0 ? 'status-selesai' : (nextAgendaDate && currDate.getTime() === nextAgendaDate.getTime() ? 'status-terdekat' : 'status-akan-datang');
+          let statusClass = 'status-akan-datang';
           
-          cell.classList.add(status);
+          if (diff < 0) statusClass = 'status-selesai';
+          else if (nextAgendaDate && isSameDay(currDate, nextAgendaDate)) statusClass = 'status-terdekat';
+          
+          cell.classList.add(statusClass);
 
-          // Cek Logo Kustom GDrive vs Emoji
           let logoContent = "";
           if (main.logo && main.logo.length > 10) {
             logoContent = `<img src="https://drive.google.com/thumbnail?id=${main.logo}&sz=w100" class="grid-custom-logo">`;
@@ -331,8 +390,8 @@
           cellHTML += `<div class="cell-icon-container">${logoContent}</div>`;
         }
 
-        if (currDate.getTime() === cleanToday.getTime()) cell.classList.add("today");
-        if (currDate.getTime() === selectedDate.getTime()) cell.classList.add("selected");
+        if (isSameDay(currDate, today)) cell.classList.add("today");
+        if (isSameDay(currDate, selectedDate)) cell.classList.add("selected");
 
         cell.innerHTML = cellHTML;
         cell.onclick = () => {
@@ -349,9 +408,7 @@
       const placeholder = document.getElementById("agenda-list-placeholder");
       document.getElementById("agenda-list-date").textContent = date.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
       
-      const agendas = getFilteredAgendas().filter(a => 
-        a.parsedDate.getFullYear() === date.getFullYear() && a.parsedDate.getMonth() === date.getMonth() && a.parsedDate.getDate() === date.getDate()
-      );
+      const agendas = getFilteredAgendas().filter(a => isSameDay(a.parsedDate, date));
 
       list.innerHTML = "";
       if (agendas.length === 0) {
@@ -361,34 +418,40 @@
       placeholder.style.display = "none";
 
       agendas.forEach(item => {
+        const diff = item.parsedDate.getTime() - cleanToday.getTime();
+        let themeClass = 'bg-akan-datang';
+        if (diff < 0) themeClass = 'bg-selesai';
+        else if (nextAgendaDate && isSameDay(item.parsedDate, nextAgendaDate)) themeClass = 'bg-terdekat';
+
         const div = document.createElement("div");
+        div.className = `detail-card ${themeClass}`;
+        
         const logoURL = (item.logo && item.logo.length > 10) ? `https://drive.google.com/thumbnail?id=${item.logo}&sz=w100` : null;
         
         div.innerHTML = `
-          <div class="detail-card">
             <div class="detail-header">
               ${logoURL ? `<img src="${logoURL}" class="detail-logo-img">` : `<span style="font-size:30px">${item.logo || '📍'}</span>`}
               <h3>${item.judul}</h3>
             </div>
             <div class="detail-content">
-              <img src="${item.foto || '../../assets/img/placeholder-agenda.jpg'}" class="detail-img">
+              <img src="${item.foto || '../../assets/img/placeholder-agenda.jpg'}" class="detail-img" onerror="this.src='https://via.placeholder.com/150?text=No+Image'">
               <div class="detail-info">
-                <p><i class="ri-map-pin-line"></i> ${item.tempat || 'TBA'}</p>
-                <p><i class="ri-time-line"></i> ${item.waktu || 'TBA'}</p>
-                <p><i class="ri-bookmark-line"></i> ${item.kategori || 'Kegiatan'}</p>
-                <div class="detail-desc">${item.deskripsi || 'Tidak ada deskripsi.'}</div>
+                <p><i class="ri-map-pin-2-line"></i> ${item.tempat || 'Lokasi belum ditentukan'}</p>
+                <p><i class="ri-time-line"></i> ${item.waktu || 'Waktu belum ditentukan'}</p>
+                <p><i class="ri-price-tag-3-line"></i> ${item.kategori || 'Kegiatan HC'}</p>
+                <div class="detail-desc">${item.deskripsi || 'Tidak ada deskripsi rincian untuk kegiatan ini.'}</div>
               </div>
             </div>
-          </div>
         `;
         list.appendChild(div);
       });
     }
 
-    // --- 5. Event Listeners ---
+    // Navigasi Bulan
     document.getElementById("btn-prev").onclick = () => { displayDate.setMonth(displayDate.getMonth() - 1); renderCalendar(); };
     document.getElementById("btn-next").onclick = () => { displayDate.setMonth(displayDate.getMonth() + 1); renderCalendar(); };
     
+    // Fitur Pencarian Dinamis
     document.getElementById("search-input").oninput = () => { renderCalendar(); renderAgendaList(selectedDate); };
     document.getElementById("filter-kategori").onchange = () => { renderCalendar(); renderAgendaList(selectedDate); };
 
