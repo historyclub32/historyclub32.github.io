@@ -46,147 +46,105 @@
 
     #agenda-hc32 h2 { text-align: center; margin-bottom: 24px; color: var(--hc-dark); font-weight: 700; }
 
-    /* Search Bar & Navigasi Cepat */
-    .search-container {
-      background: white;
-      padding: 15px;
-      border-radius: 12px;
-      border: 1px solid var(--border-color);
-      margin-bottom: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    /* Navigasi Cepat (Jump to Month) */
+    .jump-nav {
+      background: white; padding: 12px; border-radius: 12px;
+      border: 1px solid var(--border-color); margin-bottom: 15px;
+      display: flex; gap: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
     }
-    .search-row { display: flex; gap: 10px; }
-    .search-row input, .search-row select {
-      padding: 10px;
-      border: 1px solid #e2e8f0;
-      border-radius: 8px;
-      font-family: inherit;
-      font-size: 14px;
-      outline: none;
-    }
-    .search-row input { flex: 2; }
-    .search-row select { flex: 1; }
+    .jump-nav select { flex: 1; padding: 8px; border-radius: 8px; border: 1px solid #e2e8f0; font-family: inherit; outline: none; }
 
-    .quick-nav { border-top: 1px solid #f1f5f9; padding-top: 12px; display: flex; gap: 10px; align-items: center; }
-    .quick-nav label { font-size: 12px; font-weight: 700; color: var(--hc-blue); white-space: nowrap; }
+    .search-container {
+      background: white; padding: 12px; border-radius: 12px;
+      border: 1px solid var(--border-color); margin-bottom: 20px;
+      display: flex; gap: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    }
+    .search-container input, .search-container select { padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; font-family: inherit; font-size: 14px; outline: none; }
+    .search-container input { flex: 2; }
+    .search-container select { flex: 1; }
 
     /* Kalender Grid */
-    #agenda-calendar {
-      background: #fff;
-      border-radius: 16px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-      overflow: hidden;
-      margin-bottom: 24px;
-      border: 1px solid var(--border-color);
-    }
-
-    .calendar-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 20px;
-      background: #fff;
-      border-bottom: 2px solid #f1f5f9;
-    }
-
+    #agenda-calendar { background: #fff; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); overflow: hidden; margin-bottom: 24px; border: 1px solid var(--border-color); }
+    .calendar-header { display: flex; justify-content: space-between; align-items: center; padding: 20px; background: #fff; border-bottom: 2px solid #f1f5f9; }
     .calendar-header h3 { font-size: 1.2rem; margin: 0; color: var(--hc-blue); font-weight: 700; }
+    .calendar-nav button { background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px 14px; cursor: pointer; color: var(--hc-blue); transition: all 0.2s; }
+    .calendar-nav button:hover { background: var(--hc-blue); color: white; }
 
-    .calendar-nav button {
-      background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 8px;
-      padding: 8px 14px; cursor: pointer; color: var(--hc-blue);
-      transition: all 0.2s;
-    }
-
-    .calendar-grid-header {
-      display: grid; grid-template-columns: repeat(7, 1fr);
-      background: #f8fafc; border-bottom: 1px solid var(--border-color);
-    }
-
+    .calendar-grid-header { display: grid; grid-template-columns: repeat(7, 1fr); background: #f8fafc; border-bottom: 1px solid var(--border-color); }
     .calendar-grid-header div { padding: 14px 0; font-size: 12px; font-weight: 700; text-align: center; color: #64748b; text-transform: uppercase; }
+
+    /* Perbaikan Visual Hari Sabtu */
+    .calendar-grid-header div:last-child { color: var(--hc-red); }
 
     .calendar-grid-body { display: grid; grid-template-columns: repeat(7, 1fr); }
 
     .calendar-cell {
-      min-height: 110px; /* Diperpanjang ke bawah sesuai request */
-      border-right: 1px solid #f1f5f9;
-      border-bottom: 1px solid #f1f5f9;
-      padding: 8px;
-      position: relative;
-      cursor: pointer;
-      display: flex; flex-direction: column;
+      min-height: 110px; /* Diperpanjang agar logo terlihat */
+      border-right: 1px solid #f1f5f9; border-bottom: 1px solid #f1f5f9;
+      padding: 8px; position: relative; cursor: pointer; display: flex; flex-direction: column; transition: transform 0.2s;
     }
-
-    .calendar-cell:nth-child(7n), .calendar-cell:nth-child(7n-1) { background-color: rgba(211, 14, 20, 0.02); }
-    .calendar-cell:nth-child(7n) .date-num, .calendar-cell:nth-child(7n-1) .date-num { color: var(--hc-red); }
-
     .calendar-cell:nth-child(7n) { border-right: none; }
-    .calendar-cell:hover:not(.empty) { background-color: #f8fafc; }
+    .calendar-cell:hover:not(.empty) { background-color: #f8fafc; z-index: 2; transform: scale(1.02); }
 
     .calendar-cell .date-num { font-size: 14px; font-weight: 700; color: var(--hc-text); }
+    /* Warna Merah Sabtu di Cell */
+    .calendar-cell:nth-child(7n) .date-num { color: var(--hc-red); }
+    .calendar-cell.is-holiday .date-num { color: var(--hc-red); }
     
-    .calendar-cell.today .date-num { 
-      color: var(--hc-toska); 
-      border-bottom: 3px solid var(--hc-toska);
-      padding-bottom: 1px;
-    }
-
-    .calendar-cell.selected { background-color: #fff !important; outline: 3px solid var(--hc-blue); z-index: 5; }
+    .calendar-cell.today .date-num { color: var(--hc-toska); display: inline-block; border-bottom: 3px solid var(--hc-toska); padding-bottom: 1px; }
+    .calendar-cell.selected { background-color: #fff !important; outline: 3px solid var(--hc-blue); z-index: 5; box-shadow: 0 0 15px rgba(26, 71, 135, 0.2); }
 
     .cell-icon-container { margin: auto; width: 100%; display: flex; justify-content: center; align-items: center; }
-    .grid-custom-logo { width: 38px; height: 38px; object-fit: contain; }
+    .grid-custom-logo { width: 38px; height: 38px; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); }
     .grid-emoji-logo { font-size: 28px; }
 
-    .status-selesai { background-color: var(--bg-selesai) !important; }
-    .status-terdekat { background-color: var(--bg-terdekat) !important; }
-    .status-akan-datang { background-color: var(--bg-akan-datang) !important; }
-
-    .holiday-info { font-size: 8px; color: var(--hc-red); margin-top: 2px; line-height: 1; }
-
-    /* Hasil Global Search */
-    #global-results { margin-bottom: 24px; display: none; }
-    .global-card {
-        background: white; border-radius: 12px; padding: 12px 15px;
-        margin-bottom: 10px; border-left: 5px solid var(--hc-blue);
-        display: flex; justify-content: space-between; align-items: center;
-        cursor: pointer; transition: transform 0.2s;
-    }
-    .global-card:hover { transform: translateX(5px); }
+    .status-selesai { background-color: var(--bg-selesai); }
+    .status-terdekat { background-color: var(--bg-terdekat); }
+    .status-akan-datang { background-color: var(--bg-akan-datang); }
 
     /* Detail Card */
-    .detail-card {
-      border-radius: 16px; padding: 20px;
-      border: 1px solid var(--border-color); margin-bottom: 20px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-    }
-    .detail-card.bg-selesai { background-color: var(--bg-selesai); }
-    .detail-card.bg-terdekat { background-color: var(--bg-terdekat); }
-    .detail-card.bg-akan-datang { background-color: var(--bg-akan-datang); }
+    .detail-card { border-radius: 16px; padding: 20px; border: 1px solid var(--border-color); margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); animation: fadeIn 0.4s ease; }
+    .detail-card.bg-selesai { background-color: var(--bg-selesai); border-color: rgba(211, 14, 20, 0.3); }
+    .detail-card.bg-terdekat { background-color: var(--bg-terdekat); border-color: rgba(21, 162, 86, 0.3); }
+    .detail-card.bg-akan-datang { background-color: var(--bg-akan-datang); border-color: rgba(26, 71, 135, 0.3); }
 
     .detail-header { display: flex; align-items: center; gap: 15px; border-bottom: 1px solid rgba(0,0,0,0.1); padding-bottom: 15px; margin-bottom: 15px; }
     .detail-logo-img { width: 45px; height: 45px; object-fit: contain; }
     .detail-header h3 { margin: 0; font-size: 18px; color: var(--hc-blue); font-weight: 700; }
-    
     .detail-content { display: flex; gap: 20px; }
-    .detail-img { width: 150px; height: 150px; border-radius: 12px; object-fit: cover; background: white; flex-shrink: 0; border: 3px solid white; }
+    .detail-img { width: 150px; height: 150px; border-radius: 12px; object-fit: cover; background: white; flex-shrink: 0; border: 3px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
     .detail-info { flex: 1; }
     .detail-info p { margin: 0 0 10px 0; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 10px; }
+    .detail-info i { color: var(--hc-blue); font-size: 18px; width: 20px; }
+    .detail-desc { margin-top: 12px; font-size: 13.5px; color: #4b5563; line-height: 1.6; background: rgba(255,255,255,0.5); padding: 10px; border-radius: 8px; }
 
-    /* Legenda */
+    /* Rekap Hasil Pencarian */
+    #search-results-section { display: none; margin-bottom: 30px; border-top: 2px dashed var(--hc-blue); padding-top: 20px; }
+    .result-title { font-weight: 700; color: var(--hc-blue); margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+
     .legend-container { background: white; border-radius: 12px; padding: 15px; border: 1px solid var(--border-color); margin-top: 20px; }
+    .legend-title { font-size: 14px; font-weight: 700; margin-bottom: 12px; color: var(--hc-dark); }
     .legend-list { display: flex; flex-wrap: wrap; gap: 15px; }
     .legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; color: #64748b; }
     .legend-box { width: 20px; height: 20px; border-radius: 4px; border: 1px solid rgba(0,0,0,0.1); }
 
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Responsive Mobile */
     @media (max-width: 650px) {
       #agenda-hc32 { padding-top: 70px; }
-      .search-row { flex-direction: column; }
-      .calendar-cell { min-height: 100px; } /* Mobile tetap panjang ke bawah */
+      .search-container, .jump-nav { flex-direction: column; }
+      /* Menghindari overflow grid di mobile */
+      .calendar-grid-body, .calendar-grid-header { width: 100%; }
+      .calendar-cell { 
+        min-height: 100px; /* Sedikit lebih pendek di mobile tapi tetap cukup untuk logo */
+        padding: 4px;
+        overflow: hidden; 
+      }
+      .grid-custom-logo { width: 28px; height: 28px; }
       .detail-content { flex-direction: column; }
       .detail-img { width: 100%; height: 180px; }
-      .quick-nav { flex-wrap: wrap; }
+      .legend-list { flex-direction: column; gap: 8px; }
     }
   </style>
 </head>
@@ -195,41 +153,34 @@
 <div id="agenda-hc32">
   <h2>Agenda History Club 32</h2>
 
-  <div class="search-container">
-    <div class="search-row">
-      <input type="text" id="search-input" placeholder="Cari nama kegiatan (Global)...">
-      <select id="filter-kategori">
-        <option value="">Semua Kategori</option>
-        <option value="Pertemuan Reguler">Pertemuan Reguler</option>
-        <option value="Kunjungan Museum">Kunjungan Museum</option>
-        <option value="Rapat Pengurus">Rapat Pengurus</option>
-        <option value="Lomba">Lomba</option>
-      </select>
-    </div>
-    <div class="quick-nav">
-        <label>Lompat Ke:</label>
-        <select id="jump-month">
-            <option value="0">Januari</option><option value="1">Februari</option><option value="2">Maret</option>
-            <option value="3">April</option><option value="4">Mei</option><option value="5">Juni</option>
-            <option value="6">Juli</option><option value="7">Agustus</option><option value="8">September</option>
-            <option value="9">Oktober</option><option value="10">November</option><option value="11">Desember</option>
-        </select>
-        <select id="jump-year"></select>
-        <button id="btn-go" class="calendar-nav" style="padding: 5px 15px; border-radius: 8px; background: var(--hc-blue); color: white; border: none; cursor: pointer;">Cari</button>
-    </div>
+  <div class="jump-nav">
+    <select id="jump-month">
+      <option value="0">Januari</option><option value="1">Februari</option><option value="2">Maret</option>
+      <option value="3">April</option><option value="4">Mei</option><option value="5">Juni</option>
+      <option value="6">Juli</option><option value="7">Agustus</option><option value="8">September</option>
+      <option value="9">Oktober</option><option value="10">November</option><option value="11">Desember</option>
+    </select>
+    <select id="jump-year"></select>
+    <button class="calendar-nav" id="btn-jump" style="padding: 8px 20px; background: var(--hc-blue); color: white; border: none; border-radius: 8px; cursor: pointer;">Pindah</button>
   </div>
 
-  <div id="global-results">
-      <h4 style="color: var(--hc-blue); border-bottom: 2px solid var(--hc-blue); padding-bottom: 5px;">Hasil Pencarian Global</h4>
-      <div id="global-list"></div>
+  <div class="search-container">
+    <input type="text" id="search-input" placeholder="Cari nama kegiatan (Global)...">
+    <select id="filter-kategori">
+      <option value="">Semua Kategori</option>
+      <option value="Pertemuan Reguler">Pertemuan Reguler</option>
+      <option value="Kunjungan Museum">Kunjungan Museum</option>
+      <option value="Rapat Pengurus">Rapat Pengurus</option>
+      <option value="Lomba">Lomba</option>
+    </select>
   </div>
   
   <div id="agenda-calendar">
     <div class="calendar-header">
       <h3 id="calendar-month-year"></h3>
       <div class="calendar-nav">
-        <button id="btn-prev"><i class="ri-arrow-left-s-line"></i></button>
-        <button id="btn-next"><i class="ri-arrow-right-s-line"></i></button>
+        <button id="btn-prev" title="Bulan Sebelumnya"><i class="ri-arrow-left-s-line"></i></button>
+        <button id="btn-next" title="Bulan Berikutnya"><i class="ri-arrow-right-s-line"></i></button>
       </div>
     </div>
     <div class="calendar-grid-header">
@@ -238,11 +189,17 @@
     <div class="calendar-grid-body" id="calendar-body"></div>
   </div>
 
+  <div id="search-results-section">
+    <div class="result-title"><i class="ri-search-eye-line"></i> Hasil Pencarian Rekap Global</div>
+    <div id="global-search-list"></div>
+  </div>
+
   <div class="legend-container">
+    <div class="legend-title">Keterangan Warna</div>
     <div class="legend-list">
       <div class="legend-item"><div class="legend-box" style="background: var(--bg-terdekat);"></div> Agenda Terdekat</div>
-      <div class="legend-item"><div class="legend-box" style="background: var(--bg-akan-datang);"></div> Agenda Akan Datang</div>
-      <div class="legend-item"><div class="legend-box" style="background: var(--bg-selesai);"></div> Agenda Selesai</div>
+      <div class="legend-item"><div class="legend-box" style="background: var(--bg-akan-datang);"></div> Agenda Yang Akan Datang</div>
+      <div class="legend-item"><div class="legend-box" style="background: var(--bg-selesai);"></div> Agenda Yang Sudah Selesai</div>
     </div>
   </div>
 
@@ -252,31 +209,50 @@
 </div>
 
 <script>
-  document.addEventListener('DOMContentLoaded', () => { if(typeof initHC32Navigation === 'function') initHC32Navigation('agenda'); });
+  document.addEventListener('DOMContentLoaded', () => {
+    if(typeof initHC32Navigation === 'function') initHC32Navigation('agenda');
+  });
 
   (function() {
     const API_URL = (typeof GAS_URL !== 'undefined') ? GAS_URL : "https://script.google.com/macros/s/AKfycbz22NwYQ-WJwmdieMgzQxw1I2lXKTghebFO-oSY-wE_av-3oEYIi9TfSCqJCpy3iZKt/exec";
-    let allAgendaData = [], holidayData = {}, displayDate = new Date(), selectedDate = new Date();
-    const today = new Date(), cleanToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+    let allAgendaData = [];
+    let holidayData = {};
+    let displayDate = new Date();
+    let selectedDate = new Date();
+    const today = new Date();
+    const cleanToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
     let nextAgendaDate = null;
+
+    // Init Dropdown Tahun
+    const yearSelect = document.getElementById('jump-year');
+    const curYear = today.getFullYear();
+    for(let i = curYear - 2; i <= curYear + 3; i++) {
+      const opt = document.createElement('option');
+      opt.value = i; opt.textContent = i;
+      if(i === curYear) opt.selected = true;
+      yearSelect.appendChild(opt);
+    }
 
     async function fetchHolidays(year) {
       try {
         const res = await fetch(`https://api-harilibur.vercel.app/api?year=${year}`);
         const data = await res.json();
         data.forEach(h => { holidayData[h.holiday_date] = h.holiday_name; });
-      } catch (e) {}
+      } catch (e) { console.error("Gagal load hari libur:", e); }
     }
 
     async function loadAllData() {
-      if (typeof window.showHC32Status === 'function') window.showHC32Status('loading', 'Sinkronisasi...', 'Mengakses basis data HC32.');
+      if (typeof window.showHC32Status === 'function') window.showHC32Status('loading', 'Sinkronisasi...', 'Menyiapkan agenda global...');
+
       try {
         await fetchHolidays(displayDate.getFullYear());
         const [nextRes, riwayatRes] = await Promise.all([
           fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "getKegiatanPublik", mode: "next" }) }),
           fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "getKegiatanPublik", mode: "riwayat" }) })
         ]);
-        const nextOut = await nextRes.json(), riwayatOut = await riwayatRes.json();
+        const nextOut = await nextRes.json();
+        const riwayatOut = await riwayatRes.json();
         allAgendaData = [...(nextOut.data || []), ...(riwayatOut.data || [])]
           .map(item => ({ ...item, parsedDate: new Date(item.tanggal) }))
           .filter(item => !isNaN(item.parsedDate));
@@ -284,128 +260,152 @@
         const future = allAgendaData.filter(i => i.parsedDate >= cleanToday).sort((a,b) => a.parsedDate - b.parsedDate);
         if (future.length > 0) nextAgendaDate = future[0].parsedDate;
 
-        initYearDropdown();
         renderCalendar();
-      } catch (e) {} finally { if (typeof window.hideHC32Status === 'function') window.hideHC32Status(); }
+        if(allAgendaData.some(a => isSameDay(a.parsedDate, today))) renderAgendaList(today);
+      } catch (e) { console.error(e); } finally {
+        if (typeof window.hideHC32Status === 'function') window.hideHC32Status();
+      }
     }
 
-    function initYearDropdown() {
-        const jumpYear = document.getElementById('jump-year');
-        const currYear = new Date().getFullYear();
-        for(let i = currYear - 2; i <= currYear + 2; i++) {
-            let opt = document.createElement('option');
-            opt.value = i; opt.textContent = i;
-            if(i === currYear) opt.selected = true;
-            jumpYear.appendChild(opt);
-        }
-    }
+    function isSameDay(d1, d2) { return d1.getFullYear() === d2.getFullYear() && d1.getMonth() === d2.getMonth() && d1.getDate() === d2.getDate(); }
 
     function renderCalendar() {
       const body = document.getElementById("calendar-body");
       body.innerHTML = "";
-      const y = displayDate.getFullYear(), m = displayDate.getMonth();
+      const y = displayDate.getFullYear();
+      const m = displayDate.getMonth();
       document.getElementById("calendar-month-year").textContent = new Intl.DateTimeFormat('id-ID', { month: 'long', year: 'numeric' }).format(displayDate);
-
-      const firstDay = new Date(y, m, 1).getDay(), daysInMonth = new Date(y, m + 1, 0).getDate();
+      const firstDay = new Date(y, m, 1).getDay();
+      const daysInMonth = new Date(y, m + 1, 0).getDate();
 
       for (let i = 0; i < firstDay; i++) {
-        const empty = document.createElement("div"); empty.className = "calendar-cell empty"; body.appendChild(empty);
+        const empty = document.createElement("div");
+        empty.className = "calendar-cell empty";
+        body.appendChild(empty);
       }
 
       for (let d = 1; d <= daysInMonth; d++) {
-        const currDate = new Date(y, m, d), dateISO = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-        const cell = document.createElement("div"); cell.className = "calendar-cell";
+        const currDate = new Date(y, m, d);
+        const dateISO = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        const cell = document.createElement("div");
+        cell.className = "calendar-cell";
         
-        const isSunday = currDate.getDay() === 0, isSaturday = currDate.getDay() === 6;
-        const holidayName = holidayData[dateISO];
-        if (isSunday || isSaturday || holidayName) cell.classList.add("is-holiday");
+        // Minggu (0) dan Sabtu (6)
+        const dayOfWeek = currDate.getDay();
+        const isHoliday = holidayData[dateISO];
+        if (dayOfWeek === 0 || dayOfWeek === 6 || isHoliday) cell.classList.add("is-holiday");
 
         let cellHTML = `<span class="date-num">${d}</span>`;
-        if (holidayName) cellHTML += `<span class="holiday-info">${holidayName}</span>`;
+        if (isHoliday) cellHTML += `<span class="holiday-info">${isHoliday}</span>`;
 
-        const dayAgendas = allAgendaData.filter(a => a.parsedDate.getFullYear() === y && a.parsedDate.getMonth() === m && a.parsedDate.getDate() === d);
-
+        const dayAgendas = allAgendaData.filter(a => isSameDay(a.parsedDate, currDate));
         if (dayAgendas.length > 0) {
-          const main = dayAgendas[0], diff = currDate.getTime() - cleanToday.getTime();
-          let statusClass = (diff < 0) ? 'status-selesai' : (nextAgendaDate && currDate.getTime() === nextAgendaDate.getTime() ? 'status-terdekat' : 'status-akan-datang');
+          const main = dayAgendas[0];
+          const diff = currDate.getTime() - cleanToday.getTime();
+          let statusClass = diff < 0 ? 'status-selesai' : (nextAgendaDate && isSameDay(currDate, nextAgendaDate) ? 'status-terdekat' : 'status-akan-datang');
           cell.classList.add(statusClass);
 
-          let logo = (main.logo && main.logo.length > 10) ? `<img src="https://drive.google.com/thumbnail?id=${main.logo}&sz=w100" class="grid-custom-logo">` : `<span class="grid-emoji-logo">${main.logo || '📍'}</span>`;
-          cellHTML += `<div class="cell-icon-container">${logo}</div>`;
+          let logoContent = (main.logo && main.logo.length > 10) 
+            ? `<img src="https://drive.google.com/thumbnail?id=${main.logo}&sz=w100" class="grid-custom-logo">` 
+            : `<span class="grid-emoji-logo">${main.logo || '📍'}</span>`;
+          cellHTML += `<div class="cell-icon-container">${logoContent}</div>`;
         }
 
-        if (currDate.getFullYear() === today.getFullYear() && currDate.getMonth() === today.getMonth() && currDate.getDate() === today.getDate()) cell.classList.add("today");
-        if (currDate.getFullYear() === selectedDate.getFullYear() && currDate.getMonth() === selectedDate.getMonth() && currDate.getDate() === selectedDate.getDate()) cell.classList.add("selected");
-
+        if (isSameDay(currDate, today)) cell.classList.add("today");
+        if (isSameDay(currDate, selectedDate)) cell.classList.add("selected");
         cell.innerHTML = cellHTML;
         cell.onclick = () => { selectedDate = currDate; renderCalendar(); renderAgendaList(currDate); };
         body.appendChild(cell);
       }
     }
 
-    function handleGlobalSearch() {
-        const query = document.getElementById('search-input').value.toLowerCase();
-        const cat = document.getElementById('filter-kategori').value;
-        const globalDiv = document.getElementById('global-results'), globalList = document.getElementById('global-list');
-
-        if(query === "" && cat === "") { globalDiv.style.display = "none"; return; }
-        
-        if (typeof window.showHC32Status === 'function') window.showHC32Status('loading', 'Mencari...', 'Menyisir basis data global.');
-        
-        setTimeout(() => {
-            const filtered = allAgendaData.filter(item => {
-                const matchText = item.judul.toLowerCase().includes(query) || (item.deskripsi || '').toLowerCase().includes(query);
-                const matchCat = cat === "" || item.kategori === cat;
-                return matchText && matchCat;
-            });
-
-            globalList.innerHTML = "";
-            if(filtered.length > 0) {
-                globalDiv.style.display = "block";
-                filtered.slice(0, 10).forEach(item => {
-                    const card = document.createElement('div');
-                    card.className = "global-card";
-                    card.innerHTML = `<div><strong>${item.judul}</strong><br><small>${new Date(item.tanggal).toLocaleDateString('id-ID', {day:'numeric', month:'long', year:'numeric'})}</small></div><i class="ri-arrow-right-s-line"></i>`;
-                    card.onclick = () => {
-                        displayDate = new Date(item.tanggal);
-                        selectedDate = new Date(item.tanggal);
-                        renderCalendar();
-                        renderAgendaList(selectedDate);
-                        document.getElementById('agenda-calendar').scrollIntoView({behavior:'smooth'});
-                    };
-                    globalList.appendChild(card);
-                });
-            } else { globalDiv.style.display = "none"; }
-            if (typeof window.hideHC32Status === 'function') window.hideHC32Status();
-        }, 500);
-    }
-
-    function renderAgendaList(date) {
-      const list = document.getElementById("agenda-list"), placeholder = document.getElementById("agenda-list-placeholder");
-      document.getElementById("agenda-list-date").textContent = date.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-      const agendas = allAgendaData.filter(a => a.parsedDate.getFullYear() === date.getFullYear() && a.parsedDate.getMonth() === date.getMonth() && a.parsedDate.getDate() === date.getDate());
-
+    function renderAgendaList(date, targetListId = "agenda-list", targetPlaceholderId = "agenda-list-placeholder") {
+      const list = document.getElementById(targetListId);
+      const placeholder = document.getElementById(targetPlaceholderId);
+      if(targetListId === "agenda-list") document.getElementById("agenda-list-date").textContent = date.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+      
+      const agendas = allAgendaData.filter(a => isSameDay(a.parsedDate, date));
       list.innerHTML = "";
-      if (agendas.length === 0) { placeholder.style.display = "block"; return; }
-      placeholder.style.display = "none";
+      if (agendas.length === 0) { if(placeholder) placeholder.style.display = "block"; return; }
+      if(placeholder) placeholder.style.display = "none";
 
       agendas.forEach(item => {
         const diff = item.parsedDate.getTime() - cleanToday.getTime();
-        let theme = (diff < 0) ? 'bg-selesai' : (nextAgendaDate && item.parsedDate.getTime() === nextAgendaDate.getTime() ? 'bg-terdekat' : 'bg-akan-datang');
-        const div = document.createElement("div"); div.className = `detail-card ${theme}`;
-        let logo = (item.logo && item.logo.length > 10) ? `<img src="https://drive.google.com/thumbnail?id=${item.logo}&sz=w100" class="detail-logo-img">` : `<span style="font-size:30px">${item.logo || '📍'}</span>`;
-        div.innerHTML = `<div class="detail-header">${logo}<h3>${item.judul}</h3></div><div class="detail-content"><img src="${item.foto || '../../assets/img/placeholder-agenda.jpg'}" class="detail-img" onerror="this.src='https://via.placeholder.com/150?text=No+Image'"><div class="detail-info"><p><i class="ri-map-pin-2-line"></i> ${item.tempat || 'TBA'}</p><p><i class="ri-time-line"></i> ${item.waktu || 'TBA'}</p><p><i class="ri-price-tag-3-line"></i> ${item.kategori || 'Kegiatan HC'}</p><div class="detail-desc">${item.deskripsi || 'Tidak ada deskripsi.'}</div></div></div>`;
+        let themeClass = diff < 0 ? 'bg-selesai' : (nextAgendaDate && isSameDay(item.parsedDate, nextAgendaDate) ? 'bg-terdekat' : 'bg-akan-datang');
+        const div = document.createElement("div");
+        div.className = `detail-card ${themeClass}`;
+        const logoURL = (item.logo && item.logo.length > 10) ? `https://drive.google.com/thumbnail?id=${item.logo}&sz=w100` : null;
+        div.innerHTML = `
+          <div class="detail-header">${logoURL ? `<img src="${logoURL}" class="detail-logo-img">` : `<span style="font-size:30px">${item.logo || '📍'}</span>`}<h3>${item.judul}</h3></div>
+          <div class="detail-content">
+            <img src="${item.foto || '../../assets/img/placeholder-agenda.jpg'}" class="detail-img" onerror="this.src='https://via.placeholder.com/150?text=No+Image'">
+            <div class="detail-info">
+              <p><i class="ri-map-pin-2-line"></i> ${item.tempat || 'Lokasi TBA'}</p>
+              <p><i class="ri-time-line"></i> ${item.waktu || 'Waktu TBA'}</p>
+              <p><i class="ri-price-tag-3-line"></i> ${item.kategori || 'Kegiatan'}</p>
+              <div class="detail-desc">${item.deskripsi || 'Tidak ada deskripsi.'}</div>
+            </div>
+          </div>`;
         list.appendChild(div);
       });
     }
 
+    // Fitur 2: Pencarian Global (Seluruh Database)
+    function handleGlobalSearch() {
+      const query = document.getElementById('search-input').value.toLowerCase();
+      const cat = document.getElementById('filter-kategori').value;
+      const resultsSection = document.getElementById('search-results-section');
+      const resultsList = document.getElementById('global-search-list');
+
+      if(query === "" && cat === "") { resultsSection.style.display = "none"; return; }
+      
+      if (typeof window.showHC32Status === 'function') window.showHC32Status('loading', 'Mencari...', 'Mencari data di rekap global.');
+
+      const filtered = allAgendaData.filter(item => {
+        const matchText = item.judul.toLowerCase().includes(query) || (item.deskripsi || '').toLowerCase().includes(query);
+        const matchCat = cat === "" || item.kategori === cat;
+        return matchText && matchCat;
+      });
+
+      resultsList.innerHTML = "";
+      if(filtered.length > 0) {
+        resultsSection.style.display = "block";
+        filtered.forEach(item => {
+          const div = document.createElement("div");
+          div.className = "detail-card";
+          div.style.background = "white"; // Netral untuk hasil pencarian
+          div.innerHTML = `<div class="detail-header"><h3 style="font-size: 14px;">${item.judul}</h3><small>${item.tanggal}</small></div><p style="font-size: 12px; margin:0;">${item.tempat || ''}</p>`;
+          div.onclick = async () => {
+            if (typeof window.showHC32Status === 'function') window.showHC32Status('loading', 'Mengarahkan...', 'Membuka kalender...');
+            displayDate = new Date(item.parsedDate);
+            selectedDate = new Date(item.parsedDate);
+            await fetchHolidays(displayDate.getFullYear());
+            renderCalendar();
+            renderAgendaList(selectedDate);
+            resultsSection.style.display = "none";
+            document.getElementById('agenda-calendar').scrollIntoView({ behavior: 'smooth' });
+            if (typeof window.hideHC32Status === 'function') window.hideHC32Status();
+          };
+          resultsList.appendChild(div);
+        });
+      } else { resultsSection.style.display = "none"; }
+      
+      if (typeof window.hideHC32Status === 'function') window.hideHC32Status();
+    }
+
+    // Fitur 1: Jump to Month/Year
+    document.getElementById("btn-jump").onclick = async () => {
+      const m = parseInt(document.getElementById("jump-month").value);
+      const y = parseInt(document.getElementById("jump-year").value);
+      if (typeof window.showHC32Status === 'function') window.showHC32Status('loading', 'Berpindah...', `Membuka ${m+1}/${y}`);
+      displayDate = new Date(y, m, 1);
+      await fetchHolidays(y);
+      renderCalendar();
+      if (typeof window.hideHC32Status === 'function') window.hideHC32Status();
+    };
+
     document.getElementById("btn-prev").onclick = () => { displayDate.setMonth(displayDate.getMonth() - 1); renderCalendar(); };
     document.getElementById("btn-next").onclick = () => { displayDate.setMonth(displayDate.getMonth() + 1); renderCalendar(); };
-    document.getElementById("btn-go").onclick = () => { 
-        displayDate = new Date(document.getElementById('jump-year').value, document.getElementById('jump-month').value, 1);
-        if (typeof window.showHC32Status === 'function') window.showHC32Status('loading', 'Mencari...', 'Mengalihkan kalender.');
-        setTimeout(() => { fetchHolidays(displayDate.getFullYear()); renderCalendar(); if (typeof window.hideHC32Status === 'function') window.hideHC32Status(); }, 600);
-    };
     document.getElementById("search-input").onchange = handleGlobalSearch;
     document.getElementById("filter-kategori").onchange = handleGlobalSearch;
 
