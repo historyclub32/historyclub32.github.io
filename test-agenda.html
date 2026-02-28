@@ -23,7 +23,6 @@
       --hc-bg: #eef2f5;
       --hc-text: #464646;
       --border-color: #cbd5e1;
-
       --bg-selesai: rgba(211, 14, 20, 0.15);
       --bg-terdekat: rgba(21, 162, 86, 0.18);
       --bg-akan-datang: rgba(26, 71, 135, 0.15);
@@ -46,105 +45,144 @@
 
     #agenda-hc32 h2 { text-align: center; margin-bottom: 24px; color: var(--hc-dark); font-weight: 700; }
 
-    /* Navigasi Cepat (Jump to Month) */
-    .jump-nav {
-      background: white; padding: 12px; border-radius: 12px;
-      border: 1px solid var(--border-color); margin-bottom: 15px;
-      display: flex; gap: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    /* Filter Tools */
+    .tools-container {
+      background: white;
+      padding: 15px;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
     }
-    .jump-nav select { flex: 1; padding: 8px; border-radius: 8px; border: 1px solid #e2e8f0; font-family: inherit; outline: none; }
 
-    .search-container {
-      background: white; padding: 12px; border-radius: 12px;
-      border: 1px solid var(--border-color); margin-bottom: 20px;
-      display: flex; gap: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    .search-row { display: flex; gap: 10px; }
+    .jump-row { display: flex; gap: 10px; border-top: 1px solid #f1f5f9; padding-top: 10px; align-items: center; }
+    .jump-row label { font-size: 12px; font-weight: 600; color: var(--hc-blue); white-space: nowrap; }
+
+    input, select {
+      padding: 10px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 14px;
+      outline: none;
     }
-    .search-container input, .search-container select { padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; font-family: inherit; font-size: 14px; outline: none; }
-    .search-container input { flex: 2; }
-    .search-container select { flex: 1; }
+    .search-row input { flex: 2; }
+    .search-row select { flex: 1; }
+    .jump-row select { flex: 1; height: 38px; }
 
     /* Kalender Grid */
-    #agenda-calendar { background: #fff; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); overflow: hidden; margin-bottom: 24px; border: 1px solid var(--border-color); }
-    .calendar-header { display: flex; justify-content: space-between; align-items: center; padding: 20px; background: #fff; border-bottom: 2px solid #f1f5f9; }
+    #agenda-calendar {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+      overflow: hidden;
+      margin-bottom: 24px;
+      border: 1px solid var(--border-color);
+    }
+
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px;
+      background: #fff;
+      border-bottom: 2px solid #f1f5f9;
+    }
     .calendar-header h3 { font-size: 1.2rem; margin: 0; color: var(--hc-blue); font-weight: 700; }
-    .calendar-nav button { background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px 14px; cursor: pointer; color: var(--hc-blue); transition: all 0.2s; }
-    .calendar-nav button:hover { background: var(--hc-blue); color: white; }
+    .calendar-nav button {
+      background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 8px;
+      padding: 8px 14px; cursor: pointer; color: var(--hc-blue);
+      transition: all 0.2s;
+    }
 
-    .calendar-grid-header { display: grid; grid-template-columns: repeat(7, 1fr); background: #f8fafc; border-bottom: 1px solid var(--border-color); }
-    .calendar-grid-header div { padding: 14px 0; font-size: 12px; font-weight: 700; text-align: center; color: #64748b; text-transform: uppercase; }
-
-    /* Perbaikan Visual Hari Sabtu */
-    .calendar-grid-header div:last-child { color: var(--hc-red); }
+    .calendar-grid-header {
+      display: grid; grid-template-columns: repeat(7, 1fr);
+      background: #f8fafc; border-bottom: 1px solid var(--border-color);
+    }
+    .calendar-grid-header div {
+      padding: 14px 0; font-size: 12px; font-weight: 700;
+      text-align: center; color: #64748b;
+    }
+    /* Warna Merah Hari Minggu (Col 1) dan Sabtu (Col 7) */
+    .calendar-grid-header div:nth-child(1), 
+    .calendar-grid-header div:nth-child(7) { color: var(--hc-red); }
 
     .calendar-grid-body { display: grid; grid-template-columns: repeat(7, 1fr); }
 
     .calendar-cell {
-      min-height: 110px; /* Diperpanjang agar logo terlihat */
-      border-right: 1px solid #f1f5f9; border-bottom: 1px solid #f1f5f9;
-      padding: 8px; position: relative; cursor: pointer; display: flex; flex-direction: column; transition: transform 0.2s;
+      min-height: 110px; /* Diperpanjang sesuai request agar logo terlihat */
+      border-right: 1px solid #f1f5f9;
+      border-bottom: 1px solid #f1f5f9;
+      padding: 8px;
+      position: relative;
+      cursor: pointer;
+      display: flex; flex-direction: column;
     }
+    /* Sabtu (7n) dan Minggu (7n+1) warna merah */
+    .calendar-cell:nth-child(7n) .date-num,
+    .calendar-cell:nth-child(7n+1) .date-num { color: var(--hc-red); }
+
     .calendar-cell:nth-child(7n) { border-right: none; }
-    .calendar-cell:hover:not(.empty) { background-color: #f8fafc; z-index: 2; transform: scale(1.02); }
+    .calendar-cell:hover:not(.empty) { background-color: #f8fafc; }
 
     .calendar-cell .date-num { font-size: 14px; font-weight: 700; color: var(--hc-text); }
-    /* Warna Merah Sabtu di Cell */
-    .calendar-cell:nth-child(7n) .date-num { color: var(--hc-red); }
-    .calendar-cell.is-holiday .date-num { color: var(--hc-red); }
-    
-    .calendar-cell.today .date-num { color: var(--hc-toska); display: inline-block; border-bottom: 3px solid var(--hc-toska); padding-bottom: 1px; }
-    .calendar-cell.selected { background-color: #fff !important; outline: 3px solid var(--hc-blue); z-index: 5; box-shadow: 0 0 15px rgba(26, 71, 135, 0.2); }
+    .calendar-cell.today .date-num { 
+      color: var(--hc-toska); 
+      border-bottom: 3px solid var(--hc-toska);
+    }
+
+    .calendar-cell.selected { background-color: #fff !important; outline: 3px solid var(--hc-blue); z-index: 5; }
 
     .cell-icon-container { margin: auto; width: 100%; display: flex; justify-content: center; align-items: center; }
-    .grid-custom-logo { width: 38px; height: 38px; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); }
-    .grid-emoji-logo { font-size: 28px; }
+    .grid-custom-logo { width: 34px; height: 34px; object-fit: contain; }
+    .grid-emoji-logo { font-size: 26px; }
 
     .status-selesai { background-color: var(--bg-selesai); }
     .status-terdekat { background-color: var(--bg-terdekat); }
     .status-akan-datang { background-color: var(--bg-akan-datang); }
 
-    /* Detail Card */
-    .detail-card { border-radius: 16px; padding: 20px; border: 1px solid var(--border-color); margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); animation: fadeIn 0.4s ease; }
-    .detail-card.bg-selesai { background-color: var(--bg-selesai); border-color: rgba(211, 14, 20, 0.3); }
-    .detail-card.bg-terdekat { background-color: var(--bg-terdekat); border-color: rgba(21, 162, 86, 0.3); }
-    .detail-card.bg-akan-datang { background-color: var(--bg-akan-datang); border-color: rgba(26, 71, 135, 0.3); }
+    .detail-card {
+      border-radius: 16px; padding: 20px;
+      border: 1px solid var(--border-color); margin-bottom: 20px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+    .detail-card.bg-selesai { background-color: var(--bg-selesai); }
+    .detail-card.bg-terdekat { background-color: var(--bg-terdekat); }
+    .detail-card.bg-akan-datang { background-color: var(--bg-akan-datang); }
 
     .detail-header { display: flex; align-items: center; gap: 15px; border-bottom: 1px solid rgba(0,0,0,0.1); padding-bottom: 15px; margin-bottom: 15px; }
     .detail-logo-img { width: 45px; height: 45px; object-fit: contain; }
-    .detail-header h3 { margin: 0; font-size: 18px; color: var(--hc-blue); font-weight: 700; }
+    .detail-header h3 { margin: 0; font-size: 18px; color: var(--hc-blue); }
     .detail-content { display: flex; gap: 20px; }
-    .detail-img { width: 150px; height: 150px; border-radius: 12px; object-fit: cover; background: white; flex-shrink: 0; border: 3px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+    .detail-img { width: 150px; height: 150px; border-radius: 12px; object-fit: cover; background: white; flex-shrink: 0; }
     .detail-info { flex: 1; }
     .detail-info p { margin: 0 0 10px 0; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 10px; }
-    .detail-info i { color: var(--hc-blue); font-size: 18px; width: 20px; }
     .detail-desc { margin-top: 12px; font-size: 13.5px; color: #4b5563; line-height: 1.6; background: rgba(255,255,255,0.5); padding: 10px; border-radius: 8px; }
 
-    /* Rekap Hasil Pencarian */
-    #search-results-section { display: none; margin-bottom: 30px; border-top: 2px dashed var(--hc-blue); padding-top: 20px; }
-    .result-title { font-weight: 700; color: var(--hc-blue); margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
-
     .legend-container { background: white; border-radius: 12px; padding: 15px; border: 1px solid var(--border-color); margin-top: 20px; }
-    .legend-title { font-size: 14px; font-weight: 700; margin-bottom: 12px; color: var(--hc-dark); }
+    .legend-title { font-size: 14px; font-weight: 700; margin-bottom: 12px; }
     .legend-list { display: flex; flex-wrap: wrap; gap: 15px; }
-    .legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; color: #64748b; }
-    .legend-box { width: 20px; height: 20px; border-radius: 4px; border: 1px solid rgba(0,0,0,0.1); }
+    .legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; }
+    .legend-box { width: 20px; height: 20px; border-radius: 4px; }
 
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    /* Hasil Rekap Global */
+    #global-recap { margin-top: 40px; display: none; }
+    .recap-title { font-size: 16px; font-weight: 700; color: var(--hc-blue); margin-bottom: 15px; border-left: 4px solid var(--hc-toska); padding-left: 10px; }
 
-    /* Responsive Mobile */
     @media (max-width: 650px) {
       #agenda-hc32 { padding-top: 70px; }
-      .search-container, .jump-nav { flex-direction: column; }
-      /* Menghindari overflow grid di mobile */
+      .search-row { flex-direction: column; }
+      /* Mencegah overflow grid mobile sesuai request */
       .calendar-grid-body, .calendar-grid-header { width: 100%; }
-      .calendar-cell { 
-        min-height: 100px; /* Sedikit lebih pendek di mobile tapi tetap cukup untuk logo */
-        padding: 4px;
-        overflow: hidden; 
-      }
-      .grid-custom-logo { width: 28px; height: 28px; }
+      .calendar-cell { min-height: 85px; padding: 4px; overflow: hidden; }
+      .grid-custom-logo { width: 22px; height: 22px; }
+      .grid-emoji-logo { font-size: 18px; }
       .detail-content { flex-direction: column; }
       .detail-img { width: 100%; height: 180px; }
-      .legend-list { flex-direction: column; gap: 8px; }
     }
   </style>
 </head>
@@ -153,26 +191,23 @@
 <div id="agenda-hc32">
   <h2>Agenda History Club 32</h2>
 
-  <div class="jump-nav">
-    <select id="jump-month">
-      <option value="0">Januari</option><option value="1">Februari</option><option value="2">Maret</option>
-      <option value="3">April</option><option value="4">Mei</option><option value="5">Juni</option>
-      <option value="6">Juli</option><option value="7">Agustus</option><option value="8">September</option>
-      <option value="9">Oktober</option><option value="10">November</option><option value="11">Desember</option>
-    </select>
-    <select id="jump-year"></select>
-    <button class="calendar-nav" id="btn-jump" style="padding: 8px 20px; background: var(--hc-blue); color: white; border: none; border-radius: 8px; cursor: pointer;">Pindah</button>
-  </div>
-
-  <div class="search-container">
-    <input type="text" id="search-input" placeholder="Cari nama kegiatan (Global)...">
-    <select id="filter-kategori">
-      <option value="">Semua Kategori</option>
-      <option value="Pertemuan Reguler">Pertemuan Reguler</option>
-      <option value="Kunjungan Museum">Kunjungan Museum</option>
-      <option value="Rapat Pengurus">Rapat Pengurus</option>
-      <option value="Lomba">Lomba</option>
-    </select>
+  <div class="tools-container">
+    <div class="search-row">
+      <input type="text" id="search-input" placeholder="Cari nama kegiatan (semua bulan)...">
+      <select id="filter-kategori">
+        <option value="">Semua Kategori</option>
+        <option value="Pertemuan Reguler">Pertemuan Reguler</option>
+        <option value="Kunjungan Museum">Kunjungan Museum</option>
+        <option value="Rapat Pengurus">Rapat Pengurus</option>
+        <option value="Lomba">Lomba</option>
+      </select>
+    </div>
+    <div class="jump-row">
+      <label>Loncat ke:</label>
+      <select id="jump-month"></select>
+      <select id="jump-year"></select>
+      <button id="btn-jump" class="calendar-nav" style="padding: 7px 15px; font-size: 12px; background: var(--hc-toska); color: white; border: none; border-radius: 8px; cursor: pointer;">Pindah</button>
+    </div>
   </div>
   
   <div id="agenda-calendar">
@@ -189,18 +224,18 @@
     <div class="calendar-grid-body" id="calendar-body"></div>
   </div>
 
-  <div id="search-results-section">
-    <div class="result-title"><i class="ri-search-eye-line"></i> Hasil Pencarian Rekap Global</div>
-    <div id="global-search-list"></div>
-  </div>
-
   <div class="legend-container">
     <div class="legend-title">Keterangan Warna</div>
     <div class="legend-list">
       <div class="legend-item"><div class="legend-box" style="background: var(--bg-terdekat);"></div> Agenda Terdekat</div>
-      <div class="legend-item"><div class="legend-box" style="background: var(--bg-akan-datang);"></div> Agenda Yang Akan Datang</div>
-      <div class="legend-item"><div class="legend-box" style="background: var(--bg-selesai);"></div> Agenda Yang Sudah Selesai</div>
+      <div class="legend-item"><div class="legend-box" style="background: var(--bg-akan-datang);"></div> Agenda Akan Datang</div>
+      <div class="legend-item"><div class="legend-box" style="background: var(--bg-selesai);"></div> Agenda Sudah Selesai</div>
     </div>
+  </div>
+
+  <div id="global-recap">
+    <div class="recap-title">Hasil Rekapan Pencarian (Global)</div>
+    <div id="recap-list"></div>
   </div>
 
   <h4 id="agenda-list-date" style="margin-top: 30px; color: var(--hc-blue);"></h4>
@@ -209,12 +244,11 @@
 </div>
 
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    if(typeof initHC32Navigation === 'function') initHC32Navigation('agenda');
-  });
+  document.addEventListener('DOMContentLoaded', () => { if(typeof initHC32Navigation === 'function') initHC32Navigation('agenda'); });
 
   (function() {
     const API_URL = (typeof GAS_URL !== 'undefined') ? GAS_URL : "https://script.google.com/macros/s/AKfycbz22NwYQ-WJwmdieMgzQxw1I2lXKTghebFO-oSY-wE_av-3oEYIi9TfSCqJCpy3iZKt/exec";
+    const months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
 
     let allAgendaData = [];
     let holidayData = {};
@@ -224,14 +258,16 @@
     const cleanToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
     let nextAgendaDate = null;
 
-    // Init Dropdown Tahun
-    const yearSelect = document.getElementById('jump-year');
-    const curYear = today.getFullYear();
-    for(let i = curYear - 2; i <= curYear + 3; i++) {
-      const opt = document.createElement('option');
-      opt.value = i; opt.textContent = i;
-      if(i === curYear) opt.selected = true;
-      yearSelect.appendChild(opt);
+    // Inisialisasi Dropdown Loncat Tanggal
+    function initJumpControls() {
+      const monthSel = document.getElementById('jump-month');
+      const yearSel = document.getElementById('jump-year');
+      months.forEach((m, i) => { monthSel.innerHTML += `<option value="${i}">${m}</option>`; });
+      const currentYear = new Date().getFullYear();
+      for(let y = currentYear - 2; y <= currentYear + 3; y++) {
+        yearSel.innerHTML += `<option value="${y}" ${y === currentYear ? 'selected' : ''}>${y}</option>`;
+      }
+      monthSel.value = displayDate.getMonth();
     }
 
     async function fetchHolidays(year) {
@@ -239,12 +275,12 @@
         const res = await fetch(`https://api-harilibur.vercel.app/api?year=${year}`);
         const data = await res.json();
         data.forEach(h => { holidayData[h.holiday_date] = h.holiday_name; });
-      } catch (e) { console.error("Gagal load hari libur:", e); }
+      } catch (e) { console.error(e); }
     }
 
     async function loadAllData() {
-      if (typeof window.showHC32Status === 'function') window.showHC32Status('loading', 'Sinkronisasi...', 'Menyiapkan agenda global...');
-
+      // Spinner HC saat pertama kali akses
+      if (typeof window.showHC32Status === 'function') window.showHC32Status('loading', 'Sinkronisasi...', 'Memuat seluruh database agenda.');
       try {
         await fetchHolidays(displayDate.getFullYear());
         const [nextRes, riwayatRes] = await Promise.all([
@@ -262,9 +298,8 @@
 
         renderCalendar();
         if(allAgendaData.some(a => isSameDay(a.parsedDate, today))) renderAgendaList(today);
-      } catch (e) { console.error(e); } finally {
-        if (typeof window.hideHC32Status === 'function') window.hideHC32Status();
-      }
+      } catch (e) { console.error(e); }
+      finally { if (typeof window.hideHC32Status === 'function') window.hideHC32Status(); }
     }
 
     function isSameDay(d1, d2) { return d1.getFullYear() === d2.getFullYear() && d1.getMonth() === d2.getMonth() && d1.getDate() === d2.getDate(); }
@@ -274,7 +309,8 @@
       body.innerHTML = "";
       const y = displayDate.getFullYear();
       const m = displayDate.getMonth();
-      document.getElementById("calendar-month-year").textContent = new Intl.DateTimeFormat('id-ID', { month: 'long', year: 'numeric' }).format(displayDate);
+      document.getElementById("calendar-month-year").textContent = `${months[m]} ${y}`;
+
       const firstDay = new Date(y, m, 1).getDay();
       const daysInMonth = new Date(y, m + 1, 0).getDate();
 
@@ -290,125 +326,108 @@
         const cell = document.createElement("div");
         cell.className = "calendar-cell";
         
-        // Minggu (0) dan Sabtu (6)
-        const dayOfWeek = currDate.getDay();
         const isHoliday = holidayData[dateISO];
-        if (dayOfWeek === 0 || dayOfWeek === 6 || isHoliday) cell.classList.add("is-holiday");
+        // Minggu (0) dan Sabtu (6)
+        if (currDate.getDay() === 0 || currDate.getDay() === 6 || isHoliday) cell.classList.add("is-holiday");
 
         let cellHTML = `<span class="date-num">${d}</span>`;
         if (isHoliday) cellHTML += `<span class="holiday-info">${isHoliday}</span>`;
 
         const dayAgendas = allAgendaData.filter(a => isSameDay(a.parsedDate, currDate));
         if (dayAgendas.length > 0) {
-          const main = dayAgendas[0];
           const diff = currDate.getTime() - cleanToday.getTime();
           let statusClass = diff < 0 ? 'status-selesai' : (nextAgendaDate && isSameDay(currDate, nextAgendaDate) ? 'status-terdekat' : 'status-akan-datang');
           cell.classList.add(statusClass);
-
-          let logoContent = (main.logo && main.logo.length > 10) 
-            ? `<img src="https://drive.google.com/thumbnail?id=${main.logo}&sz=w100" class="grid-custom-logo">` 
-            : `<span class="grid-emoji-logo">${main.logo || '📍'}</span>`;
-          cellHTML += `<div class="cell-icon-container">${logoContent}</div>`;
+          let logo = dayAgendas[0].logo && dayAgendas[0].logo.length > 10 ? `<img src="https://drive.google.com/thumbnail?id=${dayAgendas[0].logo}&sz=w100" class="grid-custom-logo">` : `<span class="grid-emoji-logo">${dayAgendas[0].logo || '📍'}</span>`;
+          cellHTML += `<div class="cell-icon-container">${logo}</div>`;
         }
-
         if (isSameDay(currDate, today)) cell.classList.add("today");
         if (isSameDay(currDate, selectedDate)) cell.classList.add("selected");
+
         cell.innerHTML = cellHTML;
         cell.onclick = () => { selectedDate = currDate; renderCalendar(); renderAgendaList(currDate); };
         body.appendChild(cell);
       }
     }
 
-    function renderAgendaList(date, targetListId = "agenda-list", targetPlaceholderId = "agenda-list-placeholder") {
-      const list = document.getElementById(targetListId);
-      const placeholder = document.getElementById(targetPlaceholderId);
-      if(targetListId === "agenda-list") document.getElementById("agenda-list-date").textContent = date.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    function renderAgendaList(date, targetId = "agenda-list", isGlobal = false) {
+      const list = document.getElementById(targetId);
+      if(!isGlobal) document.getElementById("agenda-list-date").textContent = date.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
       
       const agendas = allAgendaData.filter(a => isSameDay(a.parsedDate, date));
-      list.innerHTML = "";
-      if (agendas.length === 0) { if(placeholder) placeholder.style.display = "block"; return; }
-      if(placeholder) placeholder.style.display = "none";
+      if(!isGlobal) list.innerHTML = "";
+      if (agendas.length === 0 && !isGlobal) { document.getElementById("agenda-list-placeholder").style.display = "block"; return; }
+      if(!isGlobal) document.getElementById("agenda-list-placeholder").style.display = "none";
 
       agendas.forEach(item => {
         const diff = item.parsedDate.getTime() - cleanToday.getTime();
         let themeClass = diff < 0 ? 'bg-selesai' : (nextAgendaDate && isSameDay(item.parsedDate, nextAgendaDate) ? 'bg-terdekat' : 'bg-akan-datang');
         const div = document.createElement("div");
         div.className = `detail-card ${themeClass}`;
-        const logoURL = (item.logo && item.logo.length > 10) ? `https://drive.google.com/thumbnail?id=${item.logo}&sz=w100` : null;
-        div.innerHTML = `
-          <div class="detail-header">${logoURL ? `<img src="${logoURL}" class="detail-logo-img">` : `<span style="font-size:30px">${item.logo || '📍'}</span>`}<h3>${item.judul}</h3></div>
-          <div class="detail-content">
-            <img src="${item.foto || '../../assets/img/placeholder-agenda.jpg'}" class="detail-img" onerror="this.src='https://via.placeholder.com/150?text=No+Image'">
-            <div class="detail-info">
-              <p><i class="ri-map-pin-2-line"></i> ${item.tempat || 'Lokasi TBA'}</p>
-              <p><i class="ri-time-line"></i> ${item.waktu || 'Waktu TBA'}</p>
-              <p><i class="ri-price-tag-3-line"></i> ${item.kategori || 'Kegiatan'}</p>
-              <div class="detail-desc">${item.deskripsi || 'Tidak ada deskripsi.'}</div>
-            </div>
-          </div>`;
+        const logo = (item.logo && item.logo.length > 10) ? `<img src="https://drive.google.com/thumbnail?id=${item.logo}&sz=w100" class="detail-logo-img">` : `<span style="font-size:30px">${item.logo || '📍'}</span>`;
+        div.innerHTML = `<div class="detail-header">${logo}<h3>${item.judul} ${isGlobal ? `<small style="font-size:10px; display:block;">(${item.tanggal})</small>` : ''}</h3></div><div class="detail-content"><img src="${item.foto || 'https://via.placeholder.com/150'}" class="detail-img"><div class="detail-info"><p><i class="ri-map-pin-2-line"></i> ${item.tempat || '-'}</p><p><i class="ri-time-line"></i> ${item.waktu || '-'}</p><div class="detail-desc">${item.deskripsi || '-'}</div></div></div>`;
         list.appendChild(div);
       });
     }
 
-    // Fitur 2: Pencarian Global (Seluruh Database)
     function handleGlobalSearch() {
       const query = document.getElementById('search-input').value.toLowerCase();
       const cat = document.getElementById('filter-kategori').value;
-      const resultsSection = document.getElementById('search-results-section');
-      const resultsList = document.getElementById('global-search-list');
-
-      if(query === "" && cat === "") { resultsSection.style.display = "none"; return; }
+      const recapDiv = document.getElementById('global-recap');
+      const recapList = document.getElementById('recap-list');
       
-      if (typeof window.showHC32Status === 'function') window.showHC32Status('loading', 'Mencari...', 'Mencari data di rekap global.');
+      if(query === "" && cat === "") { recapDiv.style.display = "none"; return; }
 
-      const filtered = allAgendaData.filter(item => {
-        const matchText = item.judul.toLowerCase().includes(query) || (item.deskripsi || '').toLowerCase().includes(query);
-        const matchCat = cat === "" || item.kategori === cat;
-        return matchText && matchCat;
-      });
+      // Spinner HC saat pencarian data
+      if (typeof window.showHC32Status === 'function') window.showHC32Status('loading', 'Mencari...', 'Menyaring hasil dari seluruh database.');
 
-      resultsList.innerHTML = "";
-      if(filtered.length > 0) {
-        resultsSection.style.display = "block";
-        filtered.forEach(item => {
-          const div = document.createElement("div");
-          div.className = "detail-card";
-          div.style.background = "white"; // Netral untuk hasil pencarian
-          div.innerHTML = `<div class="detail-header"><h3 style="font-size: 14px;">${item.judul}</h3><small>${item.tanggal}</small></div><p style="font-size: 12px; margin:0;">${item.tempat || ''}</p>`;
-          div.onclick = async () => {
-            if (typeof window.showHC32Status === 'function') window.showHC32Status('loading', 'Mengarahkan...', 'Membuka kalender...');
-            displayDate = new Date(item.parsedDate);
-            selectedDate = new Date(item.parsedDate);
-            await fetchHolidays(displayDate.getFullYear());
-            renderCalendar();
-            renderAgendaList(selectedDate);
-            resultsSection.style.display = "none";
-            document.getElementById('agenda-calendar').scrollIntoView({ behavior: 'smooth' });
-            if (typeof window.hideHC32Status === 'function') window.hideHC32Status();
-          };
-          resultsList.appendChild(div);
+      setTimeout(() => {
+        recapList.innerHTML = "";
+        const filtered = allAgendaData.filter(item => {
+          const matchText = item.judul.toLowerCase().includes(query) || (item.deskripsi || '').toLowerCase().includes(query);
+          const matchCat = cat === "" || item.kategori === cat;
+          return matchText && matchCat;
         });
-      } else { resultsSection.style.display = "none"; }
-      
-      if (typeof window.hideHC32Status === 'function') window.hideHC32Status();
+
+        if(filtered.length > 0) {
+          recapDiv.style.display = "block";
+          filtered.sort((a,b) => b.parsedDate - a.parsedDate).forEach(item => renderAgendaList(item.parsedDate, "recap-list", true));
+        } else {
+          recapDiv.style.display = "block";
+          recapList.innerHTML = "<p style='font-style:italic; font-size:12px; color:gray;'>Tidak ada hasil rekap ditemukan.</p>";
+        }
+        if (typeof window.hideHC32Status === 'function') window.hideHC32Status();
+      }, 500);
     }
 
-    // Fitur 1: Jump to Month/Year
+    // Event Loncat Tanggal
     document.getElementById("btn-jump").onclick = async () => {
-      const m = parseInt(document.getElementById("jump-month").value);
-      const y = parseInt(document.getElementById("jump-year").value);
-      if (typeof window.showHC32Status === 'function') window.showHC32Status('loading', 'Berpindah...', `Membuka ${m+1}/${y}`);
+      const m = parseInt(document.getElementById('jump-month').value);
+      const y = parseInt(document.getElementById('jump-year').value);
+      if (typeof window.showHC32Status === 'function') window.showHC32Status('loading', 'Berpindah...', `Menuju ${months[m]} ${y}`);
+      
       displayDate = new Date(y, m, 1);
       await fetchHolidays(y);
       renderCalendar();
-      if (typeof window.hideHC32Status === 'function') window.hideHC32Status();
+      
+      setTimeout(() => { if (typeof window.hideHC32Status === 'function') window.hideHC32Status(); }, 500);
     };
 
-    document.getElementById("btn-prev").onclick = () => { displayDate.setMonth(displayDate.getMonth() - 1); renderCalendar(); };
-    document.getElementById("btn-next").onclick = () => { displayDate.setMonth(displayDate.getMonth() + 1); renderCalendar(); };
+    document.getElementById("btn-prev").onclick = async () => { 
+      displayDate.setMonth(displayDate.getMonth() - 1); 
+      await fetchHolidays(displayDate.getFullYear());
+      renderCalendar(); 
+    };
+    document.getElementById("btn-next").onclick = async () => { 
+      displayDate.setMonth(displayDate.getMonth() + 1); 
+      await fetchHolidays(displayDate.getFullYear());
+      renderCalendar(); 
+    };
+    
     document.getElementById("search-input").onchange = handleGlobalSearch;
     document.getElementById("filter-kategori").onchange = handleGlobalSearch;
 
+    initJumpControls();
     loadAllData();
   })();
 </script>
