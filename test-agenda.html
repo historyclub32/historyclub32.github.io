@@ -59,7 +59,16 @@
     }
 
     .search-row { display: flex; gap: 10px; }
-    .jump-row { display: flex; gap: 10px; border-top: 1px solid #f1f5f9; padding-top: 10px; align-items: center; }
+    
+    /* Perbaikan jump-row agar tombol tidak keluar di mobile */
+    .jump-row { 
+      display: flex; 
+      gap: 8px; 
+      border-top: 1px solid #f1f5f9; 
+      padding-top: 12px; 
+      align-items: center;
+      flex-wrap: wrap; /* Memungkinkan turun ke bawah jika sangat sempit */
+    }
     .jump-row label { font-size: 12px; font-weight: 600; color: var(--hc-blue); white-space: nowrap; }
 
     input, select {
@@ -72,9 +81,13 @@
     }
     .search-row input { flex: 2; }
     .search-row select { flex: 1; }
-    .jump-row select { flex: 1; height: 38px; }
+    
+    .jump-row select { 
+      flex: 1; 
+      height: 38px; 
+      min-width: 80px; /* Mencegah select menghilang */
+    }
 
-    /* Fix Mobile Terpotong: Container Scroll */
     .calendar-scroll-wrapper {
       width: 100%;
       overflow-x: auto;
@@ -83,11 +96,10 @@
       background: #fff;
       box-shadow: 0 10px 25px rgba(0,0,0,0.08);
       margin-bottom: 24px;
+      -webkit-overflow-scrolling: touch;
     }
 
-    #agenda-calendar {
-      min-width: 600px; /* Memastikan grid tidak berhimpit di layar kecil */
-    }
+    #agenda-calendar { min-width: 650px; }
 
     .calendar-header {
       display: flex;
@@ -187,6 +199,11 @@
     @media (max-width: 650px) {
       #agenda-hc32 { padding: 70px 15px 40px 15px; }
       .search-row { flex-direction: column; }
+      
+      /* Tombol pindah menyesuaikan lebar di mobile */
+      .jump-row { flex-direction: row; justify-content: space-between; }
+      #btn-jump { flex: 1; margin-left: 5px; }
+      
       .detail-content { flex-direction: column; }
       .detail-img { width: 100%; height: 180px; }
       .legend-wrapper { grid-template-columns: 1fr; }
@@ -213,7 +230,7 @@
       <label>Loncat ke:</label>
       <select id="jump-month"></select>
       <select id="jump-year"></select>
-      <button id="btn-jump" class="calendar-nav" style="padding: 7px 15px; font-size: 12px; background: var(--hc-toska); color: white; border: none; border-radius: 8px; cursor: pointer;">Pindah</button>
+      <button id="btn-jump" style="padding: 10px 20px; font-size: 12px; background: var(--hc-toska); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 700;">Pindah</button>
     </div>
   </div>
   
@@ -390,9 +407,6 @@
         const div = document.createElement("div");
         div.className = `detail-card ${themeClass}`;
         const logo = (item.logo && item.logo.length > 10) ? `<img src="https://drive.google.com/thumbnail?id=${item.logo}&sz=w100" class="detail-logo-img">` : `<span style="font-size:30px">${item.logo || '📍'}</span>`;
-        
-        // HAPUS TEKS DI BAWAH JUDUL (isGlobal ? (tanggal) : '') sesuai instruksi
-        // Serta tambahkan format tanggal baru di baris rincian
         const formattedDate = formatIndonesianDate(item.parsedDate);
 
         div.innerHTML = `
@@ -430,7 +444,6 @@
         if(filtered.length > 0) {
           recapDiv.style.display = "block";
           filtered.sort((a,b) => b.parsedDate - a.parsedDate).forEach(item => {
-             // Render list ke pencarian global
              const diff = item.parsedDate.getTime() - cleanToday.getTime();
              let themeClass = diff < 0 ? 'bg-selesai' : (nextAgendaDate && isSameDay(item.parsedDate, nextAgendaDate) ? 'bg-terdekat' : 'bg-akan-datang');
              const div = document.createElement("div");
@@ -438,7 +451,6 @@
              const logo = (item.logo && item.logo.length > 10) ? `<img src="https://drive.google.com/thumbnail?id=${item.logo}&sz=w100" class="detail-logo-img">` : `<span style="font-size:30px">${item.logo || '📍'}</span>`;
              const formattedDate = formatIndonesianDate(item.parsedDate);
              
-             // Pastikan di bawah judul bersih dari teks (tanggal ISO dihapus)
              div.innerHTML = `
                <div class="detail-header">${logo}<h3>${item.judul}</h3></div>
                <div class="detail-content">
