@@ -45,7 +45,6 @@
 
     #agenda-hc32 h2 { text-align: center; margin-bottom: 24px; color: var(--hc-dark); font-weight: 700; }
 
-    /* Filter Tools */
     .tools-container {
       background: white;
       padding: 15px;
@@ -74,7 +73,6 @@
     .search-row select { flex: 1; }
     .jump-row select { flex: 1; height: 38px; }
 
-    /* Kalender Grid */
     #agenda-calendar {
       background: #fff;
       border-radius: 16px;
@@ -96,7 +94,6 @@
     .calendar-nav button {
       background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 8px;
       padding: 8px 14px; cursor: pointer; color: var(--hc-blue);
-      transition: all 0.2s;
     }
 
     .calendar-grid-header {
@@ -107,14 +104,13 @@
       padding: 14px 0; font-size: 12px; font-weight: 700;
       text-align: center; color: #64748b;
     }
-    /* Warna Merah Hari Minggu (Col 1) dan Sabtu (Col 7) */
     .calendar-grid-header div:nth-child(1), 
     .calendar-grid-header div:nth-child(7) { color: var(--hc-red); }
 
     .calendar-grid-body { display: grid; grid-template-columns: repeat(7, 1fr); }
 
     .calendar-cell {
-      min-height: 110px; /* Diperpanjang sesuai request agar logo terlihat */
+      min-height: 110px;
       border-right: 1px solid #f1f5f9;
       border-bottom: 1px solid #f1f5f9;
       padding: 8px;
@@ -122,10 +118,8 @@
       cursor: pointer;
       display: flex; flex-direction: column;
     }
-    /* Sabtu (7n) dan Minggu (7n+1) warna merah */
     .calendar-cell:nth-child(7n) .date-num,
     .calendar-cell:nth-child(7n+1) .date-num { color: var(--hc-red); }
-
     .calendar-cell:nth-child(7n) { border-right: none; }
     .calendar-cell:hover:not(.empty) { background-color: #f8fafc; }
 
@@ -163,26 +157,34 @@
     .detail-info p { margin: 0 0 10px 0; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 10px; }
     .detail-desc { margin-top: 12px; font-size: 13.5px; color: #4b5563; line-height: 1.6; background: rgba(255,255,255,0.5); padding: 10px; border-radius: 8px; }
 
-    .legend-container { background: white; border-radius: 12px; padding: 15px; border: 1px solid var(--border-color); margin-top: 20px; }
-    .legend-title { font-size: 14px; font-weight: 700; margin-bottom: 12px; }
-    .legend-list { display: flex; flex-wrap: wrap; gap: 15px; }
-    .legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; }
-    .legend-box { width: 20px; height: 20px; border-radius: 4px; }
+    /* Legenda Container */
+    .legend-wrapper {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-top: 20px;
+    }
 
-    /* Hasil Rekap Global */
+    .legend-container { background: white; border-radius: 12px; padding: 15px; border: 1px solid var(--border-color); }
+    .legend-title { font-size: 14px; font-weight: 700; margin-bottom: 12px; color: var(--hc-blue); }
+    .legend-list { display: flex; flex-direction: column; gap: 10px; }
+    .legend-item { display: flex; align-items: center; gap: 10px; font-size: 12px; font-weight: 600; color: #64748b; }
+    .legend-box { width: 18px; height: 18px; border-radius: 4px; flex-shrink: 0; }
+    .legend-icon { width: 22px; height: 22px; object-fit: contain; flex-shrink: 0; }
+
     #global-recap { margin-top: 40px; display: none; }
     .recap-title { font-size: 16px; font-weight: 700; color: var(--hc-blue); margin-bottom: 15px; border-left: 4px solid var(--hc-toska); padding-left: 10px; }
 
     @media (max-width: 650px) {
       #agenda-hc32 { padding-top: 70px; }
       .search-row { flex-direction: column; }
-      /* Mencegah overflow grid mobile sesuai request */
       .calendar-grid-body, .calendar-grid-header { width: 100%; }
-      .calendar-cell { min-height: 85px; padding: 4px; overflow: hidden; }
+      .calendar-cell { min-height: 85px; padding: 4px; }
       .grid-custom-logo { width: 22px; height: 22px; }
       .grid-emoji-logo { font-size: 18px; }
       .detail-content { flex-direction: column; }
       .detail-img { width: 100%; height: 180px; }
+      .legend-wrapper { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -224,12 +226,20 @@
     <div class="calendar-grid-body" id="calendar-body"></div>
   </div>
 
-  <div class="legend-container">
-    <div class="legend-title">Keterangan Warna</div>
-    <div class="legend-list">
-      <div class="legend-item"><div class="legend-box" style="background: var(--bg-terdekat);"></div> Agenda Terdekat</div>
-      <div class="legend-item"><div class="legend-box" style="background: var(--bg-akan-datang);"></div> Agenda Akan Datang</div>
-      <div class="legend-item"><div class="legend-box" style="background: var(--bg-selesai);"></div> Agenda Sudah Selesai</div>
+  <div class="legend-wrapper">
+    <div class="legend-container">
+      <div class="legend-title">Keterangan Warna</div>
+      <div class="legend-list">
+        <div class="legend-item"><div class="legend-box" style="background: var(--bg-terdekat);"></div> Agenda Terdekat</div>
+        <div class="legend-item"><div class="legend-box" style="background: var(--bg-akan-datang);"></div> Agenda Akan Datang</div>
+        <div class="legend-item"><div class="legend-box" style="background: var(--bg-selesai);"></div> Agenda Sudah Selesai</div>
+      </div>
+    </div>
+
+    <div class="legend-container">
+      <div class="legend-title">Keterangan Simbol</div>
+      <div class="legend-list" id="symbol-legend">
+        </div>
     </div>
   </div>
 
@@ -249,6 +259,7 @@
   (function() {
     const API_URL = (typeof GAS_URL !== 'undefined') ? GAS_URL : "https://script.google.com/macros/s/AKfycbz22NwYQ-WJwmdieMgzQxw1I2lXKTghebFO-oSY-wE_av-3oEYIi9TfSCqJCpy3iZKt/exec";
     const months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+    const days = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
 
     let allAgendaData = [];
     let holidayData = {};
@@ -258,7 +269,17 @@
     const cleanToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
     let nextAgendaDate = null;
 
-    // Inisialisasi Dropdown Loncat Tanggal
+    // Helper Format Tanggal Indonesia
+    function formatIndonesianDate(dateInput) {
+      const d = new Date(dateInput);
+      if (isNaN(d.getTime())) return dateInput;
+      const dayName = days[d.getDay()];
+      const dayNum = d.getDate();
+      const monthName = months[d.getMonth()];
+      const yearNum = d.getFullYear();
+      return `${dayName}, ${dayNum} ${monthName} ${yearNum}`;
+    }
+
     function initJumpControls() {
       const monthSel = document.getElementById('jump-month');
       const yearSel = document.getElementById('jump-year');
@@ -279,7 +300,6 @@
     }
 
     async function loadAllData() {
-      // Spinner HC saat pertama kali akses
       if (typeof window.showHC32Status === 'function') window.showHC32Status('loading', 'Sinkronisasi...', 'Memuat seluruh database agenda.');
       try {
         await fetchHolidays(displayDate.getFullYear());
@@ -296,10 +316,31 @@
         const future = allAgendaData.filter(i => i.parsedDate >= cleanToday).sort((a,b) => a.parsedDate - b.parsedDate);
         if (future.length > 0) nextAgendaDate = future[0].parsedDate;
 
+        updateSymbolLegend();
         renderCalendar();
         if(allAgendaData.some(a => isSameDay(a.parsedDate, today))) renderAgendaList(today);
       } catch (e) { console.error(e); }
       finally { if (typeof window.hideHC32Status === 'function') window.hideHC32Status(); }
+    }
+
+    // Fungsi Update Keterangan Simbol
+    function updateSymbolLegend() {
+      const container = document.getElementById('symbol-legend');
+      const map = new Map();
+      allAgendaData.forEach(item => {
+        if (item.logo && item.kategori) {
+          if (!map.has(item.kategori)) map.set(item.kategori, item.logo);
+        }
+      });
+
+      container.innerHTML = "";
+      map.forEach((logo, cat) => {
+        const isDrive = logo.length > 10;
+        const logoHTML = isDrive 
+          ? `<img src="https://drive.google.com/thumbnail?id=${logo}&sz=w100" class="legend-icon">` 
+          : `<span style="font-size:18px">${logo}</span>`;
+        container.innerHTML += `<div class="legend-item">${logoHTML} ${cat}</div>`;
+      });
     }
 
     function isSameDay(d1, d2) { return d1.getFullYear() === d2.getFullYear() && d1.getMonth() === d2.getMonth() && d1.getDate() === d2.getDate(); }
@@ -327,7 +368,6 @@
         cell.className = "calendar-cell";
         
         const isHoliday = holidayData[dateISO];
-        // Minggu (0) dan Sabtu (6)
         if (currDate.getDay() === 0 || currDate.getDay() === 6 || isHoliday) cell.classList.add("is-holiday");
 
         let cellHTML = `<span class="date-num">${d}</span>`;
@@ -352,7 +392,7 @@
 
     function renderAgendaList(date, targetId = "agenda-list", isGlobal = false) {
       const list = document.getElementById(targetId);
-      if(!isGlobal) document.getElementById("agenda-list-date").textContent = date.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+      if(!isGlobal) document.getElementById("agenda-list-date").textContent = formatIndonesianDate(date);
       
       const agendas = allAgendaData.filter(a => isSameDay(a.parsedDate, date));
       if(!isGlobal) list.innerHTML = "";
@@ -365,7 +405,21 @@
         const div = document.createElement("div");
         div.className = `detail-card ${themeClass}`;
         const logo = (item.logo && item.logo.length > 10) ? `<img src="https://drive.google.com/thumbnail?id=${item.logo}&sz=w100" class="detail-logo-img">` : `<span style="font-size:30px">${item.logo || '📍'}</span>`;
-        div.innerHTML = `<div class="detail-header">${logo}<h3>${item.judul} ${isGlobal ? `<small style="font-size:10px; display:block;">(${item.tanggal})</small>` : ''}</h3></div><div class="detail-content"><img src="${item.foto || 'https://via.placeholder.com/150'}" class="detail-img"><div class="detail-info"><p><i class="ri-map-pin-2-line"></i> ${item.tempat || '-'}</p><p><i class="ri-time-line"></i> ${item.waktu || '-'}</p><div class="detail-desc">${item.deskripsi || '-'}</div></div></div>`;
+        
+        // Render Tanggal yang sudah diformat
+        const formattedDate = formatIndonesianDate(item.tanggal);
+
+        div.innerHTML = `
+          <div class="detail-header">${logo}<h3>${item.judul} ${isGlobal ? `<small style="font-size:10px; display:block;">(${formattedDate})</small>` : ''}</h3></div>
+          <div class="detail-content">
+            <img src="${item.foto || 'https://via.placeholder.com/150'}" class="detail-img">
+            <div class="detail-info">
+              <p><i class="ri-calendar-line"></i> ${formattedDate}</p>
+              <p><i class="ri-map-pin-2-line"></i> ${item.tempat || '-'}</p>
+              <p><i class="ri-time-line"></i> ${item.waktu || '-'}</p>
+              <div class="detail-desc">${item.deskripsi || '-'}</div>
+            </div>
+          </div>`;
         list.appendChild(div);
       });
     }
@@ -378,7 +432,6 @@
       
       if(query === "" && cat === "") { recapDiv.style.display = "none"; return; }
 
-      // Spinner HC saat pencarian data
       if (typeof window.showHC32Status === 'function') window.showHC32Status('loading', 'Mencari...', 'Menyaring hasil dari seluruh database.');
 
       setTimeout(() => {
@@ -400,7 +453,6 @@
       }, 500);
     }
 
-    // Event Loncat Tanggal
     document.getElementById("btn-jump").onclick = async () => {
       const m = parseInt(document.getElementById('jump-month').value);
       const y = parseInt(document.getElementById('jump-year').value);
