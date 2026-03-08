@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Agenda - HC 32</title>
+  <title>Jadwal Agenda - HC 32</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -60,14 +60,13 @@
 
     .search-row { display: flex; gap: 10px; }
     
-    /* Perbaikan jump-row agar tombol tidak keluar di mobile */
     .jump-row { 
       display: flex; 
       gap: 8px; 
       border-top: 1px solid #f1f5f9; 
       padding-top: 12px; 
       align-items: center;
-      flex-wrap: wrap; /* Memungkinkan turun ke bawah jika sangat sempit */
+      flex-wrap: wrap;
     }
     .jump-row label { font-size: 12px; font-weight: 600; color: var(--hc-blue); white-space: nowrap; }
 
@@ -85,7 +84,7 @@
     .jump-row select { 
       flex: 1; 
       height: 38px; 
-      min-width: 80px; /* Mencegah select menghilang */
+      min-width: 80px;
     }
 
     .calendar-scroll-wrapper {
@@ -165,10 +164,21 @@
       border-radius: 16px; padding: 20px;
       border: 1px solid var(--border-color); margin-bottom: 20px;
       box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      cursor: default;
     }
     .detail-card.bg-selesai { background-color: var(--bg-selesai); }
     .detail-card.bg-terdekat { background-color: var(--bg-terdekat); }
     .detail-card.bg-akan-datang { background-color: var(--bg-akan-datang); }
+
+    /* Gaya khusus untuk kartu hasil pencarian global yang bisa diklik */
+    #recap-list .detail-card {
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    #recap-list .detail-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+    }
 
     .detail-header { display: flex; align-items: center; gap: 15px; border-bottom: 1px solid rgba(0,0,0,0.1); padding-bottom: 15px; margin-bottom: 15px; }
     .detail-logo-img { width: 45px; height: 45px; object-fit: contain; }
@@ -199,11 +209,8 @@
     @media (max-width: 650px) {
       #agenda-hc32 { padding: 70px 15px 40px 15px; }
       .search-row { flex-direction: column; }
-      
-      /* Tombol pindah menyesuaikan lebar di mobile */
       .jump-row { flex-direction: row; justify-content: space-between; }
       #btn-jump { flex: 1; margin-left: 5px; }
-      
       .detail-content { flex-direction: column; }
       .detail-img { width: 100%; height: 180px; }
       .legend-wrapper { grid-template-columns: 1fr; }
@@ -406,6 +413,12 @@
         let themeClass = diff < 0 ? 'bg-selesai' : (nextAgendaDate && isSameDay(item.parsedDate, nextAgendaDate) ? 'bg-terdekat' : 'bg-akan-datang');
         const div = document.createElement("div");
         div.className = `detail-card ${themeClass}`;
+        
+        // Tambahkan fungsi klik jika ini adalah pencarian global
+        if(isGlobal) {
+          div.onclick = () => jumpToDate(item.parsedDate);
+        }
+
         const logo = (item.logo && item.logo.length > 10) ? `<img src="https://drive.google.com/thumbnail?id=${item.logo}&sz=w100" class="detail-logo-img">` : `<span style="font-size:30px">${item.logo || '📍'}</span>`;
         const formattedDate = formatIndonesianDate(item.parsedDate);
 
@@ -427,6 +440,33 @@
       });
     }
 
+    // Fungsi untuk melompat ke tanggal tertentu dari pencarian global
+    async function jumpToDate(targetDate) {
+      const y = targetDate.getFullYear();
+      const m = targetDate.getMonth();
+      
+      if (typeof window.showHC32Status === 'function') window.showHC32Status('loading', 'Membuka Agenda...', `Menuju ${months[m]} ${y}`);
+      
+      // Update state kalender
+      displayDate = new Date(y, m, 1);
+      selectedDate = new Date(targetDate);
+      
+      // Sembunyikan hasil pencarian global
+      document.getElementById('global-recap').style.display = "none";
+      document.getElementById('search-input').value = "";
+      document.getElementById('filter-kategori').value = "";
+
+      // Refresh data hari libur jika tahun berbeda, lalu render
+      await fetchHolidays(y);
+      renderCalendar();
+      renderAgendaList(targetDate);
+      
+      // Scroll ke kalender
+      document.getElementById('agenda-calendar').scrollIntoView({ behavior: 'smooth' });
+      
+      setTimeout(() => { if (typeof window.hideHC32Status === 'function') window.hideHC32Status(); }, 500);
+    }
+
     function handleGlobalSearch() {
       const query = document.getElementById('search-input').value.toLowerCase();
       const cat = document.getElementById('filter-kategori').value;
@@ -444,25 +484,7 @@
         if(filtered.length > 0) {
           recapDiv.style.display = "block";
           filtered.sort((a,b) => b.parsedDate - a.parsedDate).forEach(item => {
-             const diff = item.parsedDate.getTime() - cleanToday.getTime();
-             let themeClass = diff < 0 ? 'bg-selesai' : (nextAgendaDate && isSameDay(item.parsedDate, nextAgendaDate) ? 'bg-terdekat' : 'bg-akan-datang');
-             const div = document.createElement("div");
-             div.className = `detail-card ${themeClass}`;
-             const logo = (item.logo && item.logo.length > 10) ? `<img src="https://drive.google.com/thumbnail?id=${item.logo}&sz=w100" class="detail-logo-img">` : `<span style="font-size:30px">${item.logo || '📍'}</span>`;
-             const formattedDate = formatIndonesianDate(item.parsedDate);
-             
-             div.innerHTML = `
-               <div class="detail-header">${logo}<h3>${item.judul}</h3></div>
-               <div class="detail-content">
-                 <img src="${item.foto || 'https://via.placeholder.com/150'}" class="detail-img">
-                 <div class="detail-info">
-                   <p><i class="ri-calendar-line"></i> ${formattedDate}</p>
-                   <p><i class="ri-map-pin-2-line"></i> ${item.tempat || '-'}</p>
-                   <p><i class="ri-time-line"></i> ${item.waktu || '-'}</p>
-                   <div class="detail-desc">${item.deskripsi || '-'}</div>
-                 </div>
-               </div>`;
-             recapList.appendChild(div);
+             renderAgendaList(item.parsedDate, "recap-list", true);
           });
         } else {
           recapDiv.style.display = "block";
@@ -477,8 +499,10 @@
       const y = parseInt(document.getElementById('jump-year').value);
       if (typeof window.showHC32Status === 'function') window.showHC32Status('loading', 'Berpindah...', `Menuju ${months[m]} ${y}`);
       displayDate = new Date(y, m, 1);
+      selectedDate = new Date(y, m, 1); // Set ke tanggal 1 bulan tersebut
       await fetchHolidays(y);
       renderCalendar();
+      renderAgendaList(selectedDate);
       setTimeout(() => { if (typeof window.hideHC32Status === 'function') window.hideHC32Status(); }, 500);
     };
 
