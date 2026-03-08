@@ -170,7 +170,6 @@
     .detail-card.bg-terdekat { background-color: var(--bg-terdekat); }
     .detail-card.bg-akan-datang { background-color: var(--bg-akan-datang); }
 
-    /* Gaya khusus untuk kartu hasil pencarian global yang bisa diklik */
     #recap-list .detail-card {
       cursor: pointer;
       transition: transform 0.2s, box-shadow 0.2s;
@@ -228,9 +227,12 @@
       <select id="filter-kategori">
         <option value="">Semua Kategori</option>
         <option value="Pertemuan Reguler">Pertemuan Reguler</option>
-        <option value="Kunjungan Museum">Kunjungan Museum</option>
-        <option value="Rapat Pengurus">Rapat Pengurus</option>
+        <option value="Hari/Pertemuan Spesial">Hari/Pertemuan Spesial</option>
+        <option value="Rapat Anggota">Rapat Anggota</option>
         <option value="Lomba">Lomba</option>
+        <option value="Kunjungan Museum">Kunjungan Museum</option>
+        <option value="Kegiatan Luar Biasa">Kegiatan Luar Biasa</option>
+        <option value="Lainnya">Lainnya</option>
       </select>
     </div>
     <div class="jump-row">
@@ -293,6 +295,7 @@
 
     let allAgendaData = [];
     let holidayData = {};
+    let kategoriLogos = {}; // Data logo kustom dari KategoriAgenda
     let displayDate = new Date();
     let selectedDate = new Date();
     const today = new Date();
@@ -328,12 +331,20 @@
       if (typeof window.showHC32Status === 'function') window.showHC32Status('loading', 'Sinkronisasi...', 'Memuat database agenda.');
       try {
         await fetchHolidays(displayDate.getFullYear());
-        const [nextRes, riwayatRes] = await Promise.all([
+        
+        // Fetch Agenda dan Data Logo Kategori secara paralel
+        const [nextRes, riwayatRes, logoRes] = await Promise.all([
           fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "getKegiatanPublik", mode: "next" }) }),
-          fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "getKegiatanPublik", mode: "riwayat" }) })
+          fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "getKegiatanPublik", mode: "riwayat" }) }),
+          fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "getKategoriLogos" }) })
         ]);
+        
         const nextOut = await nextRes.json();
         const riwayatOut = await riwayatRes.json();
+        const logoOut = await logoRes.json();
+
+        if(logoOut.status === 'ok') kategoriLogos = logoOut.data;
+
         allAgendaData = [...(nextOut.data || []), ...(riwayatOut.data || [])]
           .map(item => ({ ...item, parsedDate: new Date(item.tanggal) }))
           .filter(item => !isNaN(item.parsedDate));
@@ -350,14 +361,19 @@
 
     function updateSymbolLegend() {
       const container = document.getElementById('symbol-legend');
-      const map = new Map();
-      allAgendaData.forEach(item => {
-        if (item.logo && item.kategori && !map.has(item.kategori)) map.set(item.kategori, item.logo);
-      });
       container.innerHTML = "";
-      map.forEach((logo, cat) => {
-        const logoHTML = logo.length > 10 ? `<img src="https://drive.google.com/thumbnail?id=${logo}&sz=w100" class="legend-icon">` : `<span style="font-size:18px">${logo}</span>`;
-        container.innerHTML += `<div class="legend-item">${logoHTML} ${cat}</div>`;
+      
+      const categories = [
+          "Pertemuan Reguler", "Hari/Pertemuan Spesial", "Rapat Anggota", 
+          "Lomba", "Kunjungan Museum", "Kegiatan Luar Biasa", "Lainnya"
+      ];
+
+      categories.forEach(cat => {
+        const logoID = kategoriLogos[cat];
+        if (logoID) {
+          const logoHTML = `<img src="https://drive.google.com/thumbnail?id=${logoID}&sz=w100" class="legend-icon">`;
+          container.innerHTML += `<div class="legend-item">${logoHTML} ${cat}</div>`;
+        }
       });
     }
 
@@ -384,13 +400,20 @@
         if (currDate.getDay() === 0 || currDate.getDay() === 6 || holidayData[dateISO]) cell.classList.add("is-holiday");
         let cellHTML = `<span class="date-num">${d}</span>`;
         if (holidayData[dateISO]) cellHTML += `<span class="holiday-info">${holidayData[dateISO]}</span>`;
+        
         const dayAgendas = allAgendaData.filter(a => isSameDay(a.parsedDate, currDate));
         if (dayAgendas.length > 0) {
-          const diff = currDate.getTime() - cleanToday.getTime();
-          let statusClass = diff < 0 ? 'status-selesai' : (nextAgendaDate && isSameDay(currDate, nextAgendaDate) ? 'status-terdekat' : 'status-akan-datang');
-          cell.classList.add(statusClass);
-          let logo = dayAgendas[0].logo && dayAgendas[0].logo.length > 10 ? `<img src="https://drive.google.com/thumbnail?id=${dayAgendas[0].logo}&sz=w100" class="grid-custom-logo">` : `<span class="grid-emoji-logo">${dayAgendas[0].logo || '📍'}</span>`;
-          cellHTML += `<div class="cell-icon-container">${logo}</div>`;
+          const main = dayAgendas[0];
+          // Sembunyikan logo untuk Rapat Pengurus
+          if (main.kategori !== "Rapat Pengurus") {
+              const diff = currDate.getTime() - cleanToday.getTime();
+              let statusClass = diff < 0 ? 'status-selesai' : (nextAgendaDate && isSameDay(currDate, nextAgendaDate) ? 'status-terdekat' : 'status-akan-datang');
+              cell.classList.add(statusClass);
+              
+              const logoID = kategoriLogos[main.kategori];
+              let logo = logoID ? `<img src="https://drive.google.com/thumbnail?id=${logoID}&sz=w100" class="grid-custom-logo">` : `<span class="grid-emoji-logo">📍</span>`;
+              cellHTML += `<div class="cell-icon-container">${logo}</div>`;
+          }
         }
         if (isSameDay(currDate, today)) cell.classList.add("today");
         if (isSameDay(currDate, selectedDate)) cell.classList.add("selected");
@@ -414,12 +437,10 @@
         const div = document.createElement("div");
         div.className = `detail-card ${themeClass}`;
         
-        // Tambahkan fungsi klik jika ini adalah pencarian global
-        if(isGlobal) {
-          div.onclick = () => jumpToDate(item.parsedDate);
-        }
+        if(isGlobal) div.onclick = () => jumpToDate(item.parsedDate);
 
-        const logo = (item.logo && item.logo.length > 10) ? `<img src="https://drive.google.com/thumbnail?id=${item.logo}&sz=w100" class="detail-logo-img">` : `<span style="font-size:30px">${item.logo || '📍'}</span>`;
+        const logoID = kategoriLogos[item.kategori];
+        const logo = logoID ? `<img src="https://drive.google.com/thumbnail?id=${logoID}&sz=w100" class="detail-logo-img">` : `<span style="font-size:30px">📍</span>`;
         const formattedDate = formatIndonesianDate(item.parsedDate);
 
         div.innerHTML = `
@@ -440,30 +461,19 @@
       });
     }
 
-    // Fungsi untuk melompat ke tanggal tertentu dari pencarian global
     async function jumpToDate(targetDate) {
       const y = targetDate.getFullYear();
       const m = targetDate.getMonth();
-      
       if (typeof window.showHC32Status === 'function') window.showHC32Status('loading', 'Membuka Agenda...', `Menuju ${months[m]} ${y}`);
-      
-      // Update state kalender
       displayDate = new Date(y, m, 1);
       selectedDate = new Date(targetDate);
-      
-      // Sembunyikan hasil pencarian global
       document.getElementById('global-recap').style.display = "none";
       document.getElementById('search-input').value = "";
       document.getElementById('filter-kategori').value = "";
-
-      // Refresh data hari libur jika tahun berbeda, lalu render
       await fetchHolidays(y);
       renderCalendar();
       renderAgendaList(targetDate);
-      
-      // Scroll ke kalender
       document.getElementById('agenda-calendar').scrollIntoView({ behavior: 'smooth' });
-      
       setTimeout(() => { if (typeof window.hideHC32Status === 'function') window.hideHC32Status(); }, 500);
     }
 
@@ -499,7 +509,7 @@
       const y = parseInt(document.getElementById('jump-year').value);
       if (typeof window.showHC32Status === 'function') window.showHC32Status('loading', 'Berpindah...', `Menuju ${months[m]} ${y}`);
       displayDate = new Date(y, m, 1);
-      selectedDate = new Date(y, m, 1); // Set ke tanggal 1 bulan tersebut
+      selectedDate = new Date(y, m, 1);
       await fetchHolidays(y);
       renderCalendar();
       renderAgendaList(selectedDate);
