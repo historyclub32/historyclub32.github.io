@@ -10,8 +10,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/3.5.0/remixicon.css" rel="stylesheet">
   
-  <script src="../../../config.js"></script>
-  <script src="../../../components.js"></script>
+  <script src="../../config.js"></script>
+  <script src="../../components.js"></script>
+  
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
   
   <style>
@@ -28,7 +29,7 @@
     .card { background: #ffffff; border-radius: 16px; box-shadow: var(--card-shadow); padding: 30px; border: 1px solid #cbd5e1; }
     
     /* Skeleton Loader untuk Banner */
-    .welcome-banner { background: linear-gradient(135deg, var(--hc-blue) 0%, var(--hc-toska) 100%); color: #fff; padding: 24px; border-radius: 12px; margin-bottom: 28px; text-align: center; position: relative; overflow: hidden; }
+    .welcome-banner { background: linear-gradient(135deg, var(--hc-blue) 0%, var(--hc-toska) 100%); color: #fff; padding: 24px; border-radius: 12px; margin-bottom: 28px; text-align: center; position: relative; overflow: hidden; transition: background 0.3s; }
     .welcome-banner.loading::after {
         content: ""; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
         background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
@@ -59,7 +60,7 @@
     .method-item span { font-size: 13px; font-weight: 600; color: #475569; }
     .method-item.active { border-color: var(--hc-blue); background: #eff6ff; }
     .method-item.active i, .method-item.active span { color: var(--hc-blue); }
-    .method-item.disabled { opacity: 0.5; pointer-events: none; background: #f8fafc; border-color: #e2e8f0; }
+    .method-item.disabled { opacity: 0.5; pointer-events: none; background: #f8fafc; border-color: #e2e8f0; display: none; } /* Opsi dimatikan disembunyikan total */
 
     /* Upload Area */
     .photo-area { border: 2px dashed var(--hc-toska); border-radius: 16px; padding: 24px; text-align: center; background: #f0f9fa; position: relative; cursor: pointer; transition: 0.2s; }
@@ -207,60 +208,74 @@
   </div>
 
   <script>
-    // Inisialisasi Navigasi Publik
     document.addEventListener('DOMContentLoaded', () => {
         initHC32Navigation(''); 
         loadFormConfig();
     });
 
-    // 1. MENDAPATKAN KODE DARI URL
+    // 1. MENDAPATKAN KODE DARI PARAMETER URL (?kode=HALAL2026)
     function getFormCodeFromURL() {
         const urlParams = new URLSearchParams(window.location.search);
-        const kode = urlParams.get('kode'); // Mengambil nilai dari ?kode=
-        
-        return kode ? kode.toUpperCase() : 'UNKNOWN';
+        const kode = urlParams.get('kode'); 
+        return kode ? kode.toUpperCase().trim() : '';
     }
 
-    // 2. FETCH KONFIGURASI FORM DARI BACKEND
+    // 2. TAMPILKAN ERROR BANNER JIKA FORM GAGAL/DITUTUP
+    function showErrorBanner(title, desc) {
+        document.getElementById('form-title').innerText = title;
+        document.getElementById('form-desc').innerText = desc;
+        document.getElementById('form-banner').classList.remove('loading');
+        // Ubah warna banner jadi merah
+        document.getElementById('form-banner').style.background = 'linear-gradient(135deg, var(--hc-red) 0%, #7f1d1d 100%)';
+        document.getElementById('payment-form').style.display = 'none';
+    }
+
+    // 3. FETCH KONFIGURASI FORM DARI BACKEND
     async function loadFormConfig() {
         const formCode = getFormCodeFromURL();
+        
+        if (!formCode) {
+            showErrorBanner("Kode Form Tidak Ditemukan", "Pastikan Anda mengakses tautan yang benar (contoh: ?kode=HALAL2026).");
+            return;
+        }
+        
         document.getElementById('fd-kode-form').value = formCode;
 
-        // Simulasi Mengambil Data dari Backend (Micko, nanti ini diganti pakai fetch ke GAS_URL action: getFormConfig)
-        // Kita buat sistem mock-up dulu agar UI berjalan
-        setTimeout(() => {
-            let mockData = {};
+        try {
+            // Memanggil Apps Script action: getFormConfig
+            const response = await hc32_post('getFormConfig', { kode: formCode });
+            
+            if (response.status === 'ok') {
+                const data = response.data;
+                
+                // Set Judul & Kategori
+                document.getElementById('form-title').innerText = data.judul;
+                document.getElementById('form-desc').innerText = data.deskripsi;
+                document.getElementById('fd-kategori-trx').value = data.kategori;
 
-            if (formCode.includes('HALAL')) {
-                mockData = { title: "Halal Bihalal HC 2026", desc: "Pembayaran iuran acara Halal Bihalal", category: "Acara", methods: ["QRIS", "TUNAI", "BANK", "E-WALLET"] };
-            } else if (formCode.includes('KAS')) {
-                mockData = { title: "Uang Kas HC", desc: "Pembayaran iuran kas rutin anggota", category: "Kas Rutin", methods: ["QRIS", "TUNAI", "E-WALLET"] }; // Misal Bank dimatikan
-            } else {
-                // Form tidak ditemukan
-                document.getElementById('form-title').innerText = "Form Tidak Ditemukan";
-                document.getElementById('form-desc').innerText = "Silakan periksa kembali tautan yang Anda buka.";
+                // Proses Opsi Metode Pembayaran
+                // Asumsi data.metode adalah array dari Backend, misal: ["QRIS", "TUNAI"]
+                const allowedMethods = data.metode.map(m => m.trim().toUpperCase());
+                const allMethods = ["QRIS", "BANK", "E-WALLET", "TUNAI"];
+                
+                allMethods.forEach(m => {
+                    if (!allowedMethods.includes(m)) {
+                        const btn = document.querySelector(`.method-item[data-method="${m}"]`);
+                        if (btn) btn.classList.add('disabled'); // Sembunyikan opsi ini
+                    }
+                });
+
+                // Tampilkan Form
                 document.getElementById('form-banner').classList.remove('loading');
-                return;
+                document.getElementById('payment-form').style.display = 'block';
+            } else {
+                // Form tidak aktif atau tidak ditemukan
+                showErrorBanner("Form Tidak Tersedia", response.message || "Formulir ini tidak ditemukan atau sudah ditutup.");
             }
-
-            // Render UI sesuai Config
-            document.getElementById('form-title').innerText = mockData.title;
-            document.getElementById('form-desc').innerText = mockData.desc;
-            document.getElementById('fd-kategori-trx').value = mockData.category;
-
-            // Matikan metode yang tidak didukung
-            const allMethods = ["QRIS", "BANK", "E-WALLET", "TUNAI"];
-            allMethods.forEach(m => {
-                if (!mockData.methods.includes(m)) {
-                    const btn = document.querySelector(`.method-item[data-method="${m}"]`);
-                    if (btn) btn.classList.add('disabled');
-                }
-            });
-
-            document.getElementById('form-banner').classList.remove('loading');
-            document.getElementById('payment-form').style.display = 'block';
-
-        }, 1500); // Simulasi delay internet
+        } catch (err) {
+            console.error(err);
+            showErrorBanner("Koneksi Gagal", "Tidak dapat terhubung ke server. Periksa koneksi internet Anda.");
+        }
     }
 
     // === LOGIKA PILIH METODE BAYAR ===
@@ -285,7 +300,9 @@
             aiSection.classList.add('hidden');
             document.getElementById('inp-file-foto').value = '';
             document.getElementById('fd-foto-base64').value = '';
-            window.showHC32Status('info', 'Pembayaran Tunai', 'Form ini hanya pendataan. Uang tunai WAJIB diserahkan langsung ke Bendahara/Ketua.');
+            if(typeof window.showHC32Status === 'function') {
+                window.showHC32Status('info', 'Pembayaran Tunai', 'Form ini hanya untuk pendataan. Uang tunai WAJIB diserahkan langsung ke Bendahara/Ketua HC.');
+            }
         } else {
             buktiSection.classList.remove('hidden');
         }
@@ -334,7 +351,9 @@
 
     // === FUNGSI TESSERACT AI OCR ===
     async function runTesseractOCR(imageData) {
-        window.showHC32Status('loading', 'AI Sedang Membaca...', 'Mengekstrak data dari screenshot bukti transfer.');
+        if(typeof window.showHC32Status === 'function') {
+            window.showHC32Status('loading', 'AI Sedang Membaca...', 'Mengekstrak data dari screenshot bukti transfer.');
+        }
 
         try {
             const result = await Tesseract.recognize(imageData, 'ind+eng');
@@ -371,16 +390,19 @@
             document.getElementById('fd-sumber').value = sumber;
 
             aiSection.classList.remove('hidden');
-            window.hideHC32Status();
+            if(typeof window.hideHC32Status === 'function') window.hideHC32Status();
             
-            if(!nominal || !waktu) window.showHC32Status('info', 'Bacaan Kurang Sempurna', 'Gambar agak sulit dibaca. Mohon lengkapi bagian yang kosong secara manual.');
-            else window.showHC32Status('success', 'AI Selesai', 'Data berhasil diekstrak. Silakan periksa kembali.');
+            if(!nominal || !waktu) {
+                if(typeof window.showHC32Status === 'function') window.showHC32Status('info', 'Bacaan Kurang Sempurna', 'Gambar agak sulit dibaca. Mohon lengkapi bagian yang kosong secara manual.');
+            } else {
+                if(typeof window.showHC32Status === 'function') window.showHC32Status('success', 'AI Selesai', 'Data berhasil diekstrak. Silakan periksa kembali.');
+            }
 
         } catch (err) {
             console.error(err);
-            window.hideHC32Status();
+            if(typeof window.hideHC32Status === 'function') window.hideHC32Status();
             aiSection.classList.remove('hidden');
-            window.showHC32Status('error', 'AI Gagal Membaca', 'Tidak dapat mengenali teks pada gambar. Silakan ketik manual.');
+            if(typeof window.showHC32Status === 'function') window.showHC32Status('error', 'AI Gagal Membaca', 'Tidak dapat mengenali teks pada gambar. Silakan ketik manual.');
         }
     }
 
@@ -390,7 +412,7 @@
         
         const metode = document.getElementById('fd-metode').value;
         if(!metode) {
-            window.showHC32Status('error', 'Metode Belum Dipilih', 'Silakan pilih metode pembayaran (QRIS/Bank/Tunai).');
+            if(typeof window.showHC32Status === 'function') window.showHC32Status('error', 'Metode Belum Dipilih', 'Silakan pilih metode pembayaran (QRIS/Bank/Tunai).');
             return;
         }
 
@@ -408,22 +430,33 @@
             fotoBase64: document.getElementById('fd-foto-base64') ? document.getElementById('fd-foto-base64').value : ''
         };
 
-        window.showHC32Status('loading', 'Mengirim Data...', 'Laporan pembayaran Anda sedang diproses.');
+        if (typeof window.showHC32Status === 'function') window.showHC32Status('loading', 'Mengirim Data...', 'Laporan pembayaran Anda sedang diproses.');
 
-        // Simulasi sukses (Ganti hc32_post nantinya)
-        setTimeout(() => {
-            window.hideHC32Status();
+        try {
+            // Memanggil Apps Script action: submitTransaksiForm
+            const res = await hc32_post('submitTransaksiForm', dataPayload);
             
-            let message = "Bukti transfer telah terkirim dan menunggu verifikasi Bendahara.";
-            if(metode === 'TUNAI') message = "Data dicatat. Segera serahkan uang tunai ke Bendahara agar status menjadi Lunas.";
+            if (typeof window.hideHC32Status === 'function') window.hideHC32Status();
+            
+            if (res.status === 'ok') {
+                let message = "Bukti transfer telah terkirim dan menunggu verifikasi Bendahara.";
+                if(metode === 'TUNAI') message = "Data dicatat. Segera serahkan uang tunai ke Bendahara agar status menjadi Lunas.";
 
-            window.showHC32Status('success', 'Berhasil Terkirim', message);
-            
-            document.getElementById('payment-form').reset();
-            document.querySelectorAll('.method-item').forEach(i => i.classList.remove('active'));
-            hapusFoto(new Event('click'));
-            document.getElementById('fd-metode').value = '';
-        }, 2000);
+                if (typeof window.showHC32Status === 'function') window.showHC32Status('success', 'Berhasil Terkirim', message);
+                
+                // Reset Form
+                document.getElementById('payment-form').reset();
+                document.querySelectorAll('.method-item').forEach(i => i.classList.remove('active'));
+                hapusFoto(new Event('click'));
+                document.getElementById('fd-metode').value = '';
+            } else {
+                if (typeof window.showHC32Status === 'function') window.showHC32Status('error', 'Gagal', res.message);
+            }
+        } catch (err) {
+            console.error(err);
+            if (typeof window.hideHC32Status === 'function') window.hideHC32Status();
+            if (typeof window.showHC32Status === 'function') window.showHC32Status('error', 'Koneksi Gagal', 'Tidak dapat mengirim data. Coba lagi.');
+        }
     });
   </script>
 </body>
