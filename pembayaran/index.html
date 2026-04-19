@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pembayaran & Kas - HC 32</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/3.5.0/remixicon.css" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+    
+    <script src="../../config.js"></script>
+    <script src="../../components.js"></script>
+
+    <style>
+        :root {
+            --hc-blue: #1a4787;
+            --hc-toska: #0f8a94;
+            --hc-bg: #f8fafc;
+        }
+
+        body {
+            background-color: var(--hc-bg);
+            margin: 0;
+            padding: 0;
+        }
+
+        main {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .form-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .form-header h1 {
+            font-size: 24px;
+            color: var(--hc-blue);
+            margin-bottom: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #475569;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 14px;
+            transition: 0.2s;
+            box-sizing: border-box;
+        }
+
+        input:focus {
+            border-color: var(--hc-blue);
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(26, 71, 135, 0.1);
+        }
+
+        /* Upload Area */
+        .upload-area {
+            border: 2px dashed #cbd5e1;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
+            background: #f1f5f9;
+            position: relative;
+        }
+
+        .upload-area:hover {
+            border-color: var(--hc-toska);
+            background: #ecfeff;
+        }
+
+        .upload-icon { font-size: 40px; color: #94a3b8; }
+        
+        #preview-img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        /* AI Scanning Loader */
+        .ai-scanner {
+            display: none;
+            align-items: center;
+            gap: 10px;
+            background: #eff6ff;
+            padding: 12px;
+            border-radius: 10px;
+            margin-top: 10px;
+            color: var(--hc-blue);
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .spin { animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .btn-submit {
+            width: 100%;
+            background: linear-gradient(135deg, var(--hc-blue), var(--hc-toska));
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn-submit:hover { opacity: 0.9; transform: translateY(-2px); }
+
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+    <main>
+        <div class="form-card">
+            <div class="form-header">
+                <h1>Konfirmasi Pembayaran</h1>
+                <p style="color:#64748b; font-size: 14px;">Gunakan form ini untuk lapor bukti bayar QRIS/Transfer</p>
+            </div>
+
+            <form id="payment-form">
+                <div class="form-group">
+                    <label>Nama Lengkap / ID HC</label>
+                    <input type="text" id="sender-name" placeholder="Contoh: Micko Egi Sudrajat" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Tujuan Pembayaran / Event</label>
+                    <select id="payment-category" required>
+                        <option value="">Pilih Kategori</option>
+                        <option value="Halal Bihalal 2026">Halal Bihalal 2026</option>
+                        <option value="Uang Kas Bulanan">Uang Kas Bulanan</option>
+                        <option value="Donasi/Lainnya">Donasi / Lainnya</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Metode Pembayaran</label>
+                    <select id="payment-method" onchange="toggleUpload()" required>
+                        <option value="">Pilih Metode</option>
+                        <option value="QRIS" class="opt-qris">QRIS (Otomatis Scan)</option>
+                        <option value="Bank" class="opt-bank">Transfer Bank</option>
+                        <option value="E-Wallet" class="opt-ewallet">E-Wallet (Gopay/OVO/Dana)</option>
+                        <option value="Tunai" class="opt-tunai">Tunai (Lapor ke Pengurus)</option>
+                    </select>
+                </div>
+
+                <div id="upload-section" class="hidden">
+                    <div class="form-group">
+                        <label>Unggah Bukti Bayar (Max 1.5MB)</label>
+                        <div class="upload-area" onclick="document.getElementById('file-input').click()">
+                            <i class="ri-screenshot-2-line upload-icon"></i>
+                            <p id="upload-text" style="font-size: 12px; color: #64748b; margin: 8px 0 0;">Klik untuk upload Screenshot Bukti</p>
+                            <img id="preview-img">
+                            <input type="file" id="file-input" class="hidden" accept="image/*" onchange="handleFile(this)">
+                        </div>
+                        
+                        <div class="ai-scanner" id="ai-scanner">
+                            <i class="ri-cpu-line spin"></i>
+                            <span>AI sedang memindai bukti bayar...</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Nominal (Otomatis)</label>
+                        <input type="number" id="amount" placeholder="Rp 0" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Kode Transaksi / Reff (Otomatis)</label>
+                        <input type="text" id="trx-code" placeholder="Misal: ID12345678">
+                    </div>
+                </div>
+
+                <div id="tunai-info" class="hidden" style="background:#fff7ed; padding: 15px; border-radius: 10px; border: 1px solid #ffedd5; margin-bottom: 20px;">
+                    <p style="font-size: 13px; color: #9a3412; margin: 0;">
+                        <i class="ri-information-line"></i> Untuk pembayaran <strong>Tunai</strong>, Anda tidak perlu mengisi form. Silakan langsung temui Ketua/Bendahara untuk ceklis manual.
+                    </p>
+                </div>
+
+                <button type="submit" class="btn-submit" id="submit-btn">Kirim Laporan</button>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        // Inisialisasi Navigation (Header/Sidebar dari components.js)
+        document.addEventListener('DOMContentLoaded', () => {
+            initHC32Navigation('keuangan');
+            loadAdminSettings(); // Ambil setting aktif/nonaktif dari backend
+        });
+
+        // 1. Fungsi Toggle Tampilan berdasarkan Metode
+        function toggleUpload() {
+            const method = document.getElementById('payment-method').value;
+            const uploadSection = document.getElementById('upload-section');
+            const tunaiInfo = document.getElementById('tunai-info');
+            const submitBtn = document.getElementById('submit-btn');
+
+            if (method === 'Tunai') {
+                uploadSection.classList.add('hidden');
+                tunaiInfo.classList.remove('hidden');
+                submitBtn.classList.add('hidden');
+            } else if (method === "") {
+                uploadSection.classList.add('hidden');
+                tunaiInfo.classList.add('hidden');
+                submitBtn.classList.remove('hidden');
+            } else {
+                uploadSection.classList.remove('hidden');
+                tunaiInfo.classList.add('hidden');
+                submitBtn.classList.remove('hidden');
+            }
+        }
+
+        // 2. Fungsi Handle File & Validasi 1.5MB
+        async function handleFile(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            // Validasi Ukuran (1.5 MB = 1572864 bytes)
+            if (file.size > 1572864) {
+                window.showHC32Status('error', 'File Terlalu Besar', 'Maksimal ukuran screenshot adalah 1.5 MB');
+                input.value = "";
+                return;
+            }
+
+            // Tampilkan Preview
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = document.getElementById('preview-img');
+                img.src = e.target.result;
+                img.style.display = 'block';
+                document.getElementById('upload-text').classList.add('hidden');
+                
+                // Jalankan AI OCR
+                runAIScanner(e.target.result);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // 3. AI Scanner (OCR)
+        async function runAIScanner(imageData) {
+            const scanner = document.getElementById('ai-scanner');
+            scanner.style.display = 'flex';
+
+            try {
+                const { data: { text } } = await Tesseract.recognize(imageData, 'ind+eng');
+                console.log("AI Detected Text:", text);
+
+                // Logika Mencari Nominal (Mencari angka setelah "Rp" atau "Total")
+                const amountMatch = text.replace(/[,.]/g, '').match(/(?:Rp|Total|IDR)\s?(\d+)/i) || text.match(/(\d{3,})\b/);
+                if (amountMatch) {
+                    document.getElementById('amount').value = amountMatch[1];
+                }
+
+                // Logika Mencari Kode Transaksi
+                const codeMatch = text.match(/[A-Z0-9]{8,}/);
+                if (codeMatch) {
+                    document.getElementById('trx-code').value = codeMatch[0];
+                }
+
+            } catch (err) {
+                console.error("AI Error:", err);
+            } finally {
+                scanner.style.display = 'none';
+            }
+        }
+
+        // 4. Load Setting dari Pengurus (Placeholder Logic)
+        async function loadAdminSettings() {
+            // Nantinya ini memanggil GAS action: getKeuanganSettings
+            // Contoh setting yang diterima: { qris: true, bank: true, ewallet: false, tunai: true }
+            const activeSettings = { qris: true, bank: true, ewallet: true, tunai: true };
+
+            if (!activeSettings.qris) document.querySelector('.opt-qris').remove();
+            if (!activeSettings.bank) document.querySelector('.opt-bank').remove();
+            if (!activeSettings.ewallet) document.querySelector('.opt-ewallet').remove();
+            if (!activeSettings.tunai) document.querySelector('.opt-tunai').remove();
+        }
+
+        // 5. Submit ke GAS
+        document.getElementById('payment-form').onsubmit = async (e) => {
+            e.preventDefault();
+            window.showHC32Status('loading', 'Mengirim Data', 'Sedang mencatat transaksi...');
+            
+            // Logika pengiriman fetch(API_URL) ada di sini mirip pendaftaran
+            // Kirim Base64 Gambar, Nama, Nominal, Kategori, dll.
+            
+            setTimeout(() => {
+                window.showHC32Status('success', 'Berhasil', 'Laporan Anda sudah masuk. Mohon tunggu verifikasi Bendahara.');
+                document.getElementById('payment-form').reset();
+                document.getElementById('preview-img').style.display = 'none';
+                document.getElementById('upload-text').classList.remove('hidden');
+            }, 2000);
+        };
+    </script>
+</body>
+</html>
