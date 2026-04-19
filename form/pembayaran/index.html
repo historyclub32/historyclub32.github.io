@@ -1,1 +1,430 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Form Pembayaran - HC 32</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/3.5.0/remixicon.css" rel="stylesheet">
+  
+  <script src="../../../config.js"></script>
+  <script src="../../../components.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+  
+  <style>
+    :root {
+        --hc-blue: #1a4787; --hc-toska: #0f8a94; --hc-dark: #2e2e2e;
+        --hc-green: #15a256; --hc-red: #d30e14; --hc-bg: #f8fafc;
+        --card-shadow: 0 8px 30px rgba(26, 71, 135, 0.08);
+    }
 
+    body { font-family: 'Poppins', sans-serif; background-color: var(--hc-bg); color: #2e2e2e; margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh; }
+    .main-wrapper { flex: 1; padding: 40px 20px; }
+    .container { max-width: 600px; margin: 0 auto; }
+    
+    .card { background: #ffffff; border-radius: 16px; box-shadow: var(--card-shadow); padding: 30px; border: 1px solid #cbd5e1; }
+    
+    /* Skeleton Loader untuk Banner */
+    .welcome-banner { background: linear-gradient(135deg, var(--hc-blue) 0%, var(--hc-toska) 100%); color: #fff; padding: 24px; border-radius: 12px; margin-bottom: 28px; text-align: center; position: relative; overflow: hidden; }
+    .welcome-banner.loading::after {
+        content: ""; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        animation: shimmer 1.5s infinite;
+    }
+    @keyframes shimmer { 100% { left: 100%; } }
+    .welcome-banner h2 { margin: 0 0 6px; font-size: 22px; font-weight: 700; line-height: 1.3; }
+    .welcome-banner p { margin: 0; opacity: 0.9; font-size: 13px; font-weight: 400; }
+
+    .row { margin-bottom: 20px; }
+    label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; color: #2e2e2e; }
+    .req-star { color: var(--hc-red); margin-left: 2px; font-weight: bold; }
+    
+    input, select { width: 100%; padding: 12px 16px; border: 1px solid #cbd5e1; border-radius: 10px; font-size: 14px; outline: none; background: #fff; box-sizing: border-box; transition: 0.2s; font-family: 'Poppins', sans-serif; }
+    input:focus, select:focus { border-color: var(--hc-blue); box-shadow: 0 0 0 3px rgba(26, 71, 135, 0.15); }
+    input:disabled, select:disabled { background-color: #f1f5f9; color: #64748b; cursor: not-allowed; border-color: #e2e8f0; }
+
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .hidden { display: none !important; }
+
+    /* Payment Methods Grid */
+    .method-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 5px; }
+    .method-item { 
+        border: 2px solid #e2e8f0; border-radius: 10px; padding: 12px; text-align: center; 
+        cursor: pointer; transition: 0.2s; background: #fff;
+    }
+    .method-item i { font-size: 24px; display: block; margin-bottom: 5px; color: #64748b; }
+    .method-item span { font-size: 13px; font-weight: 600; color: #475569; }
+    .method-item.active { border-color: var(--hc-blue); background: #eff6ff; }
+    .method-item.active i, .method-item.active span { color: var(--hc-blue); }
+    .method-item.disabled { opacity: 0.5; pointer-events: none; background: #f8fafc; border-color: #e2e8f0; }
+
+    /* Upload Area */
+    .photo-area { border: 2px dashed var(--hc-toska); border-radius: 16px; padding: 24px; text-align: center; background: #f0f9fa; position: relative; cursor: pointer; transition: 0.2s; }
+    .photo-area:hover { background: #e0f2fe; border-color: var(--hc-blue); }
+    #foto-preview-container { width: 100%; max-height: 350px; margin: 0 auto 16px; border-radius: 8px; overflow: hidden; display: none; position: relative; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+    #foto-preview-img { width: 100%; height: 100%; object-fit: contain; background: #000; display: block; }
+    
+    .btn-main-camera { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: white; border: 1px solid var(--hc-blue); color: var(--hc-blue); padding: 12px 24px; border-radius: 50px; font-weight: 600; font-size: 14px; transition: all 0.2s; box-shadow: 0 2px 8px rgba(0,0,0,0.05); pointer-events: none;}
+    .btn-delete-photo { background: #fee2e2; color: #ef4444; border: none; margin-top: 10px; padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; display: none; }
+
+    /* AI Section */
+    .ai-badge { display: inline-flex; align-items: center; gap: 6px; background: linear-gradient(135deg, #7e22ce, var(--hc-blue)); color: white; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; margin-bottom: 15px; box-shadow: 0 2px 10px rgba(126, 34, 206, 0.2); }
+    .ai-section { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-top: 20px; border-left: 4px solid #7e22ce; }
+    .ai-section-title { font-size: 13px; font-weight: 700; color: #7e22ce; margin: 0 0 15px 0; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    button[type="submit"] { width: 100%; background: linear-gradient(135deg, var(--hc-blue), var(--hc-toska)); color: #fff; border: none; padding: 16px; border-radius: 10px; font-weight: 600; font-size: 16px; cursor: pointer; margin-top: 20px; box-shadow: 0 4px 15px rgba(15, 138, 148, 0.3); transition: 0.2s; }
+    button[type="submit"]:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(15, 138, 148, 0.4); }
+
+    /* Help Card */
+    .help-card { margin-top: 20px; margin-bottom: 10px; background: #fff; border-radius: 16px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); padding: 16px 20px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 12px; border-left: 4px solid var(--hc-blue); }
+    @media (min-width: 600px) { .help-card { flex-direction: row; } }
+    .help-title { font-weight: 600; font-size: 14px; color: var(--hc-dark); margin: 0; }
+    .help-desc { font-size: 12px; color: #64748b; margin: 2px 0 0; }
+    .help-link { color: var(--hc-blue); font-weight: 600; text-decoration: none; }
+    .help-btn { display: inline-flex; align-items: center; gap: 8px; background: var(--hc-blue); color: white; padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 500; text-decoration: none; transition: 0.2s; }
+    .help-btn:hover { opacity: 0.9; }
+
+    @media (max-width: 600px) { .two-col { grid-template-columns: 1fr; } .card { padding: 20px; } }
+  </style>
+</head>
+<body>
+
+  <div class="main-wrapper">
+      <div class="container">
+          <div class="card">
+              
+              <div class="welcome-banner loading" id="form-banner">
+                  <h2 id="form-title">Memuat Form...</h2>
+                  <p id="form-desc">Mencari data ke database sistem HC 32</p>
+              </div>
+
+              <form id="payment-form" style="display: none;">
+                  <input type="hidden" id="fd-kode-form">
+                  <input type="hidden" id="fd-kategori-trx">
+
+                  <div class="row">
+                      <label>NIS / No. Identitas <span class="req-star">*</span></label>
+                      <input type="text" id="fd-nis" placeholder="Nomor Induk Siswa/Anggota" required />
+                  </div>
+                  
+                  <div class="row">
+                      <label>Nama Lengkap Pembayar <span class="req-star">*</span></label>
+                      <input type="text" id="fd-nama" placeholder="Nama Lengkap" required />
+                  </div>
+
+                  <div class="row">
+                      <label>Metode Pembayaran <span class="req-star">*</span></label>
+                      <div class="method-grid" id="method-container">
+                          <div class="method-item" id="btn-method-qris" data-method="QRIS" onclick="selectMethod(this)">
+                              <i class="ri-qr-code-line"></i><span>QRIS</span>
+                          </div>
+                          <div class="method-item" id="btn-method-bank" data-method="BANK" onclick="selectMethod(this)">
+                              <i class="ri-bank-line"></i><span>Transfer Bank</span>
+                          </div>
+                          <div class="method-item" id="btn-method-ewallet" data-method="E-WALLET" onclick="selectMethod(this)">
+                              <i class="ri-wallet-3-line"></i><span>E-Wallet</span>
+                          </div>
+                          <div class="method-item" id="btn-method-tunai" data-method="TUNAI" onclick="selectMethod(this)">
+                              <i class="ri-money-dollar-circle-line"></i><span>Tunai</span>
+                          </div>
+                      </div>
+                      <p id="method-warning" style="font-size:11px; color:var(--hc-red); display:none; margin-top:5px;">Metode pembayaran ini sedang dinonaktifkan oleh pengurus.</p>
+                      <input type="hidden" id="fd-metode" required>
+                  </div>
+
+                  <div id="bukti-section" class="hidden">
+                      <div class="row">
+                          <label>Unggah Bukti Transfer (Wajib, Max 1.5 MB) <span class="req-star">*</span></label>
+                          <div class="ai-badge"><i class="ri-magic-line"></i> Didukung AI Auto-Fill</div>
+                          
+                          <div class="photo-area" onclick="document.getElementById('inp-file-foto').click()">
+                              <div id="upload-placeholder">
+                                  <div class="btn-main-camera"><i class="ri-image-add-line"></i> Pilih Screenshot Bukti</div>
+                                  <p style="font-size: 12px; color: #64748b; margin-top: 15px;">AI akan mencoba membaca nominal, tanggal, dan kode transaksi dari gambar.</p>
+                              </div>
+                              <div id="foto-preview-container">
+                                  <img id="foto-preview-img" src="" alt="Preview Bukti">
+                              </div>
+                              <input type="file" id="inp-file-foto" accept="image/*" class="hidden">
+                              <input type="hidden" id="fd-foto-base64">
+                          </div>
+                          
+                          <div style="display:flex; justify-content:center;">
+                              <button type="button" class="btn-delete-photo" id="btn-hapus-foto" onclick="hapusFoto(event)">
+                                  <i class="ri-delete-bin-line"></i> Hapus & Ganti Gambar
+                              </button>
+                          </div>
+                      </div>
+
+                      <div id="ai-result-section" class="ai-section hidden">
+                          <div class="ai-section-title"><i class="ri-robot-2-line"></i> Hasil Bacaan Dokumen</div>
+                          
+                          <div class="two-col row">
+                              <div>
+                                  <label>Nominal Pembayaran <span class="req-star">*</span></label>
+                                  <div style="display:flex; align-items:center; gap:10px;">
+                                      <span style="font-weight:600; color:#64748b;">Rp</span>
+                                      <input type="number" id="fd-nominal" placeholder="0" required>
+                                  </div>
+                              </div>
+                              <div>
+                                  <label>Waktu Transaksi</label>
+                                  <input type="text" id="fd-waktu" placeholder="Contoh: 22 Sep 2024, 21:00">
+                              </div>
+                          </div>
+
+                          <div class="row">
+                              <label>Bank / E-Wallet Pengirim</label>
+                              <input type="text" id="fd-sumber" placeholder="Contoh: GoPay / BCA">
+                          </div>
+
+                          <div class="row" style="margin-bottom:0;">
+                              <label>ID / Nomor Referensi Transaksi</label>
+                              <input type="text" id="fd-referensi" placeholder="Masukkan ID Transaksi jika ada">
+                          </div>
+                          <p style="font-size:11px; color:#94a3b8; margin-top:5px;">*Jika AI gagal membaca, mohon koreksi/isi kotak di atas secara manual.</p>
+                      </div>
+                  </div>
+
+                  <button type="submit" id="btn-submit">Kirim Form Pembayaran</button>
+              </form>
+          </div>
+
+          <div class="help-card">
+              <div style="flex:1;">
+                  <p class="help-title">Kendala Pengisian?</p>
+                  <p class="help-desc">Hubungi Bendahara atau Ketua HC jika terjadi masalah saat mengunggah bukti.</p>
+              </div>
+              <a href="https://www.instagram.com/historyclub32jkt/" target="_blank" class="help-btn">
+                  Bantuan <i class="ri-customer-service-2-line"></i>
+              </a>
+          </div>
+
+      </div>
+  </div>
+
+  <script>
+    // Inisialisasi Navigasi Publik
+    document.addEventListener('DOMContentLoaded', () => {
+        initHC32Navigation(''); 
+        loadFormConfig();
+    });
+
+    // 1. MENDAPATKAN KODE DARI URL
+    function getFormCodeFromURL() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const kode = urlParams.get('kode'); // Mengambil nilai dari ?kode=
+        
+        return kode ? kode.toUpperCase() : 'UNKNOWN';
+    }
+
+    // 2. FETCH KONFIGURASI FORM DARI BACKEND
+    async function loadFormConfig() {
+        const formCode = getFormCodeFromURL();
+        document.getElementById('fd-kode-form').value = formCode;
+
+        // Simulasi Mengambil Data dari Backend (Micko, nanti ini diganti pakai fetch ke GAS_URL action: getFormConfig)
+        // Kita buat sistem mock-up dulu agar UI berjalan
+        setTimeout(() => {
+            let mockData = {};
+
+            if (formCode.includes('HALAL')) {
+                mockData = { title: "Halal Bihalal HC 2026", desc: "Pembayaran iuran acara Halal Bihalal", category: "Acara", methods: ["QRIS", "TUNAI", "BANK", "E-WALLET"] };
+            } else if (formCode.includes('KAS')) {
+                mockData = { title: "Uang Kas HC", desc: "Pembayaran iuran kas rutin anggota", category: "Kas Rutin", methods: ["QRIS", "TUNAI", "E-WALLET"] }; // Misal Bank dimatikan
+            } else {
+                // Form tidak ditemukan
+                document.getElementById('form-title').innerText = "Form Tidak Ditemukan";
+                document.getElementById('form-desc').innerText = "Silakan periksa kembali tautan yang Anda buka.";
+                document.getElementById('form-banner').classList.remove('loading');
+                return;
+            }
+
+            // Render UI sesuai Config
+            document.getElementById('form-title').innerText = mockData.title;
+            document.getElementById('form-desc').innerText = mockData.desc;
+            document.getElementById('fd-kategori-trx').value = mockData.category;
+
+            // Matikan metode yang tidak didukung
+            const allMethods = ["QRIS", "BANK", "E-WALLET", "TUNAI"];
+            allMethods.forEach(m => {
+                if (!mockData.methods.includes(m)) {
+                    const btn = document.querySelector(`.method-item[data-method="${m}"]`);
+                    if (btn) btn.classList.add('disabled');
+                }
+            });
+
+            document.getElementById('form-banner').classList.remove('loading');
+            document.getElementById('payment-form').style.display = 'block';
+
+        }, 1500); // Simulasi delay internet
+    }
+
+    // === LOGIKA PILIH METODE BAYAR ===
+    function selectMethod(el) {
+        if(el.classList.contains('disabled')) {
+            document.getElementById('method-warning').style.display = 'block';
+            return;
+        }
+        document.getElementById('method-warning').style.display = 'none';
+
+        document.querySelectorAll('.method-item').forEach(i => i.classList.remove('active'));
+        el.classList.add('active');
+        
+        const method = el.dataset.method;
+        document.getElementById('fd-metode').value = method;
+
+        const buktiSection = document.getElementById('bukti-section');
+        const aiSection = document.getElementById('ai-result-section');
+
+        if(method === 'TUNAI') {
+            buktiSection.classList.add('hidden');
+            aiSection.classList.add('hidden');
+            document.getElementById('inp-file-foto').value = '';
+            document.getElementById('fd-foto-base64').value = '';
+            window.showHC32Status('info', 'Pembayaran Tunai', 'Form ini hanya pendataan. Uang tunai WAJIB diserahkan langsung ke Bendahara/Ketua.');
+        } else {
+            buktiSection.classList.remove('hidden');
+        }
+    }
+
+    // === LOGIKA UPLOAD & AI OCR ===
+    const fileInput = document.getElementById('inp-file-foto');
+    const previewContainer = document.getElementById('foto-preview-container');
+    const previewImg = document.getElementById('foto-preview-img');
+    const placeholder = document.getElementById('upload-placeholder');
+    const btnHapus = document.getElementById('btn-hapus-foto');
+    const aiSection = document.getElementById('ai-result-section');
+    const hiddenBase64 = document.getElementById('fd-foto-base64');
+
+    fileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        if (file.size > 1572864) {
+            window.showHC32Status('error', 'File Terlalu Besar', 'Maksimal ukuran screenshot adalah 1.5 MB.');
+            fileInput.value = "";
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+            const base64Data = evt.target.result;
+            hiddenBase64.value = base64Data;
+            
+            previewImg.src = base64Data;
+            previewContainer.style.display = 'block';
+            placeholder.style.display = 'none';
+            btnHapus.style.display = 'inline-block';
+
+            runTesseractOCR(base64Data);
+        };
+        reader.readAsDataURL(file);
+    });
+
+    function hapusFoto(e) {
+        e.stopPropagation();
+        fileInput.value = ''; hiddenBase64.value = ''; previewImg.src = '';
+        previewContainer.style.display = 'none'; placeholder.style.display = 'block';
+        btnHapus.style.display = 'none'; aiSection.classList.add('hidden');
+    }
+
+    // === FUNGSI TESSERACT AI OCR ===
+    async function runTesseractOCR(imageData) {
+        window.showHC32Status('loading', 'AI Sedang Membaca...', 'Mengekstrak data dari screenshot bukti transfer.');
+
+        try {
+            const result = await Tesseract.recognize(imageData, 'ind+eng');
+            const text = result.data.text;
+            
+            let nominal = "", waktu = "", referensi = "", sumber = "";
+
+            const nominalRegex = /(?:rp|total|bayar|nominal|idr)\s*[:\.]?\s*([\d\.,]+)/i;
+            const nominalMatch = text.match(nominalRegex) || text.match(/\b\d{1,3}(?:\.\d{3})+\b/);
+            if(nominalMatch) nominal = nominalMatch[1] ? nominalMatch[1].replace(/[^\d]/g, '') : nominalMatch[0].replace(/[^\d]/g, '');
+
+            const dateTimeRegex = /(\d{1,2}\s+[a-zA-Z]{3}\s+\d{4}[,\s]*\d{2}:\d{2}(?::\d{2})?|\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}\s+\d{2}:\d{2})/i;
+            const timeMatch = text.match(dateTimeRegex);
+            if(timeMatch) waktu = timeMatch[1];
+
+            const refRegex = /(?:referensi|ref|id|order|transaksi|no)\s*[:\.]?\s*([a-zA-Z0-9]{8,20})/i;
+            const refMatch = text.match(refRegex) || text.match(/\b[A-Z0-9]{12,20}\b/i);
+            if(refMatch) referensi = refMatch[1] ? refMatch[1].toUpperCase() : refMatch[0].toUpperCase();
+
+            const textLower = text.toLowerCase();
+            if(textLower.includes('gopay')) sumber = "GoPay";
+            else if(textLower.includes('dana')) sumber = "DANA";
+            else if(textLower.includes('ovo')) sumber = "OVO";
+            else if(textLower.includes('shopeepay') || textLower.includes('shopee')) sumber = "ShopeePay";
+            else if(textLower.includes('bca')) sumber = "BCA";
+            else if(textLower.includes('mandiri') || textLower.includes('livin')) sumber = "Bank Mandiri";
+            else if(textLower.includes('bri') || textLower.includes('brimo')) sumber = "BRI";
+            else if(textLower.includes('bni')) sumber = "BNI";
+            else if(textLower.includes('bsi')) sumber = "BSI";
+
+            document.getElementById('fd-nominal').value = nominal;
+            document.getElementById('fd-waktu').value = waktu;
+            document.getElementById('fd-referensi').value = referensi;
+            document.getElementById('fd-sumber').value = sumber;
+
+            aiSection.classList.remove('hidden');
+            window.hideHC32Status();
+            
+            if(!nominal || !waktu) window.showHC32Status('info', 'Bacaan Kurang Sempurna', 'Gambar agak sulit dibaca. Mohon lengkapi bagian yang kosong secara manual.');
+            else window.showHC32Status('success', 'AI Selesai', 'Data berhasil diekstrak. Silakan periksa kembali.');
+
+        } catch (err) {
+            console.error(err);
+            window.hideHC32Status();
+            aiSection.classList.remove('hidden');
+            window.showHC32Status('error', 'AI Gagal Membaca', 'Tidak dapat mengenali teks pada gambar. Silakan ketik manual.');
+        }
+    }
+
+    // === SUBMIT HANDLER ===
+    document.getElementById('payment-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const metode = document.getElementById('fd-metode').value;
+        if(!metode) {
+            window.showHC32Status('error', 'Metode Belum Dipilih', 'Silakan pilih metode pembayaran (QRIS/Bank/Tunai).');
+            return;
+        }
+
+        const dataPayload = {
+            action: 'submitTransaksiForm',
+            kodeForm: document.getElementById('fd-kode-form').value,
+            kategori: document.getElementById('fd-kategori-trx').value,
+            nis: document.getElementById('fd-nis').value.trim(),
+            nama: document.getElementById('fd-nama').value.trim(),
+            metode: metode,
+            nominal: document.getElementById('fd-nominal') ? document.getElementById('fd-nominal').value : '',
+            waktu_trx: document.getElementById('fd-waktu') ? document.getElementById('fd-waktu').value : '',
+            sumber_dana: document.getElementById('fd-sumber') ? document.getElementById('fd-sumber').value : '',
+            referensi: document.getElementById('fd-referensi') ? document.getElementById('fd-referensi').value : '',
+            fotoBase64: document.getElementById('fd-foto-base64') ? document.getElementById('fd-foto-base64').value : ''
+        };
+
+        window.showHC32Status('loading', 'Mengirim Data...', 'Laporan pembayaran Anda sedang diproses.');
+
+        // Simulasi sukses (Ganti hc32_post nantinya)
+        setTimeout(() => {
+            window.hideHC32Status();
+            
+            let message = "Bukti transfer telah terkirim dan menunggu verifikasi Bendahara.";
+            if(metode === 'TUNAI') message = "Data dicatat. Segera serahkan uang tunai ke Bendahara agar status menjadi Lunas.";
+
+            window.showHC32Status('success', 'Berhasil Terkirim', message);
+            
+            document.getElementById('payment-form').reset();
+            document.querySelectorAll('.method-item').forEach(i => i.classList.remove('active'));
+            hapusFoto(new Event('click'));
+            document.getElementById('fd-metode').value = '';
+        }, 2000);
+    });
+  </script>
+</body>
+</html>
