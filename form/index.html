@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pembayaran & Kas - HC 32</title>
+
+    <script src="../../config.js"></script>
+    <script src="../../components.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+
+    <style>
+        .pay-wrapper { max-width: 600px; margin: 40px auto; padding: 0 20px; min-height: 80vh; }
+        .pay-card { background: white; border-radius: 16px; border: 1px solid #cbd5e1; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .pay-title { font-size: 22px; font-weight: 700; color: var(--hc-blue); margin-bottom: 5px; }
+        .pay-desc { font-size: 14px; color: #64748b; margin-bottom: 25px; }
+
+        .form-group { margin-bottom: 20px; text-align: left; }
+        .form-label { display: block; font-size: 13px; font-weight: 600; color: var(--hc-dark); margin-bottom: 8px; }
+        .form-input { 
+            width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; 
+            font-family: 'Poppins', sans-serif; font-size: 14px; box-sizing: border-box; 
+        }
+        .form-input:focus { outline: none; border-color: var(--hc-blue); box-shadow: 0 0 0 3px rgba(26, 71, 135, 0.1); }
+
+        /* Payment Methods Grid */
+        .method-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+        .method-item { 
+            border: 2px solid #e2e8f0; border-radius: 10px; padding: 12px; text-align: center; 
+            cursor: pointer; transition: 0.2s; 
+        }
+        .method-item i { font-size: 20px; display: block; margin-bottom: 5px; color: #64748b; }
+        .method-item span { font-size: 12px; font-weight: 600; }
+        .method-item.active { border-color: var(--hc-blue); background: #eff6ff; }
+        .method-item.active i { color: var(--hc-blue); }
+
+        /* Upload Area */
+        .upload-area { 
+            border: 2px dashed #cbd5e1; border-radius: 12px; padding: 30px; 
+            text-align: center; cursor: pointer; transition: 0.2s; background: #f8fafc;
+        }
+        .upload-area:hover { border-color: var(--hc-toska); background: #f0f9fa; }
+        .upload-area i { font-size: 32px; color: #94a3b8; }
+        .preview-img { width: 100%; max-height: 300px; object-fit: contain; border-radius: 8px; display: none; margin-top: 15px; }
+
+        .ai-badge { 
+            display: inline-flex; align-items: center; gap: 5px; background: linear-gradient(135deg, #7e22ce, #1a4787); 
+            color: white; padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 600; margin-bottom: 10px;
+        }
+
+        .btn-pay {
+            width: 100%; padding: 15px; border: none; border-radius: 10px;
+            background: linear-gradient(135deg, var(--hc-blue), var(--hc-toska));
+            color: white; font-weight: 600; font-size: 15px; cursor: pointer; transition: 0.2s;
+        }
+        .btn-pay:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(15, 138, 148, 0.3); }
+
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="pay-wrapper">
+        <div class="pay-card">
+            <div class="ai-badge"><i class="ri-magic-line"></i> Didukung AI OCR</div>
+            <h2 class="pay-title">Pembayaran & Kas</h2>
+            <p class="pay-desc">Gunakan form ini untuk konfirmasi pembayaran via QRIS, Bank, atau E-Wallet.</p>
+
+            <form id="payment-form">
+                <div class="form-group">
+                    <label class="form-label">NIS / Nama Lengkap</label>
+                    <input type="text" id="user_id" class="form-input" placeholder="Masukkan NIS atau Nama untuk validasi" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Tujuan Pembayaran</label>
+                    <select id="payment_purpose" class="form-input" required>
+                        <option value="">Pilih Keperluan</option>
+                        <option value="Halal Bihalal 2026">Halal Bihalal 2026</option>
+                        <option value="Kas Bulanan">Uang Kas Bulanan</option>
+                        <option value="Seragam/Atribut">Seragam / Atribut</option>
+                    </select>
+                </div>
+
+                <div class="form-label">Metode Pembayaran</div>
+                <div class="method-grid" id="method-container">
+                    <div class="method-item" data-method="QRIS" onclick="selectMethod(this)">
+                        <i class="ri-qr-code-line"></i><span>QRIS</span>
+                    </div>
+                    <div class="method-item" data-method="BANK" onclick="selectMethod(this)">
+                        <i class="ri-bank-line"></i><span>Transfer Bank</span>
+                    </div>
+                    <div class="method-item" data-method="E-WALLET" onclick="selectMethod(this)">
+                        <i class="ri-wallet-3-line"></i><span>E-Wallet</span>
+                    </div>
+                    <div class="method-item" data-method="TUNAI" onclick="selectMethod(this)">
+                        <i class="ri-money-dollar-circle-line"></i><span>Tunai</span>
+                    </div>
+                </div>
+
+                <div id="bukti-section">
+                    <div class="form-label">Unggah Bukti Screenshot (Maks 1.5MB)</div>
+                    <div class="upload-area" onclick="document.getElementById('file-input').click()">
+                        <div id="upload-placeholder">
+                            <i class="ri-image-add-line"></i>
+                            <p style="font-size: 12px; color: #94a3b8; margin-top: 10px;">Klik untuk upload bukti bayar<br>AI akan membaca data otomatis</p>
+                        </div>
+                        <img id="image-preview" class="preview-img">
+                        <input type="file" id="file-input" class="hidden" accept="image/*" onchange="processImage(this)">
+                    </div>
+                </div>
+
+                <div id="auto-fields" class="hidden" style="margin-top: 25px; border-top: 1px solid #f1f5f9; padding-top: 20px;">
+                    <p style="font-size: 11px; font-weight: 700; color: var(--hc-toska); margin-bottom: 15px;">DATA TERDETEKSI AI:</p>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Nominal Pembayaran</label>
+                        <input type="number" id="amount" class="form-input" placeholder="Rp 0">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">ID / Kode Transaksi</label>
+                        <input type="text" id="trx_id" class="form-input" placeholder="Wajib diisi jika tidak terbaca">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Waktu & Tanggal</label>
+                        <input type="text" id="trx_time" class="form-input" placeholder="Contoh: 19/04/2026 12:45">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-pay" style="margin-top: 20px;">Kirim Konfirmasi</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            initHC32Navigation('keuangan');
+            // Simulasi load setting dari pengurus
+            loadPaymentSettings();
+        });
+
+        let selectedPaymentMethod = "";
+
+        function selectMethod(el) {
+            document.querySelectorAll('.method-item').forEach(i => i.classList.remove('active'));
+            el.classList.add('active');
+            selectedPaymentMethod = el.dataset.method;
+
+            if(selectedPaymentMethod === 'TUNAI') {
+                document.getElementById('bukti-section').classList.add('hidden');
+                document.getElementById('auto-fields').classList.add('hidden');
+                window.showHC32Status('info', 'Info Pembayaran', 'Untuk pembayaran tunai, silakan langsung hubungi Ketua atau Bendahara HC.');
+            } else {
+                document.getElementById('bukti-section').classList.remove('hidden');
+            }
+        }
+
+        function loadPaymentSettings() {
+            // Nantinya ambil dari GAS_URL action: getPaymentSettings
+            // Jika status setting FALSE, method-item akan di-remove atau di-hide
+        }
+
+        async function processImage(input) {
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+
+                // 1. Cek ukuran file (1.5 MB = 1572864 bytes)
+                if (file.size > 1572864) {
+                    window.showHC32Status('error', 'File Terlalu Besar', 'Maksimal ukuran foto adalah 1.5 MB.');
+                    input.value = "";
+                    return;
+                }
+
+                // Tampilkan Preview
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    document.getElementById('image-preview').src = e.target.result;
+                    document.getElementById('image-preview').style.display = 'block';
+                    document.getElementById('upload-placeholder').style.display = 'none';
+                    
+                    // Jalankan AI OCR
+                    runOCR(e.target.result);
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        async function runOCR(imageData) {
+            window.showHC32Status('loading', 'AI Menjelajahi Foto...', 'Sedang membaca bukti transfer Anda.');
+            
+            try {
+                const result = await Tesseract.recognize(imageData, 'ind+eng');
+                const text = result.data.text.toLowerCase();
+                console.log("Hasil Bacaan AI:", text);
+
+                // Logika Pencarian Data (Regex Sederhana)
+                // 1. Cari Nominal (mencari angka setelah Rp atau yang berformat ribuan)
+                const amountMatch = text.match(/(rp|total|jumlah|bayar)\s*([\d\.,]+)/) || text.match(/[\d]{1,3}(\.[\d]{3})+/);
+                if(amountMatch) {
+                    let cleanedAmount = amountMatch[0].replace(/[^\d]/g, '');
+                    document.getElementById('amount').value = cleanedAmount;
+                }
+
+                // 2. Cari Kode Transaksi (biasanya alfanumerik panjang)
+                const trxMatch = text.match(/[a-z0-9]{10,20}/i);
+                if(trxMatch) document.getElementById('trx_id').value = trxMatch[0].toUpperCase();
+
+                // 3. Cari Tanggal
+                const dateMatch = text.match(/\d{2}[\/\-]\d{2}[\/\-]\d{2,4}/);
+                if(dateMatch) document.getElementById('trx_time').value = dateMatch[0];
+
+                document.getElementById('auto-fields').classList.remove('hidden');
+                window.hideHC32Status();
+                window.showHC32Status('success', 'AI Berhasil Membaca', 'Beberapa data telah terisi otomatis. Mohon periksa kembali.');
+
+            } catch (err) {
+                console.error(err);
+                window.hideHC32Status();
+                document.getElementById('auto-fields').classList.remove('hidden'); // Tetap munculkan agar bisa isi manual
+                window.showHC32Status('error', 'AI Sedang Lelah', 'Gagal membaca otomatis. Silakan isi data secara manual.');
+            }
+        }
+
+        document.getElementById('payment-form').onsubmit = async (e) => {
+            e.preventDefault();
+            // Logika pengiriman data ke Apps Script action: submitTransaksi
+            window.showHC32Status('loading', 'Mengirim Data...', 'Laporan Anda sedang dicatat ke sistem pembendaharaan.');
+            
+            // Simulasi Sukses
+            setTimeout(() => {
+                window.showHC32Status('success', 'Konfirmasi Terkirim', 'Terima kasih! Bendahara akan memverifikasi pembayaran Anda segera.');
+                document.getElementById('payment-form').reset();
+            }, 2000);
+        };
+    </script>
+</body>
+</html>
